@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import json
+import html
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -46,7 +46,8 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
     for index, node in enumerate(spec["nodes"], start=2):
         x, y = positions[node["id"]]
         style = "rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EEF7;strokeColor=#64748B;"
-        cells.append(f'<mxCell id="{node["id"]}" value="{node["label"]}" style="{style}" vertex="1" parent="1"><mxGeometry x="{x}" y="{y}" width="150" height="60" as="geometry"/></mxCell>')
+        label = html.escape(str(node["label"]), quote=True)
+        cells.append(f'<mxCell id="{node["id"]}" value="{label}" style="{style}" vertex="1" parent="1"><mxGeometry x="{x}" y="{y}" width="150" height="60" as="geometry"/></mxCell>')
     for index, edge in enumerate(spec["edges"], start=100):
         cells.append(f'<mxCell id="edge-{index}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;"><mxGeometry relative="1" as="geometry"/></mxCell>')
     return '<mxfile host="Scientific Figure Agent"><diagram name="Agent Workflow"><mxGraphModel><root>' + "".join(cells) + "</root></mxGraphModel></diagram></mxfile>"

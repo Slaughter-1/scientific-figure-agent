@@ -29,3 +29,16 @@ def test_duplicate_node_id_is_rejected():
         "edges": [],
     }
     assert any("duplicate" in error.lower() for error in validate_spec(spec))
+
+
+def test_missing_style_is_rejected():
+    from figure_agent.spec import validate_spec
+
+    spec = {
+        "schema_version": "0.1",
+        "figure_type": "workflow",
+        "layout": {"direction": "left-to-right"},
+        "nodes": [],
+        "edges": [],
+    }
+    assert any("style" in error.lower() for error in validate_spec(spec))

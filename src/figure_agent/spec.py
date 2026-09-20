@@ -25,6 +25,8 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
     layout = spec.get("layout", {})
     if layout.get("direction") not in DIRECTIONS:
         errors.append("layout.direction is unsupported")
+    if not isinstance(spec.get("style"), dict):
+        errors.append("style is required and must be an object")
     nodes = spec.get("nodes")
     edges = spec.get("edges")
     if not isinstance(nodes, list) or not isinstance(edges, list):
@@ -49,7 +51,7 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
             value = edge.get(endpoint)
             if value not in ids:
                 errors.append(f"edges[{index}].{endpoint} references missing node: {value}")
-    colors = spec.get("style", {}).get("colors", {})
+    colors = spec.get("style", {}).get("colors", {}) if isinstance(spec.get("style"), dict) else {}
     for name, color in colors.items():
         if not isinstance(color, str) or not HEX_COLOR.fullmatch(color):
             errors.append(f"style.colors.{name} must be a six-digit hex color")
