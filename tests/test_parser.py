@@ -32,3 +32,18 @@ def test_parser_handles_arrow_delimited_workflow():
     assert validate_spec(spec) == []
     assert len(spec["nodes"]) == 4
     assert len(spec["edges"]) == 3
+
+
+def test_parser_records_source_evidence_for_each_node():
+    spec = parse_method_text("接收文本 → 检索工具 → 生成模型")
+    assert all(node["evidence"] for node in spec["nodes"])
+    assert spec["nodes"][1]["evidence"][0]["source"] == "input_text"
+    assert "检索工具" in spec["nodes"][1]["evidence"][0]["quote"]
+
+
+def test_classifier_routes_common_figure_inputs():
+    from figure_agent.planner import classify_figure
+
+    assert classify_figure("模块 A 连接模块 B，形成系统架构") == "architecture"
+    assert classify_figure("输入 → Planner → Answer") == "workflow"
+    assert classify_figure({"data": {"kind": "line"}, "figure_type": "plot"}) == "plot"

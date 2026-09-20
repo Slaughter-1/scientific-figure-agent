@@ -30,3 +30,5 @@ python scripts/render_next_stage.py render --spec examples/m0/workflow.json --ba
 ```
 
 它会生成 Draw.io、Figma scene、可用的数据图产物和 `manifest.json`；验证结果见 `docs/next-stage-report.md`。
+
+M7 为文本到 Figure Spec 增加节点证据溯源和轻量级图类型分类，验证结果见 `docs/m7-report.md`。

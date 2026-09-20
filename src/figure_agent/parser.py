@@ -49,11 +49,16 @@ def parse_method_text(text: str) -> dict[str, Any]:
     arrow_delimited = _ARROW_SPLIT.search(text) is not None
     raw_clauses = _ARROW_SPLIT.split(text) if arrow_delimited else _CLAUSE_SPLIT.split(text)
     labels = []
+    evidence_by_label: dict[str, str] = {}
     for raw in raw_clauses:
         label = _clean_clause(raw, strip_leading=not arrow_delimited)
         if label and label not in labels:
             labels.append(label)
-    nodes = [{"id": f"node_{index}", "label": label, "type": _node_type(label)} for index, label in enumerate(labels)]
+            evidence_by_label[label] = raw.strip()
+    nodes = [
+        {"id": f"node_{index}", "label": label, "type": _node_type(label), "evidence": [{"source": "input_text", "quote": evidence_by_label[label]}]}
+        for index, label in enumerate(labels)
+    ]
     edges = [
         {"source": nodes[index]["id"], "target": nodes[index + 1]["id"], "type": "data_flow"}
         for index in range(len(nodes) - 1)
