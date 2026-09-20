@@ -41,6 +41,18 @@ def test_parser_records_source_evidence_for_each_node():
     assert "检索工具" in spec["nodes"][1]["evidence"][0]["quote"]
 
 
+def test_parser_expands_explicit_branch_group():
+    spec = parse_method_text("Query → [Retriever | Memory] → Generator")
+    labels = {node["label"] for node in spec["nodes"]}
+    assert labels == {"Query", "Retriever", "Memory", "Generator"}
+    ids = {node["label"]: node["id"] for node in spec["nodes"]}
+    pairs = {(edge["source"], edge["target"]) for edge in spec["edges"]}
+    assert (ids["Query"], ids["Retriever"]) in pairs
+    assert (ids["Query"], ids["Memory"]) in pairs
+    assert (ids["Retriever"], ids["Generator"]) in pairs
+    assert (ids["Memory"], ids["Generator"]) in pairs
+
+
 def test_classifier_routes_common_figure_inputs():
     from figure_agent.planner import classify_figure
 

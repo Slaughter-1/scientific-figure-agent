@@ -43,26 +43,41 @@ def _node_type(label: str) -> str:
     return "process"
 
 
+def _expand_stage(raw: str, *, arrow_delimited: bool) -> list[str]:
+    label = _clean_clause(raw, strip_leading=not arrow_delimited)
+    if len(label) >= 2 and label[0] in "[({" and label[-1] in "])}":
+        inner = label[1:-1]
+        parts = [part.strip() for part in re.split(r"\s*[|/]\s*", inner) if part.strip()]
+        if len(parts) > 1:
+            return [_clean_clause(part, strip_leading=False) for part in parts]
+    return [label] if label else []
+
+
 def parse_method_text(text: str) -> dict[str, Any]:
     if not isinstance(text, str) or not text.strip():
         raise ValueError("text must be a non-empty string")
     arrow_delimited = _ARROW_SPLIT.search(text) is not None
     raw_clauses = _ARROW_SPLIT.split(text) if arrow_delimited else _CLAUSE_SPLIT.split(text)
     labels = []
+    stages: list[list[str]] = []
     evidence_by_label: dict[str, str] = {}
     for raw in raw_clauses:
-        label = _clean_clause(raw, strip_leading=not arrow_delimited)
-        if label and label not in labels:
-            labels.append(label)
-            evidence_by_label[label] = raw.strip()
+        stage = _expand_stage(raw, arrow_delimited=arrow_delimited)
+        stages.append(stage)
+        for label in stage:
+            if label and label not in labels:
+                labels.append(label)
+                evidence_by_label[label] = raw.strip()
     nodes = [
         {"id": f"node_{index}", "label": label, "type": _node_type(label), "evidence": [{"source": "input_text", "quote": evidence_by_label[label]}]}
         for index, label in enumerate(labels)
     ]
-    edges = [
-        {"source": nodes[index]["id"], "target": nodes[index + 1]["id"], "type": "data_flow"}
-        for index in range(len(nodes) - 1)
-    ]
+    node_ids = {node["label"]: node["id"] for node in nodes}
+    edges = []
+    for previous, current in zip(stages, stages[1:]):
+        for source in previous:
+            for target in current:
+                edges.append({"source": node_ids[source], "target": node_ids[target], "type": "data_flow"})
     spec = {
         "schema_version": "0.1",
         "figure_type": "workflow",
