@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "spec_sha256": "73fd07d0f6e97655d2204d556149200db3f29807441fd0cfb51e5ab78968b3c0",
+  "backends": [
+    "matplotlib"
+  ],
+  "artifacts": {
+    "matplotlib": {
+      "status": "ok",
+      "spec": "outputs\\m8\\plot-spec.json",
+      "pdf": "outputs\\m8\\figure.pdf",
+      "svg": "outputs\\m8\\figure.svg",
+      "png": "outputs\\m8\\figure.png"
+    }
+  },
+  "limitations": [
+    "Backend statuses describe local execution and do not certify scientific semantic correctness."
+  ]
+}

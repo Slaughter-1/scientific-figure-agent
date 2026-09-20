@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "plot",
+  "title": "Benchmark Accuracy",
+  "layout": {
+    "direction": "left-to-right",
+    "spacing": 24
+  },
+  "nodes": [],
+  "edges": [],
+  "groups": [],
+  "data": {
+    "kind": "bar",
+    "x": [
+      "Baseline",
+      "Ours"
+    ],
+    "y": [
+      0.71,
+      0.83
+    ],
+    "source_columns": [
+      "method",
+      "accuracy"
+    ]
+  },
+  "provenance": {
+    "source": "examples\\m8\\results.csv",
+    "format": "csv"
+  },
+  "style": {
+    "theme": "academic_clean",
+    "colors": {
+      "baseline": "#94A3B8",
+      "ours": "#2563EB"
+    }
+  }
+}
