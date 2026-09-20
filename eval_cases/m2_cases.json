@@ -1,0 +1,32 @@
+[
+  {
+    "id": "nlp_pipeline",
+    "text": "系统首先接收药品说明书文本，然后通过预处理模块提取候选片段，再利用大语言模型进行规则识别，最终存入结构化规则库。",
+    "required_labels": ["药品说明书文本", "预处理模块", "大语言模型", "结构化规则库"],
+    "edge_count": 3
+  },
+  {
+    "id": "minimal_io",
+    "text": "输入文本，然后输出结果。",
+    "required_labels": ["输入文本", "输出结果"],
+    "edge_count": 1
+  },
+  {
+    "id": "agent_chain",
+    "text": "Query → Planner → Tool → Answer",
+    "required_labels": ["Query", "Planner", "Tool", "Answer"],
+    "edge_count": 3
+  },
+  {
+    "id": "retrieval_flow",
+    "text": "用户问题 -> 检索工具 -> 文档集合 -> 生成模型 -> 最终答案",
+    "required_labels": ["用户问题", "检索工具", "文档集合", "生成模型", "最终答案"],
+    "edge_count": 4
+  },
+  {
+    "id": "staged_workflow",
+    "text": "数据预处理；特征提取；分类器；结果输出",
+    "required_labels": ["数据预处理", "特征提取", "分类器", "结果输出"],
+    "edge_count": 3
+  }
+]
