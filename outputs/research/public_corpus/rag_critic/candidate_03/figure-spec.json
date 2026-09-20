@@ -1,0 +1,127 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "workflow",
+  "title": "Generated Workflow",
+  "layout": {
+    "direction": "left-to-right",
+    "spacing": 36
+  },
+  "nodes": [
+    {
+      "id": "node_0",
+      "label": "Question",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Question"
+        }
+      ]
+    },
+    {
+      "id": "node_1",
+      "label": "Retrieval and generation",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Retrieval and generation"
+        }
+      ]
+    },
+    {
+      "id": "node_2",
+      "label": "Error detection",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Error detection"
+        }
+      ]
+    },
+    {
+      "id": "node_3",
+      "label": "Critic feedback",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Critic feedback"
+        }
+      ]
+    },
+    {
+      "id": "node_4",
+      "label": "Corrected answer",
+      "type": "data",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Corrected answer"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "data_flow"
+    }
+  ],
+  "groups": [],
+  "style": {
+    "theme": "academic_clean",
+    "colors": {
+      "process": "#E8EEF7",
+      "data": "#F2F4F7"
+    }
+  },
+  "candidate_id": "candidate_03",
+  "template_refs": [
+    {
+      "id": "scientific_figure_agent_academic_clean",
+      "source_url": "https://github.com/Slaughter-1/scientific-figure-agent",
+      "source_type": "project_builtin",
+      "license": "project_owned",
+      "editable": true,
+      "supported_types": [
+        "architecture",
+        "workflow",
+        "graph",
+        "plot"
+      ],
+      "style_tags": [
+        "academic_clean",
+        "paper"
+      ],
+      "components": [
+        "module_box",
+        "group_frame",
+        "arrow",
+        "plot_panel"
+      ],
+      "preview_url": null,
+      "download_url": null,
+      "restrictions": [],
+      "retrieved_at": "2026-09-20T15:25:23.530415+00:00",
+      "match_reason": "query token matched template metadata"
+    }
+  ]
+}

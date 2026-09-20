@@ -11,6 +11,8 @@
     "research_data/cases/atoms_counterfact_summary.csv"
   ],
   "artifacts": [
+    "public_corpus/evaluation.json",
+    "public_corpus/cases.json",
     "figma-smoke-test.json",
     "atoms_counterfact\\figure.pdf",
     "atoms_counterfact\\figure.png",

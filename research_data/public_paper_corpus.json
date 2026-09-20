@@ -1,0 +1,134 @@
+[
+  {
+    "id": "agentbench",
+    "title": "AgentBench: A Comprehensive Benchmark to Evaluate LLMs as Agents",
+    "category": "agent_benchmark",
+    "figure_type": "architecture",
+    "method_chain": "User task → Agent reasoning → Environment interaction → Observation → Task score",
+    "paper_url": "https://arxiv.org/abs/2308.03688",
+    "repository_url": "https://github.com/THUDM/AgentBench",
+    "license_status": "review_required",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "toolbench",
+    "title": "ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs",
+    "category": "tool_use",
+    "figure_type": "workflow",
+    "method_chain": "User instruction → API retrieval → Tool planning → API execution → Answer synthesis",
+    "paper_url": "https://arxiv.org/abs/2307.16789",
+    "repository_url": "https://github.com/OpenBMB/ToolBench",
+    "license_status": "review_required",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "self_rag",
+    "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+    "category": "rag",
+    "figure_type": "architecture",
+    "method_chain": "Query → Retrieval decision → Passage retrieval → Generation → Reflection token critique",
+    "paper_url": "https://arxiv.org/abs/2310.11511",
+    "repository_url": "https://github.com/AkariAsai/self-rag",
+    "license_status": "review_required",
+    "evidence": "official repository README and paper abstract"
+  },
+  {
+    "id": "crag",
+    "title": "CRAG: Comprehensive RAG Benchmark",
+    "category": "rag_benchmark",
+    "figure_type": "workflow",
+    "method_chain": "Question → Web search API → Knowledge graph API → Context aggregation → Answer evaluation",
+    "paper_url": "https://arxiv.org/abs/2406.04744",
+    "repository_url": "https://github.com/facebookresearch/CRAG",
+    "license_status": "cc_by_nc_4",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "vakra",
+    "title": "VAKRA: A Benchmark for Evaluating Multi-Hop, Multi-Source Tool-Calling in AI Agents",
+    "category": "tool_use_benchmark",
+    "figure_type": "workflow",
+    "method_chain": "User query → Tool selection → API hop → Document retrieval → Multi-source reasoning → Answer",
+    "paper_url": "https://github.com/IBM/vakra",
+    "repository_url": "https://github.com/IBM/vakra",
+    "license_status": "review_required",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "tps_bench",
+    "title": "TPS-Bench: Evaluating AI Agents' Tool Planning and Scheduling Abilities",
+    "category": "planning_benchmark",
+    "figure_type": "workflow",
+    "method_chain": "Compound task → Subtask decomposition → Tool scheduling → Parallel or sequential execution → Completion and efficiency",
+    "paper_url": "https://arxiv.org/abs/2511.01527",
+    "repository_url": "https://github.com/hanwenxu1/mcp-agent",
+    "license_status": "review_required",
+    "evidence": "arXiv abstract and official code link"
+  },
+  {
+    "id": "the_agent_company",
+    "title": "TheAgentCompany: Benchmarking LLM Agents on Consequential Real-World Tasks",
+    "category": "long_horizon_agent",
+    "figure_type": "architecture",
+    "method_chain": "Professional task → Web and code tools → Workspace actions → Coworker communication → Task outcome",
+    "paper_url": "https://github.com/TheAgentCompany/TheAgentCompany",
+    "repository_url": "https://github.com/TheAgentCompany/TheAgentCompany",
+    "license_status": "review_required",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "rag_critic",
+    "title": "RAG-Critic: Leveraging Automated Critic-Guided Agentic Workflow for RAG",
+    "category": "rag_critic",
+    "figure_type": "workflow",
+    "method_chain": "Question → Retrieval and generation → Error detection → Critic feedback → Corrected answer",
+    "paper_url": "https://github.com/RUC-NLPIR/RAG-Critic",
+    "repository_url": "https://github.com/RUC-NLPIR/RAG-Critic",
+    "license_status": "review_required",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "react",
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "category": "reasoning_action",
+    "figure_type": "architecture",
+    "method_chain": "Task → Thought trace → Action → External observation → Updated thought and action",
+    "paper_url": "https://arxiv.org/abs/2210.03629",
+    "repository_url": "https://react-lm.github.io",
+    "license_status": "review_required",
+    "evidence": "arXiv abstract and project site"
+  },
+  {
+    "id": "autogen",
+    "title": "AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation",
+    "category": "multi_agent",
+    "figure_type": "architecture",
+    "method_chain": "User request → Assistant agent → Specialized agent → Tool or human feedback → Coordinated result",
+    "paper_url": "https://arxiv.org/abs/2308.08155",
+    "repository_url": "https://github.com/microsoft/autogen",
+    "license_status": "review_required",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "kate",
+    "title": "Pushing the Limits of LLM Tool Calling via Experiential Knowledge Integration and Activation",
+    "category": "tool_use",
+    "figure_type": "workflow",
+    "method_chain": "Experience acquisition → Knowledge activation → Parallel tool sampling → Tool execution → Post-training internalization",
+    "paper_url": "https://arxiv.org/abs/2606.10875",
+    "repository_url": "https://github.com/hypasd-art/KATE",
+    "license_status": "review_required",
+    "evidence": "local paper analysis and official repository"
+  },
+  {
+    "id": "towards_atoms",
+    "title": "Towards Atoms of Large Language Models",
+    "category": "llm_interpretability",
+    "figure_type": "architecture",
+    "method_chain": "Hidden representations → Atomic Inner Product → Threshold sparse autoencoder → Atom identification → Faithfulness and stability evaluation",
+    "paper_url": "https://arxiv.org/abs/2509.20784",
+    "repository_url": "https://github.com/ChenhuiHu/towards_atoms",
+    "license_status": "review_required",
+    "evidence": "local paper analysis and official repository"
+  }
+]

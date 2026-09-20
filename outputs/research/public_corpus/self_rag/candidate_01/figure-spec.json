@@ -1,0 +1,125 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "workflow",
+  "title": "Generated Workflow",
+  "layout": {
+    "direction": "left-to-right",
+    "spacing": 24
+  },
+  "nodes": [
+    {
+      "id": "node_0",
+      "label": "Query",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Query"
+        }
+      ]
+    },
+    {
+      "id": "node_1",
+      "label": "Retrieval decision",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Retrieval decision"
+        }
+      ]
+    },
+    {
+      "id": "node_2",
+      "label": "Passage retrieval",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Passage retrieval"
+        }
+      ]
+    },
+    {
+      "id": "node_3",
+      "label": "Generation",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Generation"
+        }
+      ]
+    },
+    {
+      "id": "node_4",
+      "label": "Reflection token critique",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Reflection token critique"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "data_flow"
+    }
+  ],
+  "groups": [],
+  "style": {
+    "theme": "academic_clean",
+    "colors": {
+      "process": "#E8EEF7",
+      "data": "#F2F4F7"
+    }
+  },
+  "candidate_id": "candidate_01",
+  "template_refs": [
+    {
+      "id": "drawio_official_architecture",
+      "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+      "source_type": "drawio_official",
+      "license": "verified",
+      "editable": true,
+      "supported_types": [
+        "architecture",
+        "workflow",
+        "graph"
+      ],
+      "style_tags": [
+        "academic_clean",
+        "left_to_right"
+      ],
+      "components": [
+        "module_box",
+        "group_frame",
+        "arrow"
+      ],
+      "preview_url": null,
+      "download_url": null,
+      "restrictions": [],
+      "retrieved_at": "2026-09-20T15:25:22.151998+00:00",
+      "match_reason": "query token matched template metadata"
+    }
+  ]
+}

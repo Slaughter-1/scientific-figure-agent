@@ -56,3 +56,5 @@ figure-agent inspect --artifact outputs/generated/candidate_01/figure.svg
 `generate` 会保存 `figure-contract.json`、三个候选目录、候选评分和模板引用；`package` 会生成 `component-manifest.json` 与 `component-prompts.md`；`inspect` 会附带结构化视觉检查结果。模板目录当前使用可审计的官方/项目内记录，未确认许可证的资源不会进入 `open_license_first` 结果。Figma 未连接时仍输出本地 `figure.figma-scene.json`，连接状态由 manifest 标记。
 
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
+
+公开 LLM/Agent 论文评测集见 [`docs/public-corpus-report.md`](docs/public-corpus-report.md)，当前包含 12 个官方论文/仓库案例，覆盖工具调用、RAG、Agent planning、多智能体和可解释性。

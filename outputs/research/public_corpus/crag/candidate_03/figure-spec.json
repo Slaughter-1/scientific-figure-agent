@@ -1,0 +1,97 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "workflow",
+  "title": "Generated Workflow",
+  "layout": {
+    "direction": "left-to-right",
+    "spacing": 36
+  },
+  "nodes": [
+    {
+      "id": "node_0",
+      "label": "Question",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Question"
+        }
+      ]
+    },
+    {
+      "id": "node_1",
+      "label": "Web search API",
+      "type": "tool",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Web search API"
+        }
+      ]
+    },
+    {
+      "id": "node_2",
+      "label": "Knowledge graph API",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Knowledge graph API"
+        }
+      ]
+    },
+    {
+      "id": "node_3",
+      "label": "Context aggregation",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Context aggregation"
+        }
+      ]
+    },
+    {
+      "id": "node_4",
+      "label": "Answer evaluation",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "Answer evaluation"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "data_flow"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4",
+      "type": "data_flow"
+    }
+  ],
+  "groups": [],
+  "style": {
+    "theme": "academic_clean",
+    "colors": {
+      "process": "#E8EEF7",
+      "data": "#F2F4F7"
+    }
+  },
+  "candidate_id": "candidate_03"
+}
