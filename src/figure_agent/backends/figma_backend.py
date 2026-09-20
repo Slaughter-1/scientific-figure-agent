@@ -2,13 +2,34 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 
 from ..spec import require_valid_spec
 
 
 class FigmaDriver(Protocol):
     def write_scene(self, scene: dict[str, Any]) -> dict[str, Any]: ...
+
+
+class ConnectedFigmaDriver:
+    """Adapter for an externally supplied Figma writer.
+
+    The callback is intentionally injected so the core package never guesses a
+    particular MCP/API schema. The caller owns authentication and transport.
+    """
+
+    def __init__(self, writer: Callable[[dict[str, Any]], dict[str, Any]]) -> None:
+        self._writer = writer
+
+    def write_scene(self, scene: dict[str, Any]) -> dict[str, Any]:
+        result = self._writer(scene)
+        if not isinstance(result, dict):
+            raise TypeError("external Figma writer must return a dict")
+        if result.get("status") != "connected":
+            raise ValueError("external Figma writer must return status=connected")
+        if not result.get("file_or_frame"):
+            raise ValueError("connected Figma result must include file_or_frame")
+        return result
 
 
 def _positions(spec: dict[str, Any]) -> dict[str, tuple[float, float]]:

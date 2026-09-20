@@ -32,3 +32,18 @@ def test_figma_transport_failure_keeps_local_scene(tmp_path):
     assert result["status"] == "error"
     assert "MCP unavailable" in result["error"]
     assert Path(result["scene"]).exists()
+
+
+def test_connected_driver_wraps_external_writer_without_mcp_schema(tmp_path):
+    from figure_agent.backends.figma_backend import ConnectedFigmaDriver, render_figma_spec
+
+    calls = []
+
+    def writer(scene):
+        calls.append(scene["kind"])
+        return {"status": "connected", "file_or_frame": "https://www.figma.com/design/example"}
+
+    result = render_figma_spec(_spec(), tmp_path, ConnectedFigmaDriver(writer))
+    assert result["status"] == "connected"
+    assert result["file_or_frame"].endswith("example")
+    assert calls == ["FIGMA_SCENE"]
