@@ -51,12 +51,14 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
     ]
     preview_positions = _layout(spec)
     positions = {node_id: (round(x * 100), round((6.2 - y) * 100)) for node_id, (x, y) in preview_positions.items()}
+    group_by_node = {child: group["id"] for group in spec.get("groups", []) for child in group["children"]}
     for index, node in enumerate(spec["nodes"], start=2):
         x, y = positions[node["id"]]
         color = spec.get("style", {}).get("colors", {}).get(node.get("type"), "#E8EEF7")
         style = f"rounded=1;whiteSpace=wrap;html=1;fillColor={color};strokeColor=#64748B;"
         label = html.escape(str(node["label"]), quote=True)
-        cells.append(f'<mxCell id="{node["id"]}" value="{label}" style="{style}" vertex="1" parent="1"><mxGeometry x="{x}" y="{y}" width="150" height="60" as="geometry"/></mxCell>')
+        group_attribute = f' data-group="{html.escape(group_by_node[node["id"]], quote=True)}"' if node["id"] in group_by_node else ""
+        cells.append(f'<mxCell id="{node["id"]}" value="{label}" style="{style}" vertex="1" parent="1"{group_attribute}><mxGeometry x="{x}" y="{y}" width="150" height="60" as="geometry"/></mxCell>')
     for group_index, group in enumerate(spec.get("groups", []), start=500):
         children = [positions[node_id] for node_id in group["children"] if node_id in positions]
         if not children:

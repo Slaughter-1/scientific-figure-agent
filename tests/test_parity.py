@@ -35,3 +35,17 @@ def test_parity_reports_label_mismatch_with_source_id():
     next(node for node in scene["nodes"] if node.get("source_id") == "b")["name"] = "Wrong"
     findings = compare_semantics(_spec(), extract_figma_semantics(scene))
     assert any(finding["code"] == "label_mismatch" and finding["source_id"] == "b" for finding in findings)
+
+
+def test_parity_compares_group_membership():
+    from figure_agent.backends.figma_backend import compile_figma_scene
+    from figure_agent.parity import compare_semantics, extract_figma_semantics
+
+    spec = _spec()
+    spec["groups"] = [{"id": "core", "label": "Core", "children": ["b"]}]
+    artifact = extract_figma_semantics(compile_figma_scene(spec))
+    assert artifact["groups"]["core"] == ["b"]
+    assert compare_semantics(spec, artifact) == []
+    artifact["groups"]["core"] = []
+    findings = compare_semantics(spec, artifact)
+    assert any(finding["code"] == "group_mismatch" for finding in findings)

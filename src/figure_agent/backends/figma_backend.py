@@ -33,7 +33,7 @@ def compile_figma_scene(spec: dict[str, Any]) -> dict[str, Any]:
         if not children:
             continue
         xs, ys = zip(*children)
-        nodes.append({"kind": "FRAME", "source_id": group["id"], "name": group["label"], "x": min(xs) - 20, "y": min(ys) - 20, "width": max(xs) - min(xs) + 200, "height": max(ys) - min(ys) + 100, "children": []})
+        nodes.append({"kind": "FRAME", "source_id": group["id"], "name": group["label"], "x": min(xs) - 20, "y": min(ys) - 20, "width": max(xs) - min(xs) + 200, "height": max(ys) - min(ys) + 100, "children": list(group["children"])})
     for node in spec["nodes"]:
         x, y = positions[node["id"]]
         nodes.append({"kind": "RECTANGLE", "source_id": node["id"], "name": node["label"], "x": x, "y": y, "width": 160, "height": 64, "fills": [{"color": colors.get(node["type"], "#E8EEF7")}]})
