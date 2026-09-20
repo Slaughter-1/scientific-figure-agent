@@ -1,0 +1,3 @@
+method,accuracy
+Baseline,0.71
+Ours,0.83
