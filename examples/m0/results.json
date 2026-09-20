@@ -1,0 +1,4 @@
+{
+  "methods": ["Baseline", "Ours"],
+  "accuracy": [0.71, 0.83]
+}
