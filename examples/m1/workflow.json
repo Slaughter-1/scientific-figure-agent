@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "workflow",
+  "title": "Agent Evaluation Workflow",
+  "layout": {"direction": "left-to-right", "spacing": 24},
+  "nodes": [
+    {"id": "query", "label": "User Query", "type": "data"},
+    {"id": "planner", "label": "Planner", "type": "process"},
+    {"id": "tool", "label": "Tool", "type": "tool"},
+    {"id": "observation", "label": "Observation", "type": "data"},
+    {"id": "verifier", "label": "Verifier", "type": "decision"}
+  ],
+  "edges": [
+    {"source": "query", "target": "planner", "type": "data_flow"},
+    {"source": "planner", "target": "tool", "type": "control_flow"},
+    {"source": "tool", "target": "observation", "type": "data_flow"},
+    {"source": "observation", "target": "verifier", "type": "control_flow"}
+  ],
+  "groups": [],
+  "style": {"theme": "academic_clean", "colors": {"process": "#E8EEF7", "data": "#F2F4F7"}}
+}

@@ -9,6 +9,7 @@ NODE_TYPES = {"model", "tool", "data", "process", "storage", "decision"}
 EDGE_TYPES = {"data_flow", "control_flow", "dependency"}
 FIGURE_TYPES = {"architecture", "workflow", "graph", "plot"}
 DIRECTIONS = {"left-to-right", "top-to-bottom"}
+PLOT_KINDS = {"bar", "line", "heatmap", "scatter"}
 HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
 
@@ -51,6 +52,32 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
             value = edge.get(endpoint)
             if value not in ids:
                 errors.append(f"edges[{index}].{endpoint} references missing node: {value}")
+    groups = spec.get("groups", [])
+    if not isinstance(groups, list):
+        errors.append("groups must be an array")
+    else:
+        group_ids: set[str] = set()
+        for index, group in enumerate(groups):
+            group_id = group.get("id") if isinstance(group, dict) else None
+            if not group_id:
+                errors.append(f"groups[{index}].id is required")
+                continue
+            if group_id in group_ids:
+                errors.append(f"duplicate group id: {group_id}")
+            group_ids.add(group_id)
+            children = group.get("children")
+            if not isinstance(children, list):
+                errors.append(f"groups[{index}].children must be an array")
+            else:
+                for child in children:
+                    if child not in ids:
+                        errors.append(f"groups[{index}] references missing node: {child}")
+    if spec.get("figure_type") == "plot":
+        data = spec.get("data")
+        if not isinstance(data, dict):
+            errors.append("plot data is required and must be an object")
+        elif data.get("kind") not in PLOT_KINDS:
+            errors.append("plot data.kind is unsupported")
     colors = spec.get("style", {}).get("colors", {}) if isinstance(spec.get("style"), dict) else {}
     for name, color in colors.items():
         if not isinstance(color, str) or not HEX_COLOR.fullmatch(color):

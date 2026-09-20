@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "architecture",
+  "title": "RAG Rule Extraction Architecture",
+  "layout": {"direction": "left-to-right", "spacing": 24},
+  "nodes": [
+    {"id": "documents", "label": "Documents", "type": "data"},
+    {"id": "retriever", "label": "Retriever", "type": "tool"},
+    {"id": "llm", "label": "LLM", "type": "model"},
+    {"id": "rule_db", "label": "Rule Database", "type": "storage"}
+  ],
+  "edges": [
+    {"source": "documents", "target": "retriever", "type": "data_flow"},
+    {"source": "retriever", "target": "llm", "type": "data_flow"},
+    {"source": "llm", "target": "rule_db", "type": "data_flow"}
+  ],
+  "groups": [{"id": "extraction", "label": "Extraction Stage", "children": ["retriever", "llm"]}],
+  "style": {"theme": "academic_clean", "colors": {"model": "#DCEBFA", "data": "#F2F4F7", "storage": "#EFE7FA"}}
+}

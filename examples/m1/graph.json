@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "graph",
+  "title": "Tool Dependency Graph",
+  "layout": {"direction": "top-to-bottom", "spacing": 24},
+  "nodes": [
+    {"id": "planner", "label": "Planner", "type": "process"},
+    {"id": "search", "label": "Search", "type": "tool"},
+    {"id": "code", "label": "Code", "type": "tool"},
+    {"id": "verifier", "label": "Verifier", "type": "decision"}
+  ],
+  "edges": [
+    {"source": "planner", "target": "search", "type": "dependency"},
+    {"source": "planner", "target": "code", "type": "dependency"},
+    {"source": "search", "target": "verifier", "type": "control_flow"},
+    {"source": "code", "target": "verifier", "type": "control_flow"}
+  ],
+  "groups": [],
+  "style": {"theme": "academic_clean", "colors": {"process": "#E8EEF7", "tool": "#FCE7C3"}}
+}
