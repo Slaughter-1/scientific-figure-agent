@@ -2,5 +2,3 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .superpowers/
-outputs/m0/*
-!outputs/m0/.gitkeep
