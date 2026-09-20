@@ -20,3 +20,5 @@ M2 提供 `figure_agent.parser.parse_method_text` 作为文本到 Figure Spec �
 M3 提供统一的 `figure_agent.backends.drawio_backend.render_drawio_spec` 后端，可从任意合法 Figure Spec 生成可编辑 `.drawio`、`.svg` 和 `.pdf`，验证结果见 `docs/m3-report.md`。
 
 M5 的 `figure_agent.backends.plot_backend.render_plot_spec` 支持 `bar`、`line`、`scatter` 和 `heatmap`，验证结果见 `docs/m5-report.md`。
+
+M6 的 `figure_agent.critic` 提供结构化 Critic/Refiner，用于发现 Figure Spec 问题并执行安全的元数据修复，验证结果见 `docs/m6-report.md`。
