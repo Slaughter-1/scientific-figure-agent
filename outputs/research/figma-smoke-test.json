@@ -1,0 +1,25 @@
+{
+  "status": "connected",
+  "file_or_frame": {
+    "file_key": "4vrFadGrADX25vLDgbHkhJ",
+    "file_url": "https://www.figma.com/design/4vrFadGrADX25vLDgbHkhJ",
+    "frame_id": "2:3",
+    "frame_name": "Scientific Figure — KATE candidate 01"
+  },
+  "source_spec": "outputs/research/kate_method/candidate_01/figure-spec.json",
+  "native_nodes": {
+    "frame": 1,
+    "rectangles": 5,
+    "text": 5,
+    "lines": 4
+  },
+  "font": "Arimo Regular",
+  "smoke_test": {
+    "created": true,
+    "visual_verified": true,
+    "canvas_clipping_fixed": true
+  },
+  "transport": "mcp__codex_apps__figma_use_figma",
+  "created_at": "2026-09-20",
+  "license_note": "Figma file is user-owned workspace output; source template remains recorded separately."
+}
