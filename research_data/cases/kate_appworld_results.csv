@@ -1,0 +1,6 @@
+benchmark,model,method,average,source
+AppWorld,Qwen3-8B,ReAct,4.1,local paper Table 2 p.7
+AppWorld,Qwen3-8B,KATE,10.92,local paper Table 2 p.7
+AppWorld,Qwen3-32B,ReAct,6.52,local paper Table 2 p.7
+AppWorld,Qwen3-32B,Memp,9.62,local paper Table 2 p.7
+AppWorld,Qwen3-32B,KATE,12.87,local paper Table 2 p.7

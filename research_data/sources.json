@@ -1,0 +1,32 @@
+{
+  "kate_paper": {
+    "title": "Pushing the Limits of LLM Tool Calling via Experiential Knowledge Integration and Activation",
+    "local_source": "E:/Desktop/论文/Pushing the Limits of LLM Tool Calling - KATE/source.pdf",
+    "arxiv": "https://arxiv.org/abs/2606.10875",
+    "github": "https://github.com/hypasd-art/KATE",
+    "license_status": "review_required",
+    "evidence": "paper-analysis.md; Tables 1-2; pages 1-2, 7, 14"
+  },
+  "atoms_paper": {
+    "title": "Towards Atoms of Large Language Models",
+    "local_source": "E:/Desktop/论文/Towards Atoms of Large Language Models/scholar-project/source.pdf",
+    "arxiv": "https://arxiv.org/abs/2509.20784",
+    "github": "https://github.com/ChenhuiHu/towards_atoms",
+    "license_status": "review_required",
+    "evidence": "论文分析结果总结_中文版.md"
+  },
+  "kate_github": {
+    "repository": "https://github.com/hypasd-art/KATE",
+    "local_clone": "research_data/github/KATE",
+    "dataset": "BFCL_v4_multi_turn_base.json",
+    "records": 200,
+    "license_status": "review_required"
+  },
+  "atoms_github": {
+    "repository": "https://github.com/ChenhuiHu/towards_atoms",
+    "local_clone": "research_data/github/towards_atoms",
+    "dataset": "Knowledge_Atomization/data/counterfact.json",
+    "records": 21919,
+    "license_status": "review_required"
+  }
+}

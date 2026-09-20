@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "spec_sha256": "a945772e8e32dfb2aafbb4d3d871f3fe501d0bfea7acd7fbe218d8a0530d20b1",
+  "backends": [
+    "matplotlib"
+  ],
+  "artifacts": {
+    "matplotlib": {
+      "status": "ok",
+      "spec": "outputs\\research\\kate_bfcl_results\\plot-spec.json",
+      "pdf": "outputs\\research\\kate_bfcl_results\\figure.pdf",
+      "svg": "outputs\\research\\kate_bfcl_results\\figure.svg",
+      "png": "outputs\\research\\kate_bfcl_results\\figure.png"
+    }
+  },
+  "limitations": [
+    "Backend statuses describe local execution and do not certify scientific semantic correctness."
+  ]
+}

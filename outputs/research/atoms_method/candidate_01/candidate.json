@@ -1,0 +1,143 @@
+{
+  "candidate_id": "candidate_01",
+  "template_ref": "drawio_official_architecture",
+  "spec": {
+    "schema_version": "0.1",
+    "figure_type": "workflow",
+    "title": "Generated Workflow",
+    "layout": {
+      "direction": "left-to-right",
+      "spacing": 24
+    },
+    "nodes": [
+      {
+        "id": "node_0",
+        "label": "Hidden representations",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Hidden representations"
+          }
+        ]
+      },
+      {
+        "id": "node_1",
+        "label": "Atomic Inner Product (AIP)",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Atomic Inner Product (AIP)"
+          }
+        ]
+      },
+      {
+        "id": "node_2",
+        "label": "Threshold Sparse Autoencoder (TSAE)",
+        "type": "tool",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Threshold Sparse Autoencoder (TSAE)"
+          }
+        ]
+      },
+      {
+        "id": "node_3",
+        "label": "Atom identification",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Atom identification"
+          }
+        ]
+      },
+      {
+        "id": "node_4",
+        "label": "Faithfulness and stability evaluation",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Faithfulness and stability evaluation"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "node_0",
+        "target": "node_1",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_1",
+        "target": "node_2",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_2",
+        "target": "node_3",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_3",
+        "target": "node_4",
+        "type": "data_flow"
+      }
+    ],
+    "groups": [],
+    "style": {
+      "theme": "academic_clean",
+      "colors": {
+        "process": "#E8EEF7",
+        "data": "#F2F4F7"
+      }
+    },
+    "candidate_id": "candidate_01",
+    "template_refs": [
+      {
+        "id": "drawio_official_architecture",
+        "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+        "source_type": "drawio_official",
+        "license": "verified",
+        "editable": true,
+        "supported_types": [
+          "architecture",
+          "workflow",
+          "graph"
+        ],
+        "style_tags": [
+          "academic_clean",
+          "left_to_right"
+        ],
+        "components": [
+          "module_box",
+          "group_frame",
+          "arrow"
+        ],
+        "preview_url": null,
+        "download_url": null,
+        "restrictions": [],
+        "retrieved_at": "2026-09-20T13:11:08.794313+00:00",
+        "match_reason": "query token matched template metadata"
+      }
+    ]
+  },
+  "spec_path": "outputs\\research\\atoms_method\\candidate_01\\figure-spec.json",
+  "artifacts": {
+    "drawio": "outputs\\research\\atoms_method\\candidate_01\\figure.drawio",
+    "svg": "outputs\\research\\atoms_method\\candidate_01\\figure.svg",
+    "pdf": "outputs\\research\\atoms_method\\candidate_01\\figure.pdf"
+  },
+  "scores": {
+    "evidence_coverage": 1.0,
+    "structural_validity": 1.0,
+    "readability": 1.0,
+    "style_consistency": 1.0,
+    "license_safety": 1.0
+  },
+  "review_findings": []
+}

@@ -1,0 +1,9 @@
+dataset,records,class,class_records,source
+BFCL_v4_multi_turn_base,200,GorillaFileSystem,50,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,MathAPI,25,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,MessageAPI,40,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,TicketAPI,31,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,TradingBot,50,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,TravelAPI,50,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,TwitterAPI,39,"GitHub KATE data; counts only, raw records not copied"
+BFCL_v4_multi_turn_base,200,VehicleControlAPI,50,"GitHub KATE data; counts only, raw records not copied"

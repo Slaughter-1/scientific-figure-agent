@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "spec_sha256": "7f7975f9f4fc15d489dc96c7861be6c733ef31bff7e5c021e123793dbcad5fda",
+  "backends": [
+    "matplotlib"
+  ],
+  "artifacts": {
+    "matplotlib": {
+      "status": "ok",
+      "spec": "outputs\\research\\kate_appworld_results\\plot-spec.json",
+      "pdf": "outputs\\research\\kate_appworld_results\\figure.pdf",
+      "svg": "outputs\\research\\kate_appworld_results\\figure.svg",
+      "png": "outputs\\research\\kate_appworld_results\\figure.png"
+    }
+  },
+  "limitations": [
+    "Backend statuses describe local execution and do not certify scientific semantic correctness."
+  ]
+}

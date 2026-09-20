@@ -2,3 +2,5 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .superpowers/
+research_data/github/
+research_data/raw/

@@ -1,0 +1,44 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "plot",
+  "title": "BFCL-V3 Average: KATE ablation",
+  "layout": {
+    "direction": "left-to-right",
+    "spacing": 24
+  },
+  "nodes": [],
+  "edges": [],
+  "groups": [],
+  "data": {
+    "kind": "bar",
+    "x": [
+      "FC",
+      "KATE",
+      "Direct RL",
+      "FC",
+      "KATE"
+    ],
+    "y": [
+      32.75,
+      46.0,
+      48.25,
+      46.0,
+      50.5
+    ],
+    "source_columns": [
+      "method",
+      "average"
+    ]
+  },
+  "provenance": {
+    "source": "research_data\\cases\\kate_bfcl_results.csv",
+    "format": "csv"
+  },
+  "style": {
+    "theme": "academic_clean",
+    "colors": {
+      "baseline": "#94A3B8",
+      "ours": "#2563EB"
+    }
+  }
+}
