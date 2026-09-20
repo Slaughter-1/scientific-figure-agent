@@ -18,3 +18,5 @@ M1 的四类 Figure Spec 样例位于 `examples/m1/`，包括 `architecture`、`
 M2 提供 `figure_agent.parser.parse_method_text` 作为文本到 Figure Spec 的基线解析器，固定回归案例位于 `eval_cases/m2_cases.json`，验证结果见 `docs/m2-report.md`。
 
 M3 提供统一的 `figure_agent.backends.drawio_backend.render_drawio_spec` 后端，可从任意合法 Figure Spec 生成可编辑 `.drawio`、`.svg` 和 `.pdf`，验证结果见 `docs/m3-report.md`。
+
+M5 的 `figure_agent.backends.plot_backend.render_plot_spec` 支持 `bar`、`line`、`scatter` 和 `heatmap`，验证结果见 `docs/m5-report.md`。
