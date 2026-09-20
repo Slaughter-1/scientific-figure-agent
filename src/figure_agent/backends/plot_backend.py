@@ -45,17 +45,17 @@ def render_plot_spec(spec: dict[str, Any], output_dir: str | Path, stem: str = "
         x, y = data["x"], data["y"]
         if len(x) != len(y):
             raise ValueError("plot data x and y must have equal lengths")
-        ax.bar(x, y, color="#2563EB")
+        ax.bar(x, y, yerr=data.get("y_error"), capsize=3 if data.get("y_error") else 0, color="#2563EB")
     elif kind == "line":
         x, y = data["x"], data["y"]
         if len(x) != len(y):
             raise ValueError("plot data x and y must have equal lengths")
-        ax.plot(x, y, marker="o", color="#2563EB", linewidth=1.6)
+        ax.errorbar(x, y, yerr=data.get("y_error"), capsize=3 if data.get("y_error") else 0, marker="o", color="#2563EB", linewidth=1.6)
     elif kind == "scatter":
         x, y = data["x"], data["y"]
         if len(x) != len(y):
             raise ValueError("plot data x and y must have equal lengths")
-        ax.scatter(x, y, color="#2563EB", s=28)
+        ax.errorbar(x, y, yerr=data.get("y_error"), fmt="o", capsize=3 if data.get("y_error") else 0, color="#2563EB")
     elif kind == "heatmap":
         matrix = data["matrix"]
         if not matrix or any(len(row) != len(matrix[0]) for row in matrix):

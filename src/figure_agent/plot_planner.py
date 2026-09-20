@@ -20,7 +20,7 @@ def _number(value: Any, column: str, row_number: int) -> float:
 def build_plot_spec(
     table: dict[str, Any], *, kind: str, x_column: str | None = None,
     y_column: str | None = None, matrix_columns: list[str] | None = None,
-    title: str | None = None,
+    title: str | None = None, y_error_column: str | None = None,
 ) -> dict[str, Any]:
     if kind not in _KINDS:
         raise ValueError(f"unsupported plot kind: {kind}")
@@ -40,12 +40,16 @@ def build_plot_spec(
     else:
         if not x_column or not y_column:
             raise ValueError(f"{kind} requires x_column and y_column")
-        missing = [column for column in (x_column, y_column) if column not in columns]
+        requested = [x_column, y_column] + ([y_error_column] if y_error_column else [])
+        missing = [column for column in requested if column not in columns]
         if missing:
             raise ValueError(f"missing table columns: {', '.join(missing)}")
         x = [row.get(x_column) for row in rows]
         y = [_number(row.get(y_column), y_column, index) for index, row in enumerate(rows, 1)]
         data = {"kind": kind, "x": x, "y": y, "source_columns": [x_column, y_column]}
+        if y_error_column:
+            data["y_error"] = [_number(row.get(y_error_column), y_error_column, index) for index, row in enumerate(rows, 1)]
+            data["source_columns"].append(y_error_column)
     spec = {
         "schema_version": "0.1", "figure_type": "plot", "title": title or "Generated Plot",
         "layout": {"direction": "left-to-right", "spacing": 24}, "nodes": [], "edges": [], "groups": [],

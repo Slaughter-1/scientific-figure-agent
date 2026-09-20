@@ -97,6 +97,12 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
                 errors.append("plot data.x and data.y must be arrays")
             elif len(x_values) != len(y_values):
                 errors.append("plot data.x and data.y must have equal lengths")
+            y_error = data.get("y_error")
+            if y_error is not None:
+                if not isinstance(y_error, list):
+                    errors.append("plot data.y_error must be an array")
+                elif len(y_error) != len(y_values or []):
+                    errors.append("plot data.y_error and data.y must have equal lengths")
     colors = spec.get("style", {}).get("colors", {}) if isinstance(spec.get("style"), dict) else {}
     for name, color in colors.items():
         if not isinstance(color, str) or not HEX_COLOR.fullmatch(color):

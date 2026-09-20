@@ -48,6 +48,8 @@ figure-agent analyze --input method.md
 figure-agent search-templates --query "LLM agent architecture"
 figure-agent generate --input method.md --output-dir outputs/generated --candidates 3
 figure-agent plot --input results.csv --kind bar --x method --y accuracy --output-dir outputs/plot
+# Optional uncertainty column (rendered as error bars and recorded in provenance)
+figure-agent plot --input results.csv --kind bar --x method --y accuracy --y-error std --output-dir outputs/plot
 figure-agent package --spec outputs/generated/candidate_01/figure-spec.json --output-dir outputs/components
 figure-agent assemble --spec figure.json --assets assets --output outputs/assembled.json
 figure-agent inspect --artifact outputs/generated/candidate_01/figure.svg

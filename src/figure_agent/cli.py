@@ -32,6 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     plot_parser.add_argument("--kind", required=True, choices=["bar", "line", "scatter", "heatmap"])
     plot_parser.add_argument("--x")
     plot_parser.add_argument("--y")
+    plot_parser.add_argument("--y-error")
     plot_parser.add_argument("--matrix-columns")
     plot_parser.add_argument("--title")
     plot_parser.add_argument("--output-dir", required=True)
@@ -77,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             table = load_table(args.input)
             matrix_columns = [item.strip() for item in args.matrix_columns.split(",") if item.strip()] if args.matrix_columns else None
-            spec = build_plot_spec(table, kind=args.kind, x_column=args.x, y_column=args.y, matrix_columns=matrix_columns, title=args.title)
+            spec = build_plot_spec(table, kind=args.kind, x_column=args.x, y_column=args.y, y_error_column=args.y_error, matrix_columns=matrix_columns, title=args.title)
             output_dir = Path(args.output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
             spec_path = output_dir / "plot-spec.json"
