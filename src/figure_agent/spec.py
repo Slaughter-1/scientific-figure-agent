@@ -8,6 +8,7 @@ from typing import Any
 NODE_TYPES = {"model", "tool", "data", "process", "storage", "decision"}
 EDGE_TYPES = {"data_flow", "control_flow", "dependency"}
 FIGURE_TYPES = {"architecture", "workflow", "graph", "plot"}
+SCHEMA_VERSIONS = {"0.1", "0.2"}
 DIRECTIONS = {"left-to-right", "top-to-bottom"}
 PLOT_KINDS = {"bar", "line", "heatmap", "scatter"}
 HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -19,8 +20,8 @@ def load_spec(path: str | Path) -> dict[str, Any]:
 
 def validate_spec(spec: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    if spec.get("schema_version") != "0.1":
-        errors.append("schema_version must be '0.1'")
+    if spec.get("schema_version") not in SCHEMA_VERSIONS:
+        errors.append("schema_version must be '0.1' or '0.2'")
     if spec.get("figure_type") not in FIGURE_TYPES:
         errors.append("figure_type is unsupported")
     layout = spec.get("layout", {})
@@ -28,6 +29,12 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
         errors.append("layout.direction is unsupported")
     if not isinstance(spec.get("style"), dict):
         errors.append("style is required and must be an object")
+    for field_name in ("provenance", "constraints"):
+        if field_name in spec and not isinstance(spec[field_name], dict):
+            errors.append(f"{field_name} must be an object")
+    for field_name in ("template_refs", "asset_refs", "review_notes"):
+        if field_name in spec and not isinstance(spec[field_name], list):
+            errors.append(f"{field_name} must be an array")
     nodes = spec.get("nodes")
     edges = spec.get("edges")
     if not isinstance(nodes, list) or not isinstance(edges, list):

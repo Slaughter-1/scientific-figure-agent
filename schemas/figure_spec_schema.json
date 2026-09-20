@@ -3,13 +3,18 @@
   "type": "object",
   "required": ["schema_version", "figure_type", "nodes", "edges", "layout", "style"],
   "properties": {
-    "schema_version": {"type": "string"},
+    "schema_version": {"enum": ["0.1", "0.2"]},
     "figure_type": {"enum": ["architecture", "workflow", "graph", "plot"]},
     "title": {"type": "string"},
     "layout": {"type": "object", "required": ["direction"], "properties": {"direction": {"enum": ["left-to-right", "top-to-bottom"]}, "spacing": {"type": "number"}}},
     "nodes": {"type": "array"},
     "edges": {"type": "array"},
     "groups": {"type": "array", "items": {"type": "object", "required": ["id", "label", "children"]}},
+    "provenance": {"type": "object"},
+    "constraints": {"type": "object"},
+    "template_refs": {"type": "array"},
+    "asset_refs": {"type": "array"},
+    "review_notes": {"type": "array"},
     "style": {"type": "object"},
     "data": {"type": "object", "properties": {"kind": {"enum": ["bar", "line", "heatmap", "scatter"]}}}
   }

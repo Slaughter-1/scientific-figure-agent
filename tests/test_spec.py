@@ -62,3 +62,15 @@ def test_heatmap_matrix_must_be_rectangular():
         "nodes": [], "edges": [], "style": {}, "data": {"kind": "heatmap", "matrix": [[1, 2], [3]]},
     }
     assert any("rectangular" in error for error in validate_spec(spec))
+
+
+def test_spec_02_accepts_provenance_and_review_metadata():
+    from figure_agent.spec import validate_spec
+
+    spec = {
+        "schema_version": "0.2", "figure_type": "workflow", "layout": {"direction": "left-to-right"},
+        "nodes": [], "edges": [], "style": {}, "provenance": {"source": "method.md"},
+        "constraints": {"paper_width": "double_column"}, "template_refs": [], "asset_refs": [],
+        "review_notes": [],
+    }
+    assert validate_spec(spec) == []
