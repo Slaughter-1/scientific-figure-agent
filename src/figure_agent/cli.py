@@ -16,6 +16,7 @@ from .router import render_backends
 from .spec import load_spec, require_valid_spec
 from .templates import search_templates
 from .workflow import build_figure_contract, generate_from_text
+from .figma_handoff import build_figma_handoff
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -54,6 +55,10 @@ def main(argv: list[str] | None = None) -> int:
     assemble_parser.add_argument("--output", required=True)
     inspect_parser = subparsers.add_parser("inspect")
     inspect_parser.add_argument("--artifact", required=True)
+    figma_parser = subparsers.add_parser("push-figma")
+    figma_parser.add_argument("--spec", required=True)
+    figma_parser.add_argument("--output-dir", required=True)
+    figma_parser.add_argument("--connection", help="JSON file returned by an external Figma bridge")
     args = parser.parse_args(argv)
     if args.command == "check-env":
         print(json.dumps(build_environment_report(), indent=2))
@@ -132,4 +137,13 @@ def main(argv: list[str] | None = None) -> int:
         result = inspect_artifact(args.artifact)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result.get("status") == "ok" else 2
+    if args.command == "push-figma":
+        try:
+            connection = json.loads(Path(args.connection).read_text(encoding="utf-8")) if args.connection else None
+            result = build_figma_handoff(args.spec, args.output_dir, connection=connection)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            print(f"figure-agent push-figma error: {exc}", file=sys.stderr)
+            return 2
     return 2

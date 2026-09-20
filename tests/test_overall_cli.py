@@ -35,7 +35,13 @@ def test_package_and_inspect_cli_commands(tmp_path, capsys):
     from figure_agent.cli import main
 
     spec = tmp_path / "spec.json"
-    spec.write_text(json.dumps({"nodes": [{"id": "planner", "label": "Planner", "type": "process"}], "style": {}}), encoding="utf-8")
+    spec.write_text(json.dumps({
+        "schema_version": "0.1",
+        "figure_type": "workflow",
+        "layout": {"direction": "left-to-right"},
+        "nodes": [{"id": "planner", "label": "Planner", "type": "process"}],
+        "edges": [], "groups": [], "style": {},
+    }), encoding="utf-8")
     package_dir = tmp_path / "package"
     assert main(["package", "--spec", str(spec), "--output-dir", str(package_dir)]) == 0
     assert (package_dir / "component-manifest.json").exists()
@@ -44,3 +50,22 @@ def test_package_and_inspect_cli_commands(tmp_path, capsys):
     svg.write_text('<svg width="100" height="80"><text>x</text></svg>', encoding="utf-8")
     assert main(["inspect", "--artifact", str(svg)]) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "ok"
+
+
+def test_push_figma_cli_creates_handoff_manifest(tmp_path, capsys):
+    from figure_agent.cli import main
+
+    spec = tmp_path / "spec.json"
+    spec.write_text(json.dumps({
+        "schema_version": "0.1",
+        "figure_type": "workflow",
+        "layout": {"direction": "left-to-right"},
+        "nodes": [{"id": "planner", "label": "Planner", "type": "process"}],
+        "edges": [], "groups": [], "style": {},
+    }), encoding="utf-8")
+    output = tmp_path / "figma"
+    assert main(["push-figma", "--spec", str(spec), "--output-dir", str(output)]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "unavailable"
+    assert (output / "figure.figma-scene.json").exists()
+    assert (output / "figma-manifest.json").exists()

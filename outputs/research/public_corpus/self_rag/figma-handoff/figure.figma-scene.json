@@ -1,0 +1,199 @@
+{
+  "schema_version": "0.1",
+  "kind": "FIGMA_SCENE",
+  "nodes": [
+    {
+      "kind": "FRAME",
+      "name": "Generated Workflow",
+      "x": 0,
+      "y": 0,
+      "width": 1400,
+      "height": 800,
+      "children": []
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "node_0",
+      "name": "Query",
+      "x": 80.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "node_0:label",
+      "name": "Query",
+      "x": 92.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Query"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "node_1",
+      "name": "Retrieval decision",
+      "x": 324.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "node_1:label",
+      "name": "Retrieval decision",
+      "x": 336.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Retrieval decision"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "node_2",
+      "name": "Passage retrieval",
+      "x": 568.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "node_2:label",
+      "name": "Passage retrieval",
+      "x": 580.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Passage retrieval"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "node_3",
+      "name": "Generation",
+      "x": 812.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "node_3:label",
+      "name": "Generation",
+      "x": 824.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Generation"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "node_4",
+      "name": "Reflection token critique",
+      "x": 1056.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "node_4:label",
+      "name": "Reflection token critique",
+      "x": 1068.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Reflection token critique"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:0",
+      "name": "data_flow",
+      "source": "node_0",
+      "target": "node_1",
+      "start": [
+        240.0,
+        112.0
+      ],
+      "end": [
+        324.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:1",
+      "name": "data_flow",
+      "source": "node_1",
+      "target": "node_2",
+      "start": [
+        484.0,
+        112.0
+      ],
+      "end": [
+        568.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:2",
+      "name": "data_flow",
+      "source": "node_2",
+      "target": "node_3",
+      "start": [
+        728.0,
+        112.0
+      ],
+      "end": [
+        812.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:3",
+      "name": "data_flow",
+      "source": "node_3",
+      "target": "node_4",
+      "start": [
+        972.0,
+        112.0
+      ],
+      "end": [
+        1056.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    }
+  ]
+}

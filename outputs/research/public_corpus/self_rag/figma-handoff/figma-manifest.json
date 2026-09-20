@@ -1,0 +1,27 @@
+{
+  "status": "connected",
+  "scene": "outputs\\research\\public_corpus\\self_rag\\figma-handoff\\figure.figma-scene.json",
+  "spec": "outputs\\research\\public_corpus\\self_rag\\candidate_01\\figure-spec.json",
+  "spec_sha256": "cdec7e7bffa1a742d1d8e02eb31d59ad164d1ab63a124990406aa610271b57db",
+  "native_node_kinds": [
+    "FRAME",
+    "LINE",
+    "RECTANGLE",
+    "TEXT"
+  ],
+  "node_count": 15,
+  "file_or_frame": {
+    "file_key": "8udVYC1InA2sxKwlcWheaI",
+    "file_url": "https://www.figma.com/design/8udVYC1InA2sxKwlcWheaI",
+    "frame_id": "1:2",
+    "frame_name": "Scientific Figure — Self-RAG candidate 01"
+  },
+  "native_node_counts": {
+    "frame": 1,
+    "rectangle": 5,
+    "text": 5,
+    "line": 4
+  },
+  "visual_verified": true,
+  "transport": "mcp__codex_apps__figma_use_figma"
+}

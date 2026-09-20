@@ -51,9 +51,12 @@ figure-agent plot --input results.csv --kind bar --x method --y accuracy --outpu
 figure-agent package --spec outputs/generated/candidate_01/figure-spec.json --output-dir outputs/components
 figure-agent assemble --spec figure.json --assets assets --output outputs/assembled.json
 figure-agent inspect --artifact outputs/generated/candidate_01/figure.svg
+figure-agent push-figma --spec outputs/generated/candidate_01/figure-spec.json --output-dir outputs/figma-handoff
 ```
 
 `generate` 会保存 `figure-contract.json`、三个候选目录、候选评分和模板引用；`package` 会生成 `component-manifest.json` 与 `component-prompts.md`；`inspect` 会附带结构化视觉检查结果。模板目录当前使用可审计的官方/项目内记录，未确认许可证的资源不会进入 `open_license_first` 结果。Figma 未连接时仍输出本地 `figure.figma-scene.json`，连接状态由 manifest 标记。
+
+`push-figma` 会先生成本地 scene 和 `figma-manifest.json`。如果外部 Figma bridge 已返回连接结果，可以通过 `--connection connection.json` 回填 `file_or_frame`；当前真实 MCP smoke test 记录见 `outputs/research/public_corpus/self_rag/figma-handoff/figma-manifest.json`。
 
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
 
