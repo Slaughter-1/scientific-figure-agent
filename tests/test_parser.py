@@ -59,6 +59,13 @@ def test_parser_expands_natural_language_branch_stage():
     assert labels == {"Query", "Retriever", "Memory", "Generator"}
 
 
+def test_parser_compiles_explicit_loop_back_as_control_flow():
+    spec = parse_method_text("Query → Retriever → Generator → loop back to Retriever")
+    ids = {node["label"]: node["id"] for node in spec["nodes"]}
+    loop_edges = [edge for edge in spec["edges"] if edge["type"] == "control_flow"]
+    assert loop_edges == [{"source": ids["Generator"], "target": ids["Retriever"], "type": "control_flow"}]
+
+
 def test_classifier_routes_common_figure_inputs():
     from figure_agent.planner import classify_figure
 

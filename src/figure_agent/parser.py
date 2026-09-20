@@ -8,6 +8,10 @@ from .spec import require_valid_spec
 _ARROW_SPLIT = re.compile(r"\s*(?:→|->|=>)\s*")
 _CLAUSE_SPLIT = re.compile(r"[，,。；;。]\s*")
 _LEADING = re.compile(r"^(?:系统)?(?:首先|然后|接着|再|最后|最终)?")
+_LOOP_MARKER = re.compile(
+    r"(?:loop\s+back\s+to|repeat(?:\s+until)?|循环回到|返回|迭代到)\s*[:：]?\s*(.+)$",
+    flags=re.IGNORECASE,
+)
 
 
 def _clean_clause(clause: str, *, strip_leading: bool = True) -> str:
@@ -65,9 +69,18 @@ def parse_method_text(text: str) -> dict[str, Any]:
     raw_clauses = _ARROW_SPLIT.split(text) if arrow_delimited else _CLAUSE_SPLIT.split(text)
     labels = []
     stages: list[list[str]] = []
+    loop_stages: list[bool] = []
     evidence_by_label: dict[str, str] = {}
     for raw in raw_clauses:
-        stage = _expand_stage(raw, arrow_delimited=arrow_delimited)
+        loop_match = _LOOP_MARKER.search(raw.strip())
+        if loop_match:
+            target = _clean_clause(loop_match.group(1), strip_leading=False)
+            target = re.split(r"\s+until\s+", target, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+            stage = [target] if target else []
+            loop_stages.append(True)
+        else:
+            stage = _expand_stage(raw, arrow_delimited=arrow_delimited)
+            loop_stages.append(False)
         stages.append(stage)
         for label in stage:
             if label and label not in labels:
@@ -79,10 +92,11 @@ def parse_method_text(text: str) -> dict[str, Any]:
     ]
     node_ids = {node["label"]: node["id"] for node in nodes}
     edges = []
-    for previous, current in zip(stages, stages[1:]):
+    for stage_index, (previous, current) in enumerate(zip(stages, stages[1:]), start=1):
         for source in previous:
             for target in current:
-                edges.append({"source": node_ids[source], "target": node_ids[target], "type": "data_flow"})
+                edge_type = "control_flow" if loop_stages[stage_index] else "data_flow"
+                edges.append({"source": node_ids[source], "target": node_ids[target], "type": edge_type})
     spec = {
         "schema_version": "0.1",
         "figure_type": "workflow",
