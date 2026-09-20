@@ -50,13 +50,16 @@ class LocalFigmaDriver:
         return {"status": "mock", "node_count": len(scene["nodes"])}
 
 
-def render_figma_spec(spec: dict[str, Any], output_dir: str | Path, driver: FigmaDriver | None = None) -> dict[str, Any]:
+def render_figma_spec(spec: dict[str, Any], output_dir: str | Path, transport: FigmaDriver | None = None) -> dict[str, Any]:
     scene = compile_figma_scene(spec)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     scene_path = output_dir / "figure.figma-scene.json"
     scene_path.write_text(json.dumps(scene, ensure_ascii=False, indent=2), encoding="utf-8")
     result: dict[str, Any] = {"scene": str(scene_path), "status": "unavailable"}
-    if driver is not None:
-        result.update(driver.write_scene(scene))
+    if transport is not None:
+        try:
+            result.update(transport.write_scene(scene))
+        except Exception as exc:
+            result.update({"status": "error", "error": str(exc)})
     return result

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 
-def render_backends(spec: dict[str, Any], backends: list[str], output_dir: str | Path) -> dict[str, dict[str, Any]]:
+def render_backends(spec: dict[str, Any], backends: list[str], output_dir: str | Path, figma_transport: Any = None) -> dict[str, dict[str, Any]]:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     results: dict[str, dict[str, Any]] = {}
@@ -24,7 +24,7 @@ def render_backends(spec: dict[str, Any], backends: list[str], output_dir: str |
             elif backend == "figma":
                 from .backends.figma_backend import render_figma_spec
 
-                results[backend] = {"status": "ok", **{key: str(value) for key, value in render_figma_spec(spec, output_dir).items()}}
+                results[backend] = {"status": "ok", **{key: str(value) for key, value in render_figma_spec(spec, output_dir, figma_transport).items()}}
             else:
                 results[backend] = {"status": "error", "error": f"unknown backend: {backend}"}
         except Exception as exc:
