@@ -41,7 +41,7 @@ def compile_figma_scene(spec: dict[str, Any]) -> dict[str, Any]:
     for index, edge in enumerate(spec["edges"]):
         source_x, source_y = positions[edge["source"]]
         target_x, target_y = positions[edge["target"]]
-        nodes.append({"kind": "LINE", "source_id": f"edge:{index}", "name": edge.get("label", edge["type"]), "start": [source_x + 160, source_y + 32], "end": [target_x, target_y + 32], "marker_end": "ARROW_LINES"})
+        nodes.append({"kind": "LINE", "source_id": f"edge:{index}", "name": edge.get("label", edge["type"]), "source": edge["source"], "target": edge["target"], "start": [source_x + 160, source_y + 32], "end": [target_x, target_y + 32], "marker_end": "ARROW_LINES"})
     return {"schema_version": "0.1", "kind": "FIGMA_SCENE", "nodes": nodes}
 
 
