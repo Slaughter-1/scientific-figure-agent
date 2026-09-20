@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1",
+  "figure_type": "workflow",
+  "title": "Agent Workflow",
+  "layout": {"direction": "left-to-right", "spacing": 24},
+  "nodes": [
+    {"id": "query", "label": "User Query", "type": "data"},
+    {"id": "planner", "label": "Planner", "type": "process"},
+    {"id": "selection", "label": "Tool Selection", "type": "decision"},
+    {"id": "environment", "label": "Environment", "type": "process"},
+    {"id": "observation", "label": "Observation", "type": "data"},
+    {"id": "search", "label": "Search Tool", "type": "tool"},
+    {"id": "code", "label": "Code Tool", "type": "tool"},
+    {"id": "reflection", "label": "Reflection", "type": "process"},
+    {"id": "answer", "label": "Answer", "type": "data"}
+  ],
+  "edges": [
+    {"source": "query", "target": "planner", "type": "data_flow"},
+    {"source": "planner", "target": "selection", "type": "control_flow"},
+    {"source": "selection", "target": "environment", "type": "control_flow"},
+    {"source": "environment", "target": "observation", "type": "data_flow"},
+    {"source": "selection", "target": "search", "type": "dependency"},
+    {"source": "selection", "target": "code", "type": "dependency"},
+    {"source": "observation", "target": "reflection", "type": "control_flow"},
+    {"source": "reflection", "target": "answer", "type": "data_flow"}
+  ],
+  "groups": [],
+  "style": {
+    "theme": "academic_clean",
+    "font_family": "Arial",
+    "font_sizes": {"title": 10, "node": 8, "annotation": 7},
+    "colors": {"model": "#DCEBFA", "process": "#E8EEF7", "data": "#F2F4F7", "storage": "#EFE7FA"}
+  }
+}

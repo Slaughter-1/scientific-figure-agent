@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "figure_type", "nodes", "edges", "layout", "style"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "figure_type": {"enum": ["architecture", "workflow", "graph", "plot"]},
+    "title": {"type": "string"},
+    "layout": {"type": "object", "required": ["direction"], "properties": {"direction": {"enum": ["left-to-right", "top-to-bottom"]}, "spacing": {"type": "number"}}},
+    "nodes": {"type": "array"},
+    "edges": {"type": "array"},
+    "groups": {"type": "array"},
+    "style": {"type": "object"}
+  }
+}
