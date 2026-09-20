@@ -38,3 +38,21 @@ M8 支持 CSV/JSON 直接生成 Plot Spec 和图表，并提供可注入的 Figm
 ```powershell
 python scripts/plot_next_stage.py plot --input examples/m8/results.csv --kind bar --x method --y accuracy --output-dir outputs/m8
 ```
+
+## M9–M15 端到端工作流
+
+当前版本提供统一请求协议、论文段落 Figure Contract、开放许可优先的模板目录、组件提示词包、三候选生成、素材组装、视觉检查和评测接口。常用 CLI：
+
+```powershell
+figure-agent analyze --input method.md
+figure-agent search-templates --query "LLM agent architecture"
+figure-agent generate --input method.md --output-dir outputs/generated --candidates 3
+figure-agent plot --input results.csv --kind bar --x method --y accuracy --output-dir outputs/plot
+figure-agent package --spec outputs/generated/candidate_01/figure-spec.json --output-dir outputs/components
+figure-agent assemble --spec figure.json --assets assets --output outputs/assembled.json
+figure-agent inspect --artifact outputs/generated/candidate_01/figure.svg
+```
+
+`generate` 会保存 `figure-contract.json`、三个候选目录、候选评分和模板引用；`package` 会生成 `component-manifest.json` 与 `component-prompts.md`；`inspect` 会附带结构化视觉检查结果。模板目录当前使用可审计的官方/项目内记录，未确认许可证的资源不会进入 `open_license_first` 结果。Figma 未连接时仍输出本地 `figure.figma-scene.json`，连接状态由 manifest 标记。
+
+阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。

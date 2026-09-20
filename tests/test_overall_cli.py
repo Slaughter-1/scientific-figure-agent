@@ -21,6 +21,16 @@ def test_search_templates_cli_returns_audited_records(capsys):
     assert payload and payload[0]["source_url"]
 
 
+def test_analyze_cli_writes_figure_contract(tmp_path, capsys):
+    from figure_agent.cli import main
+
+    source = tmp_path / "method.md"
+    source.write_text("Query → Retriever → Generator", encoding="utf-8")
+    assert main(["analyze", "--input", str(source)]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["target_figure_type"] == "workflow"
+
+
 def test_package_and_inspect_cli_commands(tmp_path, capsys):
     from figure_agent.cli import main
 

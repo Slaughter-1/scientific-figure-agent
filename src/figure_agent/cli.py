@@ -15,7 +15,7 @@ from .plot_planner import build_plot_spec
 from .router import render_backends
 from .spec import load_spec, require_valid_spec
 from .templates import search_templates
-from .workflow import generate_from_text
+from .workflow import build_figure_contract, generate_from_text
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -43,6 +43,8 @@ def main(argv: list[str] | None = None) -> int:
     generate_parser.add_argument("--output-dir", required=True)
     generate_parser.add_argument("--candidates", type=int, default=3)
     generate_parser.add_argument("--policy", default="open_license_first")
+    analyze_parser = subparsers.add_parser("analyze")
+    analyze_parser.add_argument("--input", required=True)
     package_parser = subparsers.add_parser("package")
     package_parser.add_argument("--spec", required=True)
     package_parser.add_argument("--output-dir", required=True)
@@ -101,6 +103,14 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         except (OSError, ValueError) as exc:
             print(f"figure-agent generate error: {exc}", file=sys.stderr)
+            return 2
+    if args.command == "analyze":
+        try:
+            text = Path(args.input).read_text(encoding="utf-8")
+            print(json.dumps(build_figure_contract(text), ensure_ascii=False, indent=2))
+            return 0
+        except (OSError, ValueError) as exc:
+            print(f"figure-agent analyze error: {exc}", file=sys.stderr)
             return 2
     if args.command == "package":
         try:
