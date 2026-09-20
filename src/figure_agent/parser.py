@@ -45,6 +45,11 @@ def _node_type(label: str) -> str:
 
 def _expand_stage(raw: str, *, arrow_delimited: bool) -> list[str]:
     label = _clean_clause(raw, strip_leading=not arrow_delimited)
+    natural_branch = re.search(r"(?:branches?\s+to|分支为|分为)\s+(.+)$", label, flags=re.IGNORECASE)
+    if natural_branch:
+        parts = [part.strip() for part in re.split(r"\s+(?:and|or)\s+|和|或|、|,", natural_branch.group(1)) if part.strip()]
+        if len(parts) > 1:
+            return [_clean_clause(part, strip_leading=False) for part in parts]
     if len(label) >= 2 and label[0] in "[({" and label[-1] in "])}":
         inner = label[1:-1]
         parts = [part.strip() for part in re.split(r"\s*[|/]\s*", inner) if part.strip()]

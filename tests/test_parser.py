@@ -53,6 +53,12 @@ def test_parser_expands_explicit_branch_group():
     assert (ids["Memory"], ids["Generator"]) in pairs
 
 
+def test_parser_expands_natural_language_branch_stage():
+    spec = parse_method_text("Query → branches to Retriever and Memory → Generator")
+    labels = {node["label"] for node in spec["nodes"]}
+    assert labels == {"Query", "Retriever", "Memory", "Generator"}
+
+
 def test_classifier_routes_common_figure_inputs():
     from figure_agent.planner import classify_figure
 
