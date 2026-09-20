@@ -1,0 +1,359 @@
+{
+  "schema_version": "0.1",
+  "kind": "FIGMA_SCENE",
+  "nodes": [
+    {
+      "kind": "FRAME",
+      "name": "Agent Workflow",
+      "x": 0,
+      "y": 0,
+      "width": 1400,
+      "height": 800,
+      "children": []
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "query",
+      "name": "User Query",
+      "x": 80.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#F2F4F7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "query:label",
+      "name": "User Query",
+      "x": 92.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "User Query"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "planner",
+      "name": "Planner",
+      "x": 324.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "planner:label",
+      "name": "Planner",
+      "x": 336.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Planner"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "selection",
+      "name": "Tool Selection",
+      "x": 568.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "selection:label",
+      "name": "Tool Selection",
+      "x": 580.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Tool Selection"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "environment",
+      "name": "Environment",
+      "x": 812.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "environment:label",
+      "name": "Environment",
+      "x": 824.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Environment"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "observation",
+      "name": "Observation",
+      "x": 1056.0,
+      "y": 80.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#F2F4F7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "observation:label",
+      "name": "Observation",
+      "x": 1068.0,
+      "y": 102.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Observation"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "search",
+      "name": "Search Tool",
+      "x": 80.0,
+      "y": 254.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "search:label",
+      "name": "Search Tool",
+      "x": 92.0,
+      "y": 276.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Search Tool"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "code",
+      "name": "Code Tool",
+      "x": 324.0,
+      "y": 254.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "code:label",
+      "name": "Code Tool",
+      "x": 336.0,
+      "y": 276.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Code Tool"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "reflection",
+      "name": "Reflection",
+      "x": 568.0,
+      "y": 254.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#E8EEF7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "reflection:label",
+      "name": "Reflection",
+      "x": 580.0,
+      "y": 276.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Reflection"
+    },
+    {
+      "kind": "RECTANGLE",
+      "source_id": "answer",
+      "name": "Answer",
+      "x": 812.0,
+      "y": 254.0,
+      "width": 160,
+      "height": 64,
+      "fills": [
+        {
+          "color": "#F2F4F7"
+        }
+      ]
+    },
+    {
+      "kind": "TEXT",
+      "source_id": "answer:label",
+      "name": "Answer",
+      "x": 824.0,
+      "y": 276.0,
+      "width": 136,
+      "height": 20,
+      "characters": "Answer"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:0",
+      "name": "data_flow",
+      "source": "query",
+      "target": "planner",
+      "start": [
+        240.0,
+        112.0
+      ],
+      "end": [
+        324.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:1",
+      "name": "control_flow",
+      "source": "planner",
+      "target": "selection",
+      "start": [
+        484.0,
+        112.0
+      ],
+      "end": [
+        568.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:2",
+      "name": "control_flow",
+      "source": "selection",
+      "target": "environment",
+      "start": [
+        728.0,
+        112.0
+      ],
+      "end": [
+        812.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:3",
+      "name": "data_flow",
+      "source": "environment",
+      "target": "observation",
+      "start": [
+        972.0,
+        112.0
+      ],
+      "end": [
+        1056.0,
+        112.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:4",
+      "name": "dependency",
+      "source": "selection",
+      "target": "search",
+      "start": [
+        728.0,
+        112.0
+      ],
+      "end": [
+        80.0,
+        286.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:5",
+      "name": "dependency",
+      "source": "selection",
+      "target": "code",
+      "start": [
+        728.0,
+        112.0
+      ],
+      "end": [
+        324.0,
+        286.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:6",
+      "name": "control_flow",
+      "source": "observation",
+      "target": "reflection",
+      "start": [
+        1216.0,
+        112.0
+      ],
+      "end": [
+        568.0,
+        286.0
+      ],
+      "marker_end": "ARROW_LINES"
+    },
+    {
+      "kind": "LINE",
+      "source_id": "edge:7",
+      "name": "data_flow",
+      "source": "reflection",
+      "target": "answer",
+      "start": [
+        728.0,
+        286.0
+      ],
+      "end": [
+        812.0,
+        286.0
+      ],
+      "marker_end": "ARROW_LINES"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.1",
+  "spec_sha256": "6cc6b58103dd9d57fd4d27926d68e604a942bab64622e3f0439ce369f161fa94",
+  "backends": [
+    "drawio",
+    "figma",
+    "matplotlib"
+  ],
+  "artifacts": {
+    "drawio": {
+      "status": "ok",
+      "drawio": "outputs\\next-stage\\figure.drawio",
+      "svg": "outputs\\next-stage\\figure.svg",
+      "pdf": "outputs\\next-stage\\figure.pdf"
+    },
+    "figma": {
+      "status": "unavailable",
+      "scene": "outputs\\next-stage\\figure.figma-scene.json"
+    },
+    "matplotlib": {
+      "status": "skipped",
+      "reason": "matplotlib backend requires figure_type=plot"
+    }
+  },
+  "limitations": [
+    "Backend statuses describe local execution and do not certify scientific semantic correctness."
+  ]
+}

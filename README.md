@@ -22,3 +22,11 @@ M3 提供统一的 `figure_agent.backends.drawio_backend.render_drawio_spec` 后
 M5 的 `figure_agent.backends.plot_backend.render_plot_spec` 支持 `bar`、`line`、`scatter` 和 `heatmap`，验证结果见 `docs/m5-report.md`。
 
 M6 的 `figure_agent.critic` 提供结构化 Critic/Refiner，用于发现 Figure Spec 问题并执行安全的元数据修复，验证结果见 `docs/m6-report.md`。
+
+下一阶段增加统一渲染入口：
+
+```powershell
+python scripts/render_next_stage.py render --spec examples/m0/workflow.json --backend all --output-dir outputs/next-stage
+```
+
+它会生成 Draw.io、Figma scene、可用的数据图产物和 `manifest.json`；验证结果见 `docs/next-stage-report.md`。
