@@ -42,3 +42,23 @@ def test_missing_style_is_rejected():
         "edges": [],
     }
     assert any("style" in error.lower() for error in validate_spec(spec))
+
+
+def test_plot_arrays_must_have_equal_lengths():
+    from figure_agent.spec import validate_spec
+
+    spec = {
+        "schema_version": "0.1", "figure_type": "plot", "layout": {"direction": "left-to-right"},
+        "nodes": [], "edges": [], "style": {}, "data": {"kind": "line", "x": [1, 2], "y": [0.5]},
+    }
+    assert any("equal lengths" in error for error in validate_spec(spec))
+
+
+def test_heatmap_matrix_must_be_rectangular():
+    from figure_agent.spec import validate_spec
+
+    spec = {
+        "schema_version": "0.1", "figure_type": "plot", "layout": {"direction": "left-to-right"},
+        "nodes": [], "edges": [], "style": {}, "data": {"kind": "heatmap", "matrix": [[1, 2], [3]]},
+    }
+    assert any("rectangular" in error for error in validate_spec(spec))

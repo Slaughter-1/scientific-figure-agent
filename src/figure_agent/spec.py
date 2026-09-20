@@ -78,6 +78,18 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
             errors.append("plot data is required and must be an object")
         elif data.get("kind") not in PLOT_KINDS:
             errors.append("plot data.kind is unsupported")
+        elif data.get("kind") == "heatmap":
+            matrix = data.get("matrix")
+            if not isinstance(matrix, list) or not matrix or not all(isinstance(row, list) for row in matrix):
+                errors.append("plot data.matrix must be a non-empty array")
+            elif any(len(row) != len(matrix[0]) for row in matrix):
+                errors.append("plot data.matrix must be rectangular")
+        else:
+            x_values, y_values = data.get("x"), data.get("y")
+            if not isinstance(x_values, list) or not isinstance(y_values, list):
+                errors.append("plot data.x and data.y must be arrays")
+            elif len(x_values) != len(y_values):
+                errors.append("plot data.x and data.y must have equal lengths")
     colors = spec.get("style", {}).get("colors", {}) if isinstance(spec.get("style"), dict) else {}
     for name, color in colors.items():
         if not isinstance(color, str) or not HEX_COLOR.fullmatch(color):
