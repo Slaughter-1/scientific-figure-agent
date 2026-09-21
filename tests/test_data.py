@@ -32,3 +32,13 @@ def test_load_json_requires_records_array(tmp_path):
     path.write_text(json.dumps({"results": []}), encoding="utf-8")
     with pytest.raises(ValueError, match="records"):
         load_table(path)
+
+
+def test_normalize_table_accepts_csv_text_and_records_column_types():
+    from figure_agent.data import normalize_table
+
+    table = normalize_table("方法,准确率\n基线,0.71\n我们的模型,0.83\n", format="csv")
+
+    assert table["columns"] == ["方法", "准确率"]
+    assert table["column_types"]["准确率"] == "number"
+    assert table["column_types"]["方法"] == "category"

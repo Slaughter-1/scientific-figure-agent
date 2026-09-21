@@ -83,3 +83,13 @@ def test_build_plot_spec_records_labels_and_significance():
     spec = build_plot_spec(table, kind="bar", x_column="method", y_column="accuracy", significance_column="sig", y_label="Accuracy (%)")
     assert spec["data"]["significance"] == ["", "**"]
     assert spec["data"]["y_label"] == "Accuracy (%)"
+
+
+def test_build_plot_spec_records_units_and_column_level_provenance():
+    from figure_agent.plot_planner import build_plot_spec
+
+    table = {**_table(), "provenance": {"source": "results.csv", "sha256": "abc"}}
+    spec = build_plot_spec(table, kind="bar", x_column="method", y_column="accuracy,recall", unit="%", y_label="准确率")
+
+    assert spec["data"]["unit"] == "%"
+    assert spec["data"]["column_provenance"]["accuracy"]["source"] == "results.csv"

@@ -22,7 +22,7 @@ def build_plot_spec(
     y_column: str | None = None, matrix_columns: list[str] | None = None,
     title: str | None = None, y_error_column: str | None = None,
     significance_column: str | None = None, x_label: str | None = None,
-    y_label: str | None = None,
+    y_label: str | None = None, unit: str | None = None,
 ) -> dict[str, Any]:
     if kind not in _KINDS:
         raise ValueError(f"unsupported plot kind: {kind}")
@@ -73,6 +73,12 @@ def build_plot_spec(
             data["x_label"] = x_label
         if y_label:
             data["y_label"] = y_label
+        if unit:
+            data["unit"] = unit
+        data["column_provenance"] = {
+            column: {"source": table.get("provenance", {}).get("source"), "format": table.get("provenance", {}).get("format"), "role": "x" if column == x_column else "y"}
+            for column in source_columns
+        }
     spec = {
         "schema_version": "0.1", "figure_type": "plot", "title": title or "Generated Plot",
         "layout": {"direction": "left-to-right", "spacing": 24}, "nodes": [], "edges": [], "groups": [],

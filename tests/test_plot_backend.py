@@ -23,3 +23,18 @@ def test_render_plot_spec_supports_line_scatter_and_heatmap(tmp_path):
         spec = {**common, "data": data}
         outputs = render_plot_spec(spec, tmp_path, kind)
         assert all(path.exists() and path.stat().st_size > 0 for path in outputs.values())
+
+
+def test_render_plot_spec_handles_categorical_significance_and_unit(tmp_path):
+    from figure_agent.backends.plot_backend import render_plot_spec
+
+    spec = {
+        "schema_version": "0.1", "figure_type": "plot", "title": "准确率",
+        "layout": {"direction": "left-to-right"}, "nodes": [], "edges": [], "groups": [],
+        "style": {}, "data": {"kind": "bar", "x": ["基线", "我们的方法"], "y": [0.71, 0.83], "significance": ["", "**"], "unit": "%"},
+    }
+
+    outputs = render_plot_spec(spec, tmp_path, "categorical")
+
+    assert all(path.exists() and path.stat().st_size > 0 for path in outputs.values())
+    assert "准确率" in outputs["svg"].read_text(encoding="utf-8")
