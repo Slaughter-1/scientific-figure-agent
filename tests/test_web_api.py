@@ -57,6 +57,9 @@ def test_local_api_analyzes_and_generates_candidates(tmp_path):
     generated = client.post(f"/api/tasks/{task_id}/generate-candidates")
     assert generated.status_code == 200
     assert generated.json()["candidate_count"] == 3
+    assert generated.json()["candidates"][0]["design"]["family"]
+    assert generated.json()["candidates"][0]["design"]["rationale"]
+    assert set(generated.json()["candidates"][0]["artifacts"]) >= {"svg", "pdf", "drawio"}
     svg_url = generated.json()["candidates"][0]["artifacts"]["svg"]
     assert client.get(svg_url).status_code == 200
     assert client.get(f"/api/tasks/{task_id}").json()["status"] == "awaiting_review"
