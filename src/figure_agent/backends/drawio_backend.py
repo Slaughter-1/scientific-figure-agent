@@ -9,7 +9,10 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
+
+from ..layouts import layout_edges, layout_nodes
+from ..visual_styles import get_visual_style
 
 REQUIRED_LABELS = [
     "User Query",
@@ -83,23 +86,23 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
         group_style = spec.get("style", {})
         group_fill = group_style.get("group_fill", "#F8FAFC")
         cells.append(f'<mxCell id="group-{group_index}" value="{label}" style="swimlane;html=1;rounded=1;dashed=1;fillColor={group_fill};fillOpacity=20;strokeColor={group_style.get("stroke", "#94A3B8")};fontFamily={group_style.get("font_family", "Noto Sans SC")};fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="{x}" y="{y}" width="{width}" height="{height}" as="geometry"/></mxCell>')
+    route_points = layout_edges(spec, preview_positions, family=_layout_family(spec))
     for index, edge in enumerate(spec["edges"], start=100):
         arrow_color = spec.get("style", {}).get("arrow_color", "#64748B")
-        cells.append(f'<mxCell id="edge-{index}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;strokeColor={arrow_color};strokeWidth=1.5;"><mxGeometry relative="1" as="geometry"/></mxCell>')
+        points = route_points[index - 100]
+        intermediate = "".join(f'<mxPoint x="{round(point[0] * 100)}" y="{round((6.2 - point[1]) * 100)}" />' for point in points[1:-1])
+        cells.append(f'<mxCell id="edge-{index}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;strokeColor={arrow_color};strokeWidth=1.5;"><mxGeometry relative="1" as="geometry"><Array as="points">{intermediate}</Array></mxGeometry></mxCell>')
     return '<mxfile host="Scientific Figure Agent"><diagram name="Agent Workflow"><mxGraphModel><root>' + "".join(cells) + "</root></mxGraphModel></diagram></mxfile>"
 
 
 def _layout(spec: dict[str, Any]) -> dict[str, tuple[float, float]]:
     """Return deterministic center positions in inches for preview and XML."""
-    direction = spec.get("layout", {}).get("direction", "left-to-right")
-    spacing = max(float(spec.get("layout", {}).get("spacing", 24)), 12.0) / 24.0
-    positions: dict[str, tuple[float, float]] = {}
-    for index, node in enumerate(spec["nodes"]):
-        if direction == "top-to-bottom":
-            positions[node["id"]] = (1.2 + (index % 3) * (2.2 + spacing), 5.2 - (index // 3) * (1.4 + spacing))
-        else:
-            positions[node["id"]] = (0.8 + (index % 5) * (2.0 + spacing), 3.8 - (index // 5) * (1.5 + spacing))
-    return positions
+    return layout_nodes(spec, family=_layout_family(spec))
+
+
+def _layout_family(spec: dict[str, Any]) -> str:
+    variant = spec.get("style", {}).get("variant", "editorial")
+    return get_visual_style(variant).get("layout_family", "pipeline")
 
 
 def _node_color(spec: dict[str, Any], node: dict[str, Any]) -> str:
@@ -121,6 +124,7 @@ def render_drawio_spec(spec: dict[str, Any], output_dir: str | Path, stem: str =
     max_x = max((x for x, _ in positions.values()), default=2.0) + 1.6
     max_y = max((y for _, y in positions.values()), default=2.0) + 1.0
     fig, ax = plt.subplots(figsize=(max(5.5, max_x), max(3.5, max_y)), constrained_layout=True)
+    style_config = spec.get("style", {})
     ax.set_xlim(0, max_x)
     ax.set_ylim(0, max_y)
     ax.axis("off")
@@ -134,10 +138,12 @@ def render_drawio_spec(spec: dict[str, Any], output_dir: str | Path, stem: str =
         rect = Rectangle((min(xs) - 1.0 - pad, min(ys) - 0.45 - pad), max(xs) - min(xs) + 2.0 + 2 * pad, max(ys) - min(ys) + 0.9 + 2 * pad, fill=True, facecolor=style_config.get("group_fill", "#F8FAFC"), alpha=0.45, linestyle="--", linewidth=1.0, edgecolor=style_config.get("stroke", "#94A3B8"), zorder=0)
         ax.add_patch(rect)
         ax.text(min(xs) - 0.95, max(ys) + 0.5, group["label"], fontsize=8, color="#475569")
-    for edge in spec["edges"]:
-        sx, sy = positions[edge["source"]]
-        tx, ty = positions[edge["target"]]
-        ax.annotate("", xy=(tx - 0.98, ty), xytext=(sx + 0.98, sy), arrowprops={"arrowstyle": "->", "color": "#475569", "linewidth": 0.9})
+    route_points = layout_edges(spec, positions, family=_layout_family(spec))
+    for points in route_points:
+        for start, end in zip(points, points[1:]):
+            ax.plot([start[0], end[0]], [start[1], end[1]], color=style_config.get("arrow_color", "#475569"), linewidth=1.0, zorder=1)
+        start, end = points[-2], points[-1]
+        ax.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=10, color=style_config.get("arrow_color", "#475569"), linewidth=1.0, zorder=2))
     for node in spec["nodes"]:
         x, y = positions[node["id"]]
         style_config = spec.get("style", {})
