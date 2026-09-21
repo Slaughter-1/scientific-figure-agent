@@ -78,6 +78,8 @@ npm run dev
 
 浏览器打开 `http://127.0.0.1:5173`，可以创建论文段落任务、运行 Figure Contract、生成三个候选并查看候选状态。任务和输入默认保存在 `figure-agent-data/`，该目录不会提交到 Git。
 
+API 也支持候选选择和图包导出：`POST /api/tasks/{task_id}/select-candidate`、`POST /api/tasks/{task_id}/export`。导出 ZIP 会包含候选 Figure Spec、Draw.io、SVG/PDF/PNG（按后端实际生成结果）、任务 manifest 和审阅记录。
+
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
 
 公开 LLM/Agent 论文评测集见 [`docs/public-corpus-report.md`](docs/public-corpus-report.md)，当前包含 20 个官方论文/仓库案例，另有 6 个复杂结构金标准案例，覆盖工具调用、RAG、Agent planning、网页代理、多智能体和可解释性。

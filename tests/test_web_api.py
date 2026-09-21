@@ -60,3 +60,6 @@ def test_local_api_analyzes_and_generates_candidates(tmp_path):
     selected = client.post(f"/api/tasks/{task_id}/select-candidate", json={"candidate_id": "candidate_02"})
     assert selected.status_code == 200
     assert client.get(f"/api/tasks/{task_id}/manifest").json()["task_id"] == task_id
+    exported = client.post(f"/api/tasks/{task_id}/export", json={"candidate_id": "candidate_02"})
+    assert exported.status_code == 200
+    assert client.get(exported.json()["download_url"]).status_code == 200

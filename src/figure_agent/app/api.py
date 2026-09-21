@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -141,6 +142,30 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
             if path.is_file() and path.name != "request.json":
                 files.append({"path": str(path.relative_to(task_root)), "size_bytes": path.stat().st_size})
         return {"task_id": task_id, "status": task["status"], "request": task["request"], "files": sorted(files, key=lambda item: item["path"])}
+
+    @app.post("/api/tasks/{task_id}/export")
+    def export_task(task_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+        task = store.get_task(task_id)
+        if task is None:
+            raise HTTPException(status_code=404, detail="task not found")
+        candidate_id = payload.get("candidate_id", "candidate_01")
+        if not isinstance(candidate_id, str) or not candidate_id.startswith("candidate_"):
+            raise HTTPException(status_code=422, detail="candidate_id is invalid")
+        candidate_dir = data_root / "tasks" / task_id / "candidates" / candidate_id
+        if not candidate_dir.is_dir():
+            raise HTTPException(status_code=404, detail="candidate not found")
+        export_dir = data_root / "tasks" / task_id / "exports"
+        export_dir.mkdir(parents=True, exist_ok=True)
+        archive = export_dir / f"{candidate_id}.zip"
+        store.update_status(task_id, "exporting")
+        with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+            for path in candidate_dir.rglob("*"):
+                if path.is_file():
+                    bundle.write(path, path.relative_to(candidate_dir.parent.parent))
+            manifest = task_manifest(task_id)
+            bundle.writestr("task-manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+        store.update_status(task_id, "completed")
+        return {"task_id": task_id, "candidate_id": candidate_id, "path": str(archive), "download_url": f"/api/tasks/{task_id}/files/exports/{archive.name}"}
 
     @app.get("/api/tasks/{task_id}/files/{file_path:path}")
     def task_file(task_id: str, file_path: str) -> FileResponse:
