@@ -10,8 +10,8 @@ requires-python = ">=3.10"
 dependencies = ["matplotlib>=3.10"]
 
 [project.optional-dependencies]
-test = ["pytest>=9.0"]
-web = ["fastapi>=0.115", "python-multipart>=0.0.9", "uvicorn>=0.30"]
+test = ["pytest>=9.0", "httpx<0.28"]
+web = ["fastapi==0.104.1", "python-multipart>=0.0.9", "uvicorn[standard]==0.24.0"]
 
 [project.scripts]
 figure-agent = "figure_agent.cli:main"
