@@ -68,4 +68,4 @@ The workflow parser also accepts explicit branch stages such as `Query → [Retr
 
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
 
-公开 LLM/Agent 论文评测集见 [`docs/public-corpus-report.md`](docs/public-corpus-report.md)，当前包含 12 个官方论文/仓库案例，覆盖工具调用、RAG、Agent planning、多智能体和可解释性。
+公开 LLM/Agent 论文评测集见 [`docs/public-corpus-report.md`](docs/public-corpus-report.md)，当前包含 20 个官方论文/仓库案例，另有 6 个复杂结构金标准案例，覆盖工具调用、RAG、Agent planning、网页代理、多智能体和可解释性。
