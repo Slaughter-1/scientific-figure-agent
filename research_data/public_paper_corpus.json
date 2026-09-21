@@ -130,5 +130,93 @@
     "repository_url": "https://github.com/ChenhuiHu/towards_atoms",
     "license_status": "review_required",
     "evidence": "local paper analysis and official repository"
+  },
+  {
+    "id": "llamaindex",
+    "title": "LlamaIndex: A Data Framework for LLM Applications",
+    "category": "rag_framework",
+    "figure_type": "architecture",
+    "method_chain": "User query → Index construction → Retrieval → Context assembly → LLM response",
+    "paper_url": "https://github.com/run-llama/llama_index",
+    "repository_url": "https://github.com/run-llama/llama_index",
+    "license_status": "mit",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "webarena",
+    "title": "WebArena: A Realistic Web Environment for Building Autonomous Agents",
+    "category": "web_agent_benchmark",
+    "figure_type": "architecture",
+    "method_chain": "Natural language task → Agent policy → Website interaction → Environment state → Task success",
+    "paper_url": "https://arxiv.org/abs/2307.13854",
+    "repository_url": "https://github.com/web-arena-x/webarena",
+    "license_status": "apache_2",
+    "evidence": "official repository README and paper abstract"
+  },
+  {
+    "id": "browsergym",
+    "title": "BrowserGym: A Gym Environment for Web Task Automation",
+    "category": "browser_agent",
+    "figure_type": "workflow",
+    "method_chain": "Task instruction → Browser observation → Agent action → Browser transition → Reward evaluation",
+    "paper_url": "https://arxiv.org/abs/2307.13854",
+    "repository_url": "https://github.com/ServiceNow/BrowserGym",
+    "license_status": "apache_2",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "mind2web",
+    "title": "Mind2Web: Towards a Generalist Agent for the Web",
+    "category": "web_agent_dataset",
+    "figure_type": "workflow",
+    "method_chain": "Web task → HTML and DOM observation → Element grounding → Action generation → Browser execution",
+    "paper_url": "https://arxiv.org/abs/2306.06070",
+    "repository_url": "https://github.com/OSU-NLP-Group/Mind2Web",
+    "license_status": "mit",
+    "evidence": "official repository README and paper abstract"
+  },
+  {
+    "id": "metagpt",
+    "title": "MetaGPT: Meta Programming for Multi-Agent Collaborative Framework",
+    "category": "multi_agent",
+    "figure_type": "architecture",
+    "method_chain": "User requirement → Product manager → Architect → Project manager → Engineer → Executable software",
+    "paper_url": "https://arxiv.org/abs/2308.00352",
+    "repository_url": "https://github.com/FoundationAgents/MetaGPT",
+    "license_status": "mit",
+    "evidence": "official repository README"
+  },
+  {
+    "id": "camel",
+    "title": "CAMEL: Communicative Agents for Mind Exploration of Large Scale Language Model Society",
+    "category": "multi_agent",
+    "figure_type": "workflow",
+    "method_chain": "User task → Inception prompting → Assistant agent → User agent → Collaborative solution",
+    "paper_url": "https://arxiv.org/abs/2303.17760",
+    "repository_url": "https://github.com/camel-ai/camel",
+    "license_status": "apache_2",
+    "evidence": "official repository README and paper abstract"
+  },
+  {
+    "id": "gorilla",
+    "title": "Gorilla: Large Language Model Connected with Massive APIs",
+    "category": "tool_use",
+    "figure_type": "workflow",
+    "method_chain": "User query → API documentation retrieval → Gorilla model → API call generation → Execution result",
+    "paper_url": "https://arxiv.org/abs/2305.15334",
+    "repository_url": "https://github.com/ShishirPatil/gorilla",
+    "license_status": "apache_2",
+    "evidence": "official repository README and paper abstract"
+  },
+  {
+    "id": "toolformer",
+    "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+    "category": "tool_use_training",
+    "figure_type": "workflow",
+    "method_chain": "Unlabeled text → API call proposal → Tool execution → Answer filtering → Self-supervised training data",
+    "paper_url": "https://arxiv.org/abs/2302.04761",
+    "repository_url": "https://github.com/lucidrains/toolformer-pytorch",
+    "license_status": "review_required",
+    "evidence": "paper abstract and public implementation"
   }
 ]

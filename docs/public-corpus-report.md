@@ -1,6 +1,6 @@
 # Public LLM/Agent 论文评测集
 
-本轮从公开论文页面和官方代码仓库筛选了 12 个案例，覆盖工具调用、RAG、Agent planning、长程任务、多智能体和 LLM 可解释性：AgentBench、ToolLLM/ToolBench、Self-RAG、CRAG、VAKRA、TPS-Bench、TheAgentCompany、RAG-Critic、ReAct、AutoGen、KATE 和 Towards Atoms。
+本轮从公开论文页面和官方代码仓库筛选了 20 个案例，覆盖工具调用、RAG、Agent planning、网页代理、长程任务、多智能体和 LLM 可解释性：在原有 12 个案例基础上加入 LlamaIndex、WebArena、BrowserGym、Mind2Web、MetaGPT、CAMEL、Gorilla 和 Toolformer。
 
 案例清单与来源在 [`research_data/public_paper_corpus.json`](../research_data/public_paper_corpus.json)。原始公开仓库下载到 `research_data/github/`，该目录被 Git 忽略；项目只提交整理后的方法链、来源和评测输出。
 
@@ -11,7 +11,7 @@
 当前结果：
 
 ```text
-case_count: 12
+case_count: 20
 mean_node_recall: 1.0
 mean_edge_recall: 1.0
 mean_evidence_coverage: 1.0
@@ -27,4 +27,4 @@ mean_evidence_coverage: 1.0
 
 ## 下一步
 
-下一轮将从 12 个案例中挑选 6 个复杂案例进行人工金标准标注，重点补充 RAG 的循环检索、AgentBench/VAKRA 的多跳关系、TPS-Bench 的并行分支和 AutoGen 的多智能体拓扑，然后再报告真正的节点召回率、边方向准确率和分支召回率。
+下一轮将从 20 个案例中挑选复杂案例进行人工金标准标注，重点补充 RAG 的循环检索、AgentBench/VAKRA 的多跳关系、TPS-Bench 的并行分支、AutoGen/MetaGPT/CAMEL 的多智能体拓扑和网页代理的状态转移，然后再报告真正的节点召回率、边方向准确率和分支召回率。

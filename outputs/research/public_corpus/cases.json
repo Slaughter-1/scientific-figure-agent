@@ -147,7 +147,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:20.941447+00:00",
+          "retrieved_at": "2026-09-21T01:03:50.145024+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -309,7 +309,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:21.873686+00:00",
+          "retrieved_at": "2026-09-21T01:03:51.311499+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -471,7 +471,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:22.151998+00:00",
+          "retrieved_at": "2026-09-21T01:03:51.660574+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -633,7 +633,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:22.429509+00:00",
+          "retrieved_at": "2026-09-21T01:03:52.001834+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -816,7 +816,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:22.707216+00:00",
+          "retrieved_at": "2026-09-21T01:03:52.350060+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -978,7 +978,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:22.980637+00:00",
+          "retrieved_at": "2026-09-21T01:03:52.704411+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1140,7 +1140,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:23.254995+00:00",
+          "retrieved_at": "2026-09-21T01:03:53.041281+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1302,7 +1302,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:23.530403+00:00",
+          "retrieved_at": "2026-09-21T01:03:53.536540+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1464,7 +1464,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:23.791034+00:00",
+          "retrieved_at": "2026-09-21T01:03:53.977625+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1626,7 +1626,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:24.079747+00:00",
+          "retrieved_at": "2026-09-21T01:03:54.429838+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1788,7 +1788,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:24.402859+00:00",
+          "retrieved_at": "2026-09-21T01:03:54.898348+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1950,7 +1950,7 @@
           "preview_url": null,
           "download_url": null,
           "restrictions": [],
-          "retrieved_at": "2026-09-20T15:25:24.790066+00:00",
+          "retrieved_at": "2026-09-21T01:03:55.321691+00:00",
           "match_reason": "query token matched template metadata"
         }
       ]
@@ -1962,6 +1962,1323 @@
       "id": "towards_atoms",
       "title": "Towards Atoms of Large Language Models",
       "category": "llm_interpretability"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "User query",
+        "Index construction",
+        "Retrieval",
+        "Context assembly",
+        "LLM response"
+      ],
+      "edges": [
+        [
+          "User query",
+          "Index construction"
+        ],
+        [
+          "Index construction",
+          "Retrieval"
+        ],
+        [
+          "Retrieval",
+          "Context assembly"
+        ],
+        [
+          "Context assembly",
+          "LLM response"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "User query",
+          "type": "data",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "User query"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "Index construction",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Index construction"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Retrieval",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Retrieval"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "Context assembly",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Context assembly"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "LLM response",
+          "type": "model",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "LLM response"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:55.778864+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "llamaindex",
+      "title": "LlamaIndex: A Data Framework for LLM Applications",
+      "category": "rag_framework"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "Natural language task",
+        "Agent policy",
+        "Website interaction",
+        "Environment state",
+        "Task success"
+      ],
+      "edges": [
+        [
+          "Natural language task",
+          "Agent policy"
+        ],
+        [
+          "Agent policy",
+          "Website interaction"
+        ],
+        [
+          "Website interaction",
+          "Environment state"
+        ],
+        [
+          "Environment state",
+          "Task success"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "Natural language task",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Natural language task"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "Agent policy",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Agent policy"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Website interaction",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Website interaction"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "Environment state",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Environment state"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Task success",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Task success"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:56.307476+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "webarena",
+      "title": "WebArena: A Realistic Web Environment for Building Autonomous Agents",
+      "category": "web_agent_benchmark"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "Task instruction",
+        "Browser observation",
+        "Agent action",
+        "Browser transition",
+        "Reward evaluation"
+      ],
+      "edges": [
+        [
+          "Task instruction",
+          "Browser observation"
+        ],
+        [
+          "Browser observation",
+          "Agent action"
+        ],
+        [
+          "Agent action",
+          "Browser transition"
+        ],
+        [
+          "Browser transition",
+          "Reward evaluation"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "Task instruction",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Task instruction"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "Browser observation",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Browser observation"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Agent action",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Agent action"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "Browser transition",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Browser transition"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Reward evaluation",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Reward evaluation"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:56.728053+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "browsergym",
+      "title": "BrowserGym: A Gym Environment for Web Task Automation",
+      "category": "browser_agent"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "Web task",
+        "HTML and DOM observation",
+        "Element grounding",
+        "Action generation",
+        "Browser execution"
+      ],
+      "edges": [
+        [
+          "Web task",
+          "HTML and DOM observation"
+        ],
+        [
+          "HTML and DOM observation",
+          "Element grounding"
+        ],
+        [
+          "Element grounding",
+          "Action generation"
+        ],
+        [
+          "Action generation",
+          "Browser execution"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "Web task",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Web task"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "HTML and DOM observation",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "HTML and DOM observation"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Element grounding",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Element grounding"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "Action generation",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Action generation"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Browser execution",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Browser execution"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:57.170304+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "mind2web",
+      "title": "Mind2Web: Towards a Generalist Agent for the Web",
+      "category": "web_agent_dataset"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "User requirement",
+        "Product manager",
+        "Architect",
+        "Project manager",
+        "Engineer",
+        "Executable software"
+      ],
+      "edges": [
+        [
+          "User requirement",
+          "Product manager"
+        ],
+        [
+          "Product manager",
+          "Architect"
+        ],
+        [
+          "Architect",
+          "Project manager"
+        ],
+        [
+          "Project manager",
+          "Engineer"
+        ],
+        [
+          "Engineer",
+          "Executable software"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "User requirement",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "User requirement"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "Product manager",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Product manager"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Architect",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Architect"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "Project manager",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Project manager"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Engineer",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Engineer"
+            }
+          ]
+        },
+        {
+          "id": "node_5",
+          "label": "Executable software",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Executable software"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_4",
+          "target": "node_5",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:57.626178+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "metagpt",
+      "title": "MetaGPT: Meta Programming for Multi-Agent Collaborative Framework",
+      "category": "multi_agent"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "User task",
+        "Inception prompting",
+        "Assistant agent",
+        "User agent",
+        "Collaborative solution"
+      ],
+      "edges": [
+        [
+          "User task",
+          "Inception prompting"
+        ],
+        [
+          "Inception prompting",
+          "Assistant agent"
+        ],
+        [
+          "Assistant agent",
+          "User agent"
+        ],
+        [
+          "User agent",
+          "Collaborative solution"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "User task",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "User task"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "Inception prompting",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Inception prompting"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Assistant agent",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Assistant agent"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "User agent",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "User agent"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Collaborative solution",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Collaborative solution"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:58.093656+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "camel",
+      "title": "CAMEL: Communicative Agents for Mind Exploration of Large Scale Language Model Society",
+      "category": "multi_agent"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "User query",
+        "API documentation retrieval",
+        "Gorilla model",
+        "API call generation",
+        "Execution result"
+      ],
+      "edges": [
+        [
+          "User query",
+          "API documentation retrieval"
+        ],
+        [
+          "API documentation retrieval",
+          "Gorilla model"
+        ],
+        [
+          "Gorilla model",
+          "API call generation"
+        ],
+        [
+          "API call generation",
+          "Execution result"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "User query",
+          "type": "data",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "User query"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "API documentation retrieval",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "API documentation retrieval"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Gorilla model",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Gorilla model"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "API call generation",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "API call generation"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Execution result",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Execution result"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:58.518296+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "gorilla",
+      "title": "Gorilla: Large Language Model Connected with Massive APIs",
+      "category": "tool_use"
+    }
+  },
+  {
+    "expected": {
+      "nodes": [
+        "Unlabeled text",
+        "API call proposal",
+        "Tool execution",
+        "Answer filtering",
+        "Self-supervised training data"
+      ],
+      "edges": [
+        [
+          "Unlabeled text",
+          "API call proposal"
+        ],
+        [
+          "API call proposal",
+          "Tool execution"
+        ],
+        [
+          "Tool execution",
+          "Answer filtering"
+        ],
+        [
+          "Answer filtering",
+          "Self-supervised training data"
+        ]
+      ]
+    },
+    "actual": {
+      "schema_version": "0.1",
+      "figure_type": "workflow",
+      "title": "Generated Workflow",
+      "layout": {
+        "direction": "left-to-right",
+        "spacing": 24
+      },
+      "nodes": [
+        {
+          "id": "node_0",
+          "label": "Unlabeled text",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Unlabeled text"
+            }
+          ]
+        },
+        {
+          "id": "node_1",
+          "label": "API call proposal",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "API call proposal"
+            }
+          ]
+        },
+        {
+          "id": "node_2",
+          "label": "Tool execution",
+          "type": "tool",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Tool execution"
+            }
+          ]
+        },
+        {
+          "id": "node_3",
+          "label": "Answer filtering",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Answer filtering"
+            }
+          ]
+        },
+        {
+          "id": "node_4",
+          "label": "Self-supervised training data",
+          "type": "process",
+          "evidence": [
+            {
+              "source": "input_text",
+              "quote": "Self-supervised training data"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_4",
+          "type": "data_flow"
+        }
+      ],
+      "groups": [],
+      "style": {
+        "theme": "academic_clean",
+        "colors": {
+          "process": "#E8EEF7",
+          "data": "#F2F4F7"
+        }
+      },
+      "candidate_id": "candidate_01",
+      "template_refs": [
+        {
+          "id": "drawio_official_architecture",
+          "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
+          "source_type": "drawio_official",
+          "license": "verified",
+          "editable": true,
+          "supported_types": [
+            "architecture",
+            "workflow",
+            "graph"
+          ],
+          "style_tags": [
+            "academic_clean",
+            "left_to_right"
+          ],
+          "components": [
+            "module_box",
+            "group_frame",
+            "arrow"
+          ],
+          "preview_url": null,
+          "download_url": null,
+          "restrictions": [],
+          "retrieved_at": "2026-09-21T01:03:59.001888+00:00",
+          "match_reason": "query token matched template metadata"
+        }
+      ]
+    },
+    "metrics": {
+      "node_recall": 1.0,
+      "edge_recall": 1.0,
+      "evidence_coverage": 1.0,
+      "id": "toolformer",
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "category": "tool_use_training"
     }
   }
 ]

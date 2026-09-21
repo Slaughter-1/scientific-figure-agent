@@ -1,0 +1,36 @@
+{
+  "figure_goal": "method_overview",
+  "target_figure_type": "workflow",
+  "required_labels": [
+    "User requirement",
+    "Product manager",
+    "Architect",
+    "Project manager",
+    "Engineer",
+    "Executable software"
+  ],
+  "required_edges": [
+    {
+      "source": "node_0",
+      "target": "node_1"
+    },
+    {
+      "source": "node_1",
+      "target": "node_2"
+    },
+    {
+      "source": "node_2",
+      "target": "node_3"
+    },
+    {
+      "source": "node_3",
+      "target": "node_4"
+    },
+    {
+      "source": "node_4",
+      "target": "node_5"
+    }
+  ],
+  "evidence_coverage": 1.0,
+  "needs_review": []
+}

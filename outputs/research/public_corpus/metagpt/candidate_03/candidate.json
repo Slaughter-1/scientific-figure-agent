@@ -1,0 +1,161 @@
+{
+  "candidate_id": "candidate_03",
+  "template_ref": "scientific_figure_agent_academic_clean",
+  "spec": {
+    "schema_version": "0.1",
+    "figure_type": "workflow",
+    "title": "Generated Workflow",
+    "layout": {
+      "direction": "left-to-right",
+      "spacing": 36
+    },
+    "nodes": [
+      {
+        "id": "node_0",
+        "label": "User requirement",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "User requirement"
+          }
+        ]
+      },
+      {
+        "id": "node_1",
+        "label": "Product manager",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Product manager"
+          }
+        ]
+      },
+      {
+        "id": "node_2",
+        "label": "Architect",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Architect"
+          }
+        ]
+      },
+      {
+        "id": "node_3",
+        "label": "Project manager",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Project manager"
+          }
+        ]
+      },
+      {
+        "id": "node_4",
+        "label": "Engineer",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Engineer"
+          }
+        ]
+      },
+      {
+        "id": "node_5",
+        "label": "Executable software",
+        "type": "process",
+        "evidence": [
+          {
+            "source": "input_text",
+            "quote": "Executable software"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "node_0",
+        "target": "node_1",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_1",
+        "target": "node_2",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_2",
+        "target": "node_3",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_3",
+        "target": "node_4",
+        "type": "data_flow"
+      },
+      {
+        "source": "node_4",
+        "target": "node_5",
+        "type": "data_flow"
+      }
+    ],
+    "groups": [],
+    "style": {
+      "theme": "academic_clean",
+      "colors": {
+        "process": "#E8EEF7",
+        "data": "#F2F4F7"
+      }
+    },
+    "candidate_id": "candidate_03",
+    "template_refs": [
+      {
+        "id": "scientific_figure_agent_academic_clean",
+        "source_url": "https://github.com/Slaughter-1/scientific-figure-agent",
+        "source_type": "project_builtin",
+        "license": "project_owned",
+        "editable": true,
+        "supported_types": [
+          "architecture",
+          "workflow",
+          "graph",
+          "plot"
+        ],
+        "style_tags": [
+          "academic_clean",
+          "paper"
+        ],
+        "components": [
+          "module_box",
+          "group_frame",
+          "arrow",
+          "plot_panel"
+        ],
+        "preview_url": null,
+        "download_url": null,
+        "restrictions": [],
+        "retrieved_at": "2026-09-21T01:03:57.626201+00:00",
+        "match_reason": "query token matched template metadata"
+      }
+    ]
+  },
+  "spec_path": "outputs\\research\\public_corpus\\metagpt\\candidate_03\\figure-spec.json",
+  "artifacts": {
+    "drawio": "outputs\\research\\public_corpus\\metagpt\\candidate_03\\figure.drawio",
+    "svg": "outputs\\research\\public_corpus\\metagpt\\candidate_03\\figure.svg",
+    "pdf": "outputs\\research\\public_corpus\\metagpt\\candidate_03\\figure.pdf"
+  },
+  "scores": {
+    "evidence_coverage": 1.0,
+    "structural_validity": 1.0,
+    "readability": 1.0,
+    "style_consistency": 1.0,
+    "license_safety": 1.0
+  },
+  "review_findings": []
+}
