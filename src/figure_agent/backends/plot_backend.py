@@ -8,6 +8,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+plt.rcParams["font.sans-serif"] = ["Noto Sans SC", "Microsoft YaHei", "SimHei", "DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False
+plt.rcParams["svg.fonttype"] = "none"
+plt.rcParams["pdf.fonttype"] = 42
+
 
 def render_bar_chart(data: dict[str, Any], output_dir: Path, stem: str) -> dict[str, Path]:
     methods = data["methods"]

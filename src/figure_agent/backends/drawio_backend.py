@@ -23,6 +23,12 @@ REQUIRED_LABELS = [
     "Answer",
 ]
 
+# Keep Chinese labels editable in Draw.io and render them correctly in the preview.
+plt.rcParams["font.sans-serif"] = ["Noto Sans SC", "Microsoft YaHei", "SimHei", "DejaVu Sans"]
+plt.rcParams["axes.unicode_minus"] = False
+plt.rcParams["svg.fonttype"] = "none"
+plt.rcParams["pdf.fonttype"] = 42
+
 
 def check_drawio_output(path: str | Path, required_labels: list[str] | None = None) -> list[str]:
     path = Path(path)
@@ -54,11 +60,18 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
     group_by_node = {child: group["id"] for group in spec.get("groups", []) for child in group["children"]}
     for index, node in enumerate(spec["nodes"], start=2):
         x, y = positions[node["id"]]
-        color = spec.get("style", {}).get("colors", {}).get(node.get("type"), "#E8EEF7")
-        style = f"rounded=1;whiteSpace=wrap;html=1;fillColor={color};strokeColor=#64748B;"
+        style_config = spec.get("style", {})
+        color = style_config.get("colors", {}).get(node.get("type"), "#E8EEF7")
+        stroke = style_config.get("stroke", "#64748B")
+        font_family = style_config.get("font_family", "Noto Sans SC")
+        font_size = style_config.get("font_sizes", {}).get("node", 14)
+        shape = style_config.get("shape", "rounded")
+        style = f"rounded=1;shape={shape};whiteSpace=wrap;html=1;fillColor={color};strokeColor={stroke};fontFamily={font_family};fontSize={font_size};fontColor=#172033;"
         label = html.escape(str(node["label"]), quote=True)
         group_attribute = f' data-group="{html.escape(group_by_node[node["id"]], quote=True)}"' if node["id"] in group_by_node else ""
-        cells.append(f'<mxCell id="{node["id"]}" value="{label}" style="{style}" vertex="1" parent="1"{group_attribute}><mxGeometry x="{x}" y="{y}" width="150" height="60" as="geometry"/></mxCell>')
+        node_width = style_config.get("node_width", 170)
+        node_height = style_config.get("node_height", 68)
+        cells.append(f'<mxCell id="{node["id"]}" value="{label}" style="{style}" vertex="1" parent="1"{group_attribute}><mxGeometry x="{x}" y="{y}" width="{node_width}" height="{node_height}" as="geometry"/></mxCell>')
     for group_index, group in enumerate(spec.get("groups", []), start=500):
         children = [positions[node_id] for node_id in group["children"] if node_id in positions]
         if not children:
@@ -67,9 +80,12 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
         x, y = min(xs) - 20, min(ys) - 25
         width, height = max(xs) - min(xs) + 190, max(ys) - min(ys) + 110
         label = html.escape(str(group["label"]), quote=True)
-        cells.append(f'<mxCell id="group-{group_index}" value="{label}" style="swimlane;html=1;rounded=1;dashed=1;fillOpacity=0;" vertex="1" parent="1"><mxGeometry x="{x}" y="{y}" width="{width}" height="{height}" as="geometry"/></mxCell>')
+        group_style = spec.get("style", {})
+        group_fill = group_style.get("group_fill", "#F8FAFC")
+        cells.append(f'<mxCell id="group-{group_index}" value="{label}" style="swimlane;html=1;rounded=1;dashed=1;fillColor={group_fill};fillOpacity=20;strokeColor={group_style.get("stroke", "#94A3B8")};fontFamily={group_style.get("font_family", "Noto Sans SC")};fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="{x}" y="{y}" width="{width}" height="{height}" as="geometry"/></mxCell>')
     for index, edge in enumerate(spec["edges"], start=100):
-        cells.append(f'<mxCell id="edge-{index}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;"><mxGeometry relative="1" as="geometry"/></mxCell>')
+        arrow_color = spec.get("style", {}).get("arrow_color", "#64748B")
+        cells.append(f'<mxCell id="edge-{index}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;strokeColor={arrow_color};strokeWidth=1.5;"><mxGeometry relative="1" as="geometry"/></mxCell>')
     return '<mxfile host="Scientific Figure Agent"><diagram name="Agent Workflow"><mxGraphModel><root>' + "".join(cells) + "</root></mxGraphModel></diagram></mxfile>"
 
 
@@ -114,7 +130,8 @@ def render_drawio_spec(spec: dict[str, Any], output_dir: str | Path, stem: str =
             continue
         xs, ys = zip(*children)
         pad = 0.35
-        rect = Rectangle((min(xs) - 1.0 - pad, min(ys) - 0.45 - pad), max(xs) - min(xs) + 2.0 + 2 * pad, max(ys) - min(ys) + 0.9 + 2 * pad, fill=False, linestyle="--", linewidth=1.0, edgecolor="#94A3B8")
+        style_config = spec.get("style", {})
+        rect = Rectangle((min(xs) - 1.0 - pad, min(ys) - 0.45 - pad), max(xs) - min(xs) + 2.0 + 2 * pad, max(ys) - min(ys) + 0.9 + 2 * pad, fill=True, facecolor=style_config.get("group_fill", "#F8FAFC"), alpha=0.45, linestyle="--", linewidth=1.0, edgecolor=style_config.get("stroke", "#94A3B8"), zorder=0)
         ax.add_patch(rect)
         ax.text(min(xs) - 0.95, max(ys) + 0.5, group["label"], fontsize=8, color="#475569")
     for edge in spec["edges"]:
@@ -123,11 +140,12 @@ def render_drawio_spec(spec: dict[str, Any], output_dir: str | Path, stem: str =
         ax.annotate("", xy=(tx - 0.98, ty), xytext=(sx + 0.98, sy), arrowprops={"arrowstyle": "->", "color": "#475569", "linewidth": 0.9})
     for node in spec["nodes"]:
         x, y = positions[node["id"]]
-        patch = FancyBboxPatch((x - 0.98, y - 0.38), 1.96, 0.76, boxstyle="round,pad=0.03,rounding_size=0.08", facecolor=_node_color(spec, node), edgecolor="#64748B", linewidth=1.0)
+        style_config = spec.get("style", {})
+        patch = FancyBboxPatch((x - 1.05, y - 0.42), 2.1, 0.84, boxstyle="round,pad=0.04,rounding_size=0.10", facecolor=_node_color(spec, node), edgecolor=style_config.get("stroke", "#64748B"), linewidth=1.2)
         ax.add_patch(patch)
-        ax.text(x, y, node["label"], ha="center", va="center", fontsize=8)
+        ax.text(x, y, node["label"], ha="center", va="center", fontsize=style_config.get("font_sizes", {}).get("node", 9), fontfamily=style_config.get("font_family", "Noto Sans SC"), color="#172033")
     if spec.get("title"):
-        ax.set_title(spec["title"], fontsize=11, pad=10)
+        ax.set_title(spec["title"], fontsize=style_config.get("font_sizes", {}).get("title", 13), pad=12, fontfamily=style_config.get("font_family", "Noto Sans SC"), color="#172033", fontweight="bold")
     svg_path = output_dir / f"{stem}.svg"
     pdf_path = output_dir / f"{stem}.pdf"
     fig.savefig(svg_path, format="svg")
