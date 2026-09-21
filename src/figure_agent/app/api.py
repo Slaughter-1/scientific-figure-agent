@@ -8,6 +8,7 @@ from typing import Any
 try:
     from fastapi import FastAPI, File, HTTPException, UploadFile
     from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
 except ImportError as exc:  # pragma: no cover - exercised when optional web deps are absent
     raise RuntimeError("Install the 'web' extra to use the local web API") from exc
 
@@ -190,5 +191,13 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
         target = Path(data_dir) / "tasks" / task_id / "assets" / Path(file.filename or "upload.bin").name
         target.write_bytes(await file.read())
         return store.register_artifact(task_id, target, "user_asset", editable=target.suffix.lower() in {".svg", ".drawio", ".json"})
+
+    frontend_dist = Path(__file__).resolve().parents[3] / "frontend" / "dist"
+    if frontend_dist.is_dir():
+        app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
+    else:
+        @app.get("/", include_in_schema=False)
+        def frontend_not_built() -> dict[str, str]:
+            return {"status": "ok", "message": "Frontend is not built. Run `cd frontend; npm install; npm run dev` or `npm run build`."}
 
     return app

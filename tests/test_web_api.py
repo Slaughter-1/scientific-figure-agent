@@ -10,6 +10,7 @@ def test_local_api_creates_and_persists_task(tmp_path):
 
     client = TestClient(create_app(tmp_path))
     assert client.get("/api/health").json() == {"status": "ok"}
+    assert client.get("/").status_code == 200
     created = client.post("/api/tasks", json=_request())
     assert created.status_code == 201
     payload = created.json()
