@@ -40,16 +40,31 @@ def build_plot_spec(
     else:
         if not x_column or not y_column:
             raise ValueError(f"{kind} requires x_column and y_column")
-        requested = [x_column, y_column] + ([y_error_column] if y_error_column else [])
+        y_columns = [item.strip() for item in y_column.split(",") if item.strip()]
+        if not y_columns:
+            raise ValueError(f"{kind} requires at least one y column")
+        error_columns = [item.strip() for item in y_error_column.split(",") if item.strip()] if y_error_column else []
+        if error_columns and len(error_columns) not in {1, len(y_columns)}:
+            raise ValueError("y_error_column must contain one column or one column per y series")
+        requested = [x_column, *y_columns, *error_columns]
         missing = [column for column in requested if column not in columns]
         if missing:
             raise ValueError(f"missing table columns: {', '.join(missing)}")
         x = [row.get(x_column) for row in rows]
-        y = [_number(row.get(y_column), y_column, index) for index, row in enumerate(rows, 1)]
-        data = {"kind": kind, "x": x, "y": y, "source_columns": [x_column, y_column]}
-        if y_error_column:
-            data["y_error"] = [_number(row.get(y_error_column), y_error_column, index) for index, row in enumerate(rows, 1)]
-            data["source_columns"].append(y_error_column)
+        source_columns = [x_column, *y_columns, *error_columns]
+        series = []
+        for index, column in enumerate(y_columns):
+            item = {"name": column, "y": [_number(row.get(column), column, row_number) for row_number, row in enumerate(rows, 1)], "source_column": column}
+            if error_columns:
+                error_column = error_columns[0] if len(error_columns) == 1 else error_columns[index]
+                item["y_error"] = [_number(row.get(error_column), error_column, row_number) for row_number, row in enumerate(rows, 1)]
+                item["y_error_column"] = error_column
+            series.append(item)
+        data = {"kind": kind, "x": x, "y": series[0]["y"], "source_columns": source_columns}
+        if len(series) > 1:
+            data["series"] = series
+        elif error_columns:
+            data["y_error"] = series[0]["y_error"]
     spec = {
         "schema_version": "0.1", "figure_type": "plot", "title": title or "Generated Plot",
         "layout": {"direction": "left-to-right", "spacing": 24}, "nodes": [], "edges": [], "groups": [],

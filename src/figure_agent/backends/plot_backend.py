@@ -45,17 +45,33 @@ def render_plot_spec(spec: dict[str, Any], output_dir: str | Path, stem: str = "
         x, y = data["x"], data["y"]
         if len(x) != len(y):
             raise ValueError("plot data x and y must have equal lengths")
-        ax.bar(x, y, yerr=data.get("y_error"), capsize=3 if data.get("y_error") else 0, color="#2563EB")
+        series = data.get("series") or [{"name": "series", "y": y, "y_error": data.get("y_error")}]
+        width = 0.8 / len(series)
+        positions = list(range(len(x)))
+        for index, item in enumerate(series):
+            offsets = [position + (index - (len(series) - 1) / 2) * width for position in positions]
+            ax.bar(offsets, item["y"], width=width, yerr=item.get("y_error"), capsize=3 if item.get("y_error") else 0, label=item.get("name"), color=("#2563EB" if index == 0 else "#94A3B8"))
+        ax.set_xticks(positions, x)
+        if len(series) > 1:
+            ax.legend(frameon=False)
     elif kind == "line":
         x, y = data["x"], data["y"]
         if len(x) != len(y):
             raise ValueError("plot data x and y must have equal lengths")
-        ax.errorbar(x, y, yerr=data.get("y_error"), capsize=3 if data.get("y_error") else 0, marker="o", color="#2563EB", linewidth=1.6)
+        series = data.get("series") or [{"name": "series", "y": y, "y_error": data.get("y_error")}]
+        for index, item in enumerate(series):
+            ax.errorbar(x, item["y"], yerr=item.get("y_error"), capsize=3 if item.get("y_error") else 0, marker="o", color=("#2563EB" if index == 0 else "#94A3B8"), linewidth=1.6, label=item.get("name"))
+        if len(series) > 1:
+            ax.legend(frameon=False)
     elif kind == "scatter":
         x, y = data["x"], data["y"]
         if len(x) != len(y):
             raise ValueError("plot data x and y must have equal lengths")
-        ax.errorbar(x, y, yerr=data.get("y_error"), fmt="o", capsize=3 if data.get("y_error") else 0, color="#2563EB")
+        series = data.get("series") or [{"name": "series", "y": y, "y_error": data.get("y_error")}]
+        for index, item in enumerate(series):
+            ax.errorbar(x, item["y"], yerr=item.get("y_error"), fmt="o", capsize=3 if item.get("y_error") else 0, color=("#2563EB" if index == 0 else "#94A3B8"), label=item.get("name"))
+        if len(series) > 1:
+            ax.legend(frameon=False)
     elif kind == "heatmap":
         matrix = data["matrix"]
         if not matrix or any(len(row) != len(matrix[0]) for row in matrix):

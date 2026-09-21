@@ -62,3 +62,12 @@ def test_render_plot_spec_writes_errorbar_artifacts(tmp_path):
     spec = build_plot_spec(table, kind="bar", x_column="method", y_column="accuracy", y_error_column="std")
     artifacts = render_plot_spec(spec, tmp_path)
     assert all(path.exists() for path in artifacts.values())
+
+
+def test_build_plot_spec_supports_multiple_y_columns():
+    from figure_agent.plot_planner import build_plot_spec
+
+    spec = build_plot_spec(_table(), kind="line", x_column="method", y_column="accuracy,recall")
+    assert [item["name"] for item in spec["data"]["series"]] == ["accuracy", "recall"]
+    assert spec["data"]["series"][1]["y"] == [0.60, 0.79]
+    assert spec["data"]["source_columns"] == ["method", "accuracy", "recall"]

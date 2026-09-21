@@ -103,6 +103,20 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
                     errors.append("plot data.y_error must be an array")
                 elif len(y_error) != len(y_values or []):
                     errors.append("plot data.y_error and data.y must have equal lengths")
+            series = data.get("series")
+            if series is not None:
+                if not isinstance(series, list) or not series:
+                    errors.append("plot data.series must be a non-empty array")
+                else:
+                    for index, item in enumerate(series):
+                        if not isinstance(item, dict) or not isinstance(item.get("y"), list):
+                            errors.append(f"plot data.series[{index}].y must be an array")
+                            continue
+                        if len(item["y"]) != len(x_values or []):
+                            errors.append(f"plot data.series[{index}].y and data.x must have equal lengths")
+                        series_error = item.get("y_error")
+                        if series_error is not None and (not isinstance(series_error, list) or len(series_error) != len(item["y"])):
+                            errors.append(f"plot data.series[{index}].y_error must match series length")
     colors = spec.get("style", {}).get("colors", {}) if isinstance(spec.get("style"), dict) else {}
     for name, color in colors.items():
         if not isinstance(color, str) or not HEX_COLOR.fullmatch(color):
