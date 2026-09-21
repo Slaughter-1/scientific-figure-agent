@@ -1,0 +1,44 @@
+[
+  {
+    "id": "self_rag_loop",
+    "source_case": "self_rag",
+    "text": "Query → Retrieval decision → [Passage retrieval | No retrieval] → Generation → Reflection token critique → loop back to Retrieval decision",
+    "expected_edge_types": {"data_flow": 6, "control_flow": 1},
+    "annotation": "Retrieval choice is an explicit branch and reflection returns to the retrieval decision."
+  },
+  {
+    "id": "crag_branches",
+    "source_case": "crag",
+    "text": "Question → [Web search API | Knowledge graph API] → Context aggregation → Answer evaluation",
+    "expected_edge_types": {"data_flow": 5},
+    "annotation": "CRAG exposes two retrieval sources before context aggregation."
+  },
+  {
+    "id": "tps_parallel",
+    "source_case": "tps_bench",
+    "text": "Compound task → Subtask decomposition → [Tool scheduling | Parallel execution | Sequential execution] → Completion and efficiency",
+    "expected_edge_types": {"data_flow": 7},
+    "annotation": "Scheduling alternatives are kept as parallel branches for review."
+  },
+  {
+    "id": "autogen_multi_agent",
+    "source_case": "autogen",
+    "text": "User request → [Assistant agent | Specialized agent] → Tool or human feedback → Coordinated result",
+    "expected_edge_types": {"data_flow": 5},
+    "annotation": "The two agent roles are represented as sibling nodes."
+  },
+  {
+    "id": "react_loop",
+    "source_case": "react",
+    "text": "Task → Thought trace → Action → External observation → loop back to Thought trace",
+    "expected_edge_types": {"data_flow": 3, "control_flow": 1},
+    "annotation": "ReAct alternates reasoning and acting after each external observation."
+  },
+  {
+    "id": "camel_roles",
+    "source_case": "camel",
+    "text": "User task → Inception prompting → [Assistant agent | User agent] → Collaborative solution",
+    "expected_edge_types": {"data_flow": 5},
+    "annotation": "CAMEL's two role agents are preserved as an explicit branch."
+  }
+]

@@ -1,0 +1,129 @@
+{
+  "case_count": 6,
+  "mean_node_recall": 1.0,
+  "mean_edge_recall": 1.0,
+  "mean_evidence_coverage": 1.0,
+  "results": [
+    {
+      "id": "self_rag_loop",
+      "source_case": "self_rag",
+      "annotation": "Retrieval choice is an explicit branch and reflection returns to the retrieval decision.",
+      "metrics": {
+        "node_recall": 1.0,
+        "edge_recall": 1.0,
+        "evidence_coverage": 1.0
+      },
+      "actual_edge_types": {
+        "data_flow": 6,
+        "control_flow": 1
+      },
+      "expected_edge_types": {
+        "data_flow": 6,
+        "control_flow": 1
+      },
+      "edge_type_recall": {
+        "data_flow": 1.0,
+        "control_flow": 1.0
+      }
+    },
+    {
+      "id": "crag_branches",
+      "source_case": "crag",
+      "annotation": "CRAG exposes two retrieval sources before context aggregation.",
+      "metrics": {
+        "node_recall": 1.0,
+        "edge_recall": 1.0,
+        "evidence_coverage": 1.0
+      },
+      "actual_edge_types": {
+        "data_flow": 5
+      },
+      "expected_edge_types": {
+        "data_flow": 5
+      },
+      "edge_type_recall": {
+        "data_flow": 1.0
+      }
+    },
+    {
+      "id": "tps_parallel",
+      "source_case": "tps_bench",
+      "annotation": "Scheduling alternatives are kept as parallel branches for review.",
+      "metrics": {
+        "node_recall": 1.0,
+        "edge_recall": 1.0,
+        "evidence_coverage": 1.0
+      },
+      "actual_edge_types": {
+        "data_flow": 7
+      },
+      "expected_edge_types": {
+        "data_flow": 7
+      },
+      "edge_type_recall": {
+        "data_flow": 1.0
+      }
+    },
+    {
+      "id": "autogen_multi_agent",
+      "source_case": "autogen",
+      "annotation": "The two agent roles are represented as sibling nodes.",
+      "metrics": {
+        "node_recall": 1.0,
+        "edge_recall": 1.0,
+        "evidence_coverage": 1.0
+      },
+      "actual_edge_types": {
+        "data_flow": 5
+      },
+      "expected_edge_types": {
+        "data_flow": 5
+      },
+      "edge_type_recall": {
+        "data_flow": 1.0
+      }
+    },
+    {
+      "id": "react_loop",
+      "source_case": "react",
+      "annotation": "ReAct alternates reasoning and acting after each external observation.",
+      "metrics": {
+        "node_recall": 1.0,
+        "edge_recall": 1.0,
+        "evidence_coverage": 1.0
+      },
+      "actual_edge_types": {
+        "data_flow": 3,
+        "control_flow": 1
+      },
+      "expected_edge_types": {
+        "data_flow": 3,
+        "control_flow": 1
+      },
+      "edge_type_recall": {
+        "data_flow": 1.0,
+        "control_flow": 1.0
+      }
+    },
+    {
+      "id": "camel_roles",
+      "source_case": "camel",
+      "annotation": "CAMEL's two role agents are preserved as an explicit branch.",
+      "metrics": {
+        "node_recall": 1.0,
+        "edge_recall": 1.0,
+        "evidence_coverage": 1.0
+      },
+      "actual_edge_types": {
+        "data_flow": 5
+      },
+      "expected_edge_types": {
+        "data_flow": 5
+      },
+      "edge_type_recall": {
+        "data_flow": 1.0
+      }
+    }
+  ],
+  "evaluation_mode": "complex gold regression; branch and loop syntax is manually annotated from cited paper behavior"
+}

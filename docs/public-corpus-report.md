@@ -24,6 +24,9 @@ mean_evidence_coverage: 1.0
 - [`evaluation.json`](../outputs/research/public_corpus/evaluation.json)：聚合指标；
 - [`cases.json`](../outputs/research/public_corpus/cases.json)：每个案例的期望链、实际 Spec 和指标；
 - 每个案例目录：Figure Contract、三个候选、Draw.io、SVG 和 PDF。
+- [`complex-gold-evaluation.json`](../outputs/research/complex-gold-evaluation.json)：6 个复杂结构案例的分支、循环和多智能体拓扑金标准回归结果。
+
+复杂结构回归覆盖 Self-RAG 循环检索、CRAG 双检索分支、TPS-Bench 并行/顺序调度、AutoGen 多智能体、ReAct 循环和 CAMEL 双角色协作。6 个案例的节点、边和证据覆盖率均为 1.0，且分支与循环边类型计数全部匹配人工标注。
 
 ## 下一步
 
