@@ -19,6 +19,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .chips span { background: #eef3fb; border-radius: 999px; padding: 6px 10px; font-size: 13px; }
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .candidate { padding: 18px; min-height: 170px; }
+.candidate.selected { border-color: #2563eb; box-shadow: 0 0 0 3px #2563eb22; }
 .candidate-head { display: flex; justify-content: space-between; align-items: center; }
 .candidate h3 { margin: 0; }
 .candidate img { width: 100%; margin-top: 12px; border: 1px solid #eef1f5; }
