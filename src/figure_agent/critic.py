@@ -30,6 +30,8 @@ def critique_spec(spec: dict[str, Any]) -> list[dict[str, str]]:
             add("duplicate_label", "warning", f"nodes {labels[label]} and {node.get('id')} share label: {node.get('label')}")
         elif label:
             labels[label] = str(node.get("id"))
+        if spec.get("schema_version") in {"0.2", "0.3"} and not node.get("evidence"):
+            add("missing_evidence", "error", f"node {node.get('id')} has no source evidence")
     node_ids = {node.get("id") for node in nodes if isinstance(node, dict)}
     for index, edge in enumerate(spec.get("edges", []) if isinstance(spec.get("edges", []), list) else []):
         if isinstance(edge, dict) and (edge.get("source") not in node_ids or edge.get("target") not in node_ids):

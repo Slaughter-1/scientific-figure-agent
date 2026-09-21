@@ -27,3 +27,16 @@ def test_refine_spec_fixes_only_safe_metadata_and_returns_valid_spec():
     assert refined["style"] == {}
     assert {"add_title", "add_style"} <= set(changes)
     assert not {finding["code"] for finding in critique_spec(refined)} & {"missing_style", "missing_title"}
+
+
+def test_critique_reports_nodes_without_evidence():
+    spec = {
+        "schema_version": "0.3", "figure_type": "workflow", "title": "Method",
+        "layout": {"direction": "left-to-right"}, "style": {},
+        "nodes": [{"id": "a", "label": "Unsupported module", "type": "process", "evidence": []}],
+        "edges": [], "groups": [],
+    }
+
+    findings = critique_spec(spec)
+
+    assert any(item["code"] == "missing_evidence" and "a" in item["message"] for item in findings)

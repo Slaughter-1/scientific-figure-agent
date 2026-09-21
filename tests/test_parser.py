@@ -72,3 +72,22 @@ def test_classifier_routes_common_figure_inputs():
     assert classify_figure("模块 A 连接模块 B，形成系统架构") == "architecture"
     assert classify_figure("输入 → Planner → Answer") == "workflow"
     assert classify_figure({"data": {"kind": "line"}, "figure_type": "plot"}) == "plot"
+
+
+def test_contract_marks_uncertain_modules_for_review():
+    from figure_agent.workflow import build_figure_contract
+
+    contract = build_figure_contract("输入文本，可能使用缓存模块，然后输出结果。")
+
+    assert "缓存模块" not in contract["required_labels"]
+    assert "缓存模块" in contract["optional_nodes"]
+    assert any(item["code"] == "uncertain_entity" for item in contract["needs_review"])
+
+
+def test_extract_evidence_returns_quote_and_location():
+    from figure_agent.workflow import extract_evidence
+
+    evidence = extract_evidence("第一段介绍检索器。\n第二段使用生成模型。", "检索器")
+
+    assert evidence[0]["quote"] == "第一段介绍检索器。"
+    assert evidence[0]["location"] == "paragraph_1"

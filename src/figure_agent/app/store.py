@@ -101,7 +101,19 @@ class TaskStore:
             raise KeyError(task_id)
         action_id = str(uuid.uuid4())
         with self._connect() as db:
-            db.execute("INSERT INTO review_actions VALUES (?, ?, ?, ?)", (action_id, task_id, json.dumps(action, ensure_ascii=False), _now()))
+            version_row = db.execute("SELECT COALESCE(MAX(version_number), 0) AS version FROM task_versions WHERE task_id = ?", (task_id,)).fetchone()
+        base_version = int(version_row["version"] if version_row else 0)
+        action = {**action, "base_version": action.get("base_version", base_version), "approved_by": action.get("approved_by", "user"), "created_at": action.get("created_at", _now())}
+        review_path = self.root / "tasks" / task_id / "reviews" / f"{action_id}.json"
+        review_path.write_text(json.dumps(action, ensure_ascii=False, indent=2), encoding="utf-8")
+        version_number = base_version + 1
+        version_id = str(uuid.uuid4())
+        version_path = self.root / "tasks" / task_id / "versions" / f"v{version_number:04d}-review-action.json"
+        version_path.write_text(json.dumps({"version": version_number, "action": action}, ensure_ascii=False, indent=2), encoding="utf-8")
+        payload = version_path.read_bytes()
+        with self._connect() as db:
+            db.execute("INSERT INTO review_actions VALUES (?, ?, ?, ?)", (action_id, task_id, json.dumps(action, ensure_ascii=False), action["created_at"]))
+            db.execute("INSERT INTO task_versions VALUES (?, ?, ?, ?, ?, ?, ?)", (version_id, task_id, version_number, "review_action", str(version_path), hashlib.sha256(payload).hexdigest(), action["created_at"]))
         return {"action_id": action_id, "task_id": task_id, "action": action}
 
     def register_artifact(self, task_id: str, path: str | Path, kind: str, *, editable: bool = False, license: str | None = None) -> dict[str, Any]:

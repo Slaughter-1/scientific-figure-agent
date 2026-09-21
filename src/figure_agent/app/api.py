@@ -146,7 +146,7 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
         files = []
         for path in task_root.rglob("*"):
             if path.is_file() and path.name != "request.json":
-                files.append({"path": str(path.relative_to(task_root)), "size_bytes": path.stat().st_size})
+                files.append({"path": path.relative_to(task_root).as_posix(), "size_bytes": path.stat().st_size})
         return {"task_id": task_id, "status": task["status"], "request": task["request"], "files": sorted(files, key=lambda item: item["path"])}
 
     @app.post("/api/tasks/{task_id}/export")

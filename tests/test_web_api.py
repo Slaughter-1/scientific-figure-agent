@@ -35,6 +35,19 @@ def test_local_api_records_status_and_review_action(tmp_path):
     assert action.json()["action"]["target"] == "retriever"
 
 
+def test_review_action_creates_a_task_version(tmp_path):
+    from figure_agent.app.api import create_app
+
+    client = TestClient(create_app(tmp_path))
+    task_id = client.post("/api/tasks", json=_request()).json()["task_id"]
+    action = client.post(f"/api/tasks/{task_id}/review-actions", json={"action": "mark_needs_evidence", "target": "retriever", "reason": "需补充原文引用"})
+
+    assert action.status_code == 200
+    assert action.json()["action"]["base_version"] == 0
+    versions = client.get(f"/api/tasks/{task_id}/manifest").json()["files"]
+    assert any(item["path"].startswith("versions/") for item in versions)
+
+
 def test_local_api_uploads_asset_and_registers_hash(tmp_path):
     from figure_agent.app.api import create_app
 
