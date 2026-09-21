@@ -66,6 +66,18 @@ The workflow parser also accepts explicit branch stages such as `Query → [Retr
 
 `push-figma` 会先生成本地 scene 和 `figma-manifest.json`。如果外部 Figma bridge 已返回连接结果，可以通过 `--connection connection.json` 回填 `file_or_frame`；当前真实 MCP smoke test 记录见 `outputs/research/public_corpus/self_rag/figma-handoff/figma-manifest.json`。
 
+本地 Web 原型需要安装 Web 依赖后分别启动 API 和前端：
+
+```powershell
+python -m pip install -e ".[web]"
+figure-agent-web --data-dir figure-agent-data
+cd frontend
+npm install
+npm run dev
+```
+
+浏览器打开 `http://127.0.0.1:5173`，可以创建论文段落任务、运行 Figure Contract、生成三个候选并查看候选状态。任务和输入默认保存在 `figure-agent-data/`，该目录不会提交到 Git。
+
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
 
 公开 LLM/Agent 论文评测集见 [`docs/public-corpus-report.md`](docs/public-corpus-report.md)，当前包含 20 个官方论文/仓库案例，另有 6 个复杂结构金标准案例，覆盖工具调用、RAG、Agent planning、网页代理、多智能体和可解释性。

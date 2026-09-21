@@ -11,9 +11,11 @@ dependencies = ["matplotlib>=3.10"]
 
 [project.optional-dependencies]
 test = ["pytest>=9.0"]
+web = ["fastapi>=0.115", "python-multipart>=0.0.9", "uvicorn>=0.30"]
 
 [project.scripts]
 figure-agent = "figure_agent.cli:main"
+figure-agent-web = "figure_agent.web:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

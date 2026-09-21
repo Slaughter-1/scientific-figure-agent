@@ -8,7 +8,7 @@ from typing import Any
 NODE_TYPES = {"model", "tool", "data", "process", "storage", "decision"}
 EDGE_TYPES = {"data_flow", "control_flow", "dependency"}
 FIGURE_TYPES = {"architecture", "workflow", "graph", "plot"}
-SCHEMA_VERSIONS = {"0.1", "0.2"}
+SCHEMA_VERSIONS = {"0.1", "0.2", "0.3"}
 DIRECTIONS = {"left-to-right", "top-to-bottom"}
 PLOT_KINDS = {"bar", "line", "heatmap", "scatter"}
 HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -21,7 +21,7 @@ def load_spec(path: str | Path) -> dict[str, Any]:
 def validate_spec(spec: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if spec.get("schema_version") not in SCHEMA_VERSIONS:
-        errors.append("schema_version must be '0.1' or '0.2'")
+        errors.append("schema_version must be '0.1', '0.2' or '0.3'")
     if spec.get("figure_type") not in FIGURE_TYPES:
         errors.append("figure_type is unsupported")
     layout = spec.get("layout", {})
@@ -35,6 +35,16 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
     for field_name in ("template_refs", "asset_refs", "review_notes"):
         if field_name in spec and not isinstance(spec[field_name], list):
             errors.append(f"{field_name} must be an array")
+    if spec.get("schema_version") == "0.3":
+        for field_name in ("request_id", "task_id", "candidate_id"):
+            if field_name in spec and not isinstance(spec[field_name], str):
+                errors.append(f"{field_name} must be a string")
+        for field_name in ("evidence", "panel", "needs_review"):
+            if field_name in spec and not isinstance(spec[field_name], list):
+                errors.append(f"{field_name} must be an array")
+        confidence = spec.get("semantic_confidence")
+        if confidence is not None and (not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1):
+            errors.append("semantic_confidence must be between 0 and 1")
     nodes = spec.get("nodes")
     edges = spec.get("edges")
     if not isinstance(nodes, list) or not isinstance(edges, list):
@@ -52,6 +62,11 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
             errors.append(f"nodes[{index}].type is unsupported")
         if not isinstance(node.get("label"), str) or not node["label"].strip():
             errors.append(f"nodes[{index}].label is required")
+        if spec.get("schema_version") == "0.3":
+            if "evidence" in node and not isinstance(node["evidence"], list):
+                errors.append(f"nodes[{index}].evidence must be an array")
+            if "locked" in node and not isinstance(node["locked"], bool):
+                errors.append(f"nodes[{index}].locked must be boolean")
     for index, edge in enumerate(edges):
         if edge.get("type") not in EDGE_TYPES:
             errors.append(f"edges[{index}].type is unsupported")
