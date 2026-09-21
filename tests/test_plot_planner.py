@@ -71,3 +71,15 @@ def test_build_plot_spec_supports_multiple_y_columns():
     assert [item["name"] for item in spec["data"]["series"]] == ["accuracy", "recall"]
     assert spec["data"]["series"][1]["y"] == [0.60, 0.79]
     assert spec["data"]["source_columns"] == ["method", "accuracy", "recall"]
+
+
+def test_build_plot_spec_records_labels_and_significance():
+    from figure_agent.plot_planner import build_plot_spec
+
+    table = {"columns": ["method", "accuracy", "sig"], "rows": [
+        {"method": "Baseline", "accuracy": "0.71", "sig": ""},
+        {"method": "Ours", "accuracy": "0.83", "sig": "**"},
+    ]}
+    spec = build_plot_spec(table, kind="bar", x_column="method", y_column="accuracy", significance_column="sig", y_label="Accuracy (%)")
+    assert spec["data"]["significance"] == ["", "**"]
+    assert spec["data"]["y_label"] == "Accuracy (%)"

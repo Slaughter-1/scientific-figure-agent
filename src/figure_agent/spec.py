@@ -117,6 +117,9 @@ def validate_spec(spec: dict[str, Any]) -> list[str]:
                         series_error = item.get("y_error")
                         if series_error is not None and (not isinstance(series_error, list) or len(series_error) != len(item["y"])):
                             errors.append(f"plot data.series[{index}].y_error must match series length")
+            significance = data.get("significance")
+            if significance is not None and (not isinstance(significance, list) or len(significance) != len(x_values or [])):
+                errors.append("plot data.significance and data.x must have equal lengths")
     colors = spec.get("style", {}).get("colors", {}) if isinstance(spec.get("style"), dict) else {}
     for name, color in colors.items():
         if not isinstance(color, str) or not HEX_COLOR.fullmatch(color):

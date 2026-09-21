@@ -82,6 +82,12 @@ def render_plot_spec(spec: dict[str, Any], output_dir: str | Path, stem: str = "
         raise ValueError(f"unsupported plot kind: {kind}")
     ax.set_xlabel(data.get("x_label", ""))
     ax.set_ylabel(data.get("y_label", ""))
+    significance = data.get("significance")
+    if significance and kind in {"bar", "line", "scatter"}:
+        values = data.get("y", [])
+        for x_value, y_value, marker in zip(data.get("x", []), values, significance):
+            if marker:
+                ax.annotate(marker, (x_value, y_value), xytext=(0, 5), textcoords="offset points", ha="center", fontsize=9)
     if spec.get("title"):
         ax.set_title(spec["title"])
     ax.grid(axis="y", color="#E2E8F0", linewidth=0.7)

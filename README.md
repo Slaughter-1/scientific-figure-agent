@@ -52,6 +52,8 @@ figure-agent plot --input results.csv --kind bar --x method --y accuracy --outpu
 figure-agent plot --input results.csv --kind bar --x method --y accuracy --y-error std --output-dir outputs/plot
 # Multiple numeric columns become a grouped/multi-line plot
 figure-agent plot --input results.csv --kind line --x method --y accuracy,recall --output-dir outputs/plot
+# Labels and significance markers can be read from CSV columns
+figure-agent plot --input results.csv --kind bar --x method --y accuracy --y-label "Accuracy (%)" --significance p_marker --output-dir outputs/plot
 figure-agent package --spec outputs/generated/candidate_01/figure-spec.json --output-dir outputs/components
 figure-agent assemble --spec figure.json --assets assets --output outputs/assembled.json
 figure-agent inspect --artifact outputs/generated/candidate_01/figure.svg

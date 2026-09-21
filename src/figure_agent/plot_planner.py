@@ -21,6 +21,8 @@ def build_plot_spec(
     table: dict[str, Any], *, kind: str, x_column: str | None = None,
     y_column: str | None = None, matrix_columns: list[str] | None = None,
     title: str | None = None, y_error_column: str | None = None,
+    significance_column: str | None = None, x_label: str | None = None,
+    y_label: str | None = None,
 ) -> dict[str, Any]:
     if kind not in _KINDS:
         raise ValueError(f"unsupported plot kind: {kind}")
@@ -46,12 +48,12 @@ def build_plot_spec(
         error_columns = [item.strip() for item in y_error_column.split(",") if item.strip()] if y_error_column else []
         if error_columns and len(error_columns) not in {1, len(y_columns)}:
             raise ValueError("y_error_column must contain one column or one column per y series")
-        requested = [x_column, *y_columns, *error_columns]
+        requested = [x_column, *y_columns, *error_columns] + ([significance_column] if significance_column else [])
         missing = [column for column in requested if column not in columns]
         if missing:
             raise ValueError(f"missing table columns: {', '.join(missing)}")
         x = [row.get(x_column) for row in rows]
-        source_columns = [x_column, *y_columns, *error_columns]
+        source_columns = [x_column, *y_columns, *error_columns] + ([significance_column] if significance_column else [])
         series = []
         for index, column in enumerate(y_columns):
             item = {"name": column, "y": [_number(row.get(column), column, row_number) for row_number, row in enumerate(rows, 1)], "source_column": column}
@@ -65,6 +67,12 @@ def build_plot_spec(
             data["series"] = series
         elif error_columns:
             data["y_error"] = series[0]["y_error"]
+        if significance_column:
+            data["significance"] = [str(row.get(significance_column) or "") for row in rows]
+        if x_label:
+            data["x_label"] = x_label
+        if y_label:
+            data["y_label"] = y_label
     spec = {
         "schema_version": "0.1", "figure_type": "plot", "title": title or "Generated Plot",
         "layout": {"direction": "left-to-right", "spacing": 24}, "nodes": [], "edges": [], "groups": [],
