@@ -25,3 +25,16 @@ def test_critique_svg_reports_missing_dimensions(tmp_path):
     path.write_text('<svg><text>tiny</text></svg>', encoding="utf-8")
     findings = critique_artifact(path)
     assert any(item["code"] == "missing_dimensions" for item in findings)
+
+
+def test_critique_candidate_set_detects_duplicate_visual_fingerprint():
+    from figure_agent.visual_critic import critique_candidate_set
+
+    candidates = [
+        {"candidate_id": "candidate_01", "preview_fingerprint": {"node_positions": {"a": [1, 1]}, "edge_routes": [], "style_variant": "editorial"}},
+        {"candidate_id": "candidate_02", "preview_fingerprint": {"node_positions": {"a": [1, 1]}, "edge_routes": [], "style_variant": "editorial"}},
+    ]
+
+    findings = critique_candidate_set(candidates)
+
+    assert any(item["code"] == "candidate_similarity" for item in findings)

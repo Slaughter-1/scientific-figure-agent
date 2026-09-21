@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -50,3 +51,16 @@ def critique_artifact(path: str | Path) -> list[dict[str, str]]:
         except (OSError, ValueError):
             return [_finding("invalid_json", "error", "JSON artifact cannot be parsed")]
     return []
+
+
+def critique_candidate_set(candidates: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """Detect candidates that are visually identical despite different IDs."""
+    findings: list[dict[str, str]] = []
+    fingerprints: dict[str, str] = {}
+    for candidate in candidates:
+        fingerprint = json.dumps(candidate.get("preview_fingerprint", {}), ensure_ascii=False, sort_keys=True)
+        if fingerprint in fingerprints:
+            findings.append(_finding("candidate_similarity", "warning", f"{candidate.get('candidate_id')} is visually identical to {fingerprints[fingerprint]}"))
+        else:
+            fingerprints[fingerprint] = str(candidate.get("candidate_id", "unknown"))
+    return findings
