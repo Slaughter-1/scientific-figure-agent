@@ -76,10 +76,24 @@ npm install
 npm run dev
 ```
 
+如果使用 API 内置的本地页面，先构建前端再启动服务：
+
+```powershell
+cd frontend
+npm install
+npm run build
+cd ..
+figure-agent-web --data-dir figure-agent-data
+```
+
+中文字体优先使用 `Noto Sans SC`，Windows 会回退到 `Microsoft YaHei`、`SimHei` 和 `Arial`。更新前端或 Python 代码后需要重启 `figure-agent-web`，浏览器使用 `Ctrl+Shift+R` 强制刷新。候选页面会显示 editorial、swimlane、loop 或 hierarchy 设计族、证据引用、评分和 SVG/PDF/Draw.io 下载链接；预览加载失败时仍保留源文件下载入口。
+
 浏览器打开 `http://127.0.0.1:5173`，可以创建论文段落任务、运行 Figure Contract、生成三个候选并查看候选状态。任务和输入默认保存在 `figure-agent-data/`，该目录不会提交到 Git。
 
 API 也支持候选选择和图包导出：`POST /api/tasks/{task_id}/select-candidate`、`POST /api/tasks/{task_id}/export`。导出 ZIP 会包含候选 Figure Spec、Draw.io、SVG/PDF/PNG（按后端实际生成结果）、任务 manifest 和审阅记录。
 
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
+
+当前视觉产品阶段的实现和验收记录见 [`docs/visual-product-report.md`](docs/visual-product-report.md)。
 
 公开 LLM/Agent 论文评测集见 [`docs/public-corpus-report.md`](docs/public-corpus-report.md)，当前包含 20 个官方论文/仓库案例，另有 6 个复杂结构金标准案例，覆盖工具调用、RAG、Agent planning、网页代理、多智能体和可解释性。
