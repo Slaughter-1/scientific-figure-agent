@@ -42,3 +42,18 @@ def build_figma_handoff(
         result.update(connection)
     (output_dir / "figma-manifest.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     return result
+
+
+def push_candidate_to_figma(task_id: str, candidate_id: str, spec_path: str | Path, output_dir: str | Path, transport: Any = None) -> dict[str, Any]:
+    """Push one selected candidate through the injected Figma transport."""
+    result = build_figma_handoff(spec_path, output_dir)
+    result.update({"task_id": task_id, "candidate_id": candidate_id})
+    if transport is None:
+        return result
+    from .backends.figma_backend import render_figma_spec
+
+    spec = load_spec(spec_path)
+    remote = render_figma_spec(spec, output_dir, transport)
+    result.update(remote)
+    (Path(output_dir) / "figma-manifest.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    return result

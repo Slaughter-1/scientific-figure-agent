@@ -36,3 +36,15 @@ def test_build_figma_handoff_accepts_connected_identity(tmp_path):
     )
     assert result["status"] == "connected"
     assert result["file_or_frame"].endswith("example")
+
+
+def test_push_candidate_to_figma_preserves_scene_when_transport_unavailable(tmp_path):
+    from figure_agent.figma_handoff import push_candidate_to_figma
+
+    spec_path = tmp_path / "figure-spec.json"
+    spec_path.write_text(json.dumps(_spec()), encoding="utf-8")
+    result = push_candidate_to_figma("task-1", "candidate_01", spec_path, tmp_path / "out", transport=None)
+
+    assert result["status"] == "unavailable"
+    assert result["candidate_id"] == "candidate_01"
+    assert result["scene"]

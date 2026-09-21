@@ -39,3 +39,21 @@ def test_evaluate_case_resolves_edges_through_node_labels():
     }
     result = evaluate_case({"nodes": ["A", "B"], "edges": [["A", "B"]]}, actual)
     assert result["edge_recall"] == 1.0
+
+
+def test_evaluate_cases_reports_branch_and_cycle_metrics():
+    from figure_agent.evaluation import evaluate_cases
+
+    result = evaluate_cases([{"expected": {"nodes": ["A", "B"], "edges": [["A", "B"], ["B", "A"]], "cycles": 1, "branches": 0}, "actual": {"nodes": [{"label": "A"}, {"label": "B"}], "edges": [{"source": "A", "target": "B"}, {"source": "B", "target": "A"}]}}])
+
+    assert result["mean_cycle_recall"] == 1.0
+    assert result["mean_branch_recall"] == 1.0
+
+
+def test_build_evaluation_report_writes_json(tmp_path):
+    from figure_agent.evaluation import build_evaluation_report
+
+    output = build_evaluation_report([{"case_id": "demo", "node_recall": 1.0}], tmp_path / "evaluation.json")
+
+    assert output.exists()
+    assert "demo" in output.read_text(encoding="utf-8")
