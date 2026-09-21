@@ -6,25 +6,25 @@ from typing import Any
 TEMPLATE_RECORDS: list[dict[str, Any]] = [
     {
         "id": "drawio_official_architecture", "source_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/",
-        "source_type": "drawio_official", "license": "verified", "editable": True,
+        "source_type": "drawio_official", "license": "verified", "license_evidence_url": "https://www.drawio.com/docs/manual/templates/template-diagrams/", "approval_status": "verified", "editable": True,
         "supported_types": ["architecture", "workflow", "graph"], "style_tags": ["academic_clean", "left_to_right"],
         "components": ["module_box", "group_frame", "arrow"], "preview_url": None, "download_url": None, "restrictions": [],
     },
     {
         "id": "mermaid_official_architecture", "source_url": "https://mermaid.js.org/syntax/architecture",
-        "source_type": "mermaid_official", "license": "verified", "editable": True,
+        "source_type": "mermaid_official", "license": "verified", "license_evidence_url": "https://mermaid.js.org/syntax/architecture", "approval_status": "verified", "editable": True,
         "supported_types": ["architecture", "workflow"], "style_tags": ["academic_clean", "text_first"],
         "components": ["service", "group", "edge"], "preview_url": None, "download_url": None, "restrictions": [],
     },
     {
         "id": "scientific_figure_agent_academic_clean", "source_url": "https://github.com/Slaughter-1/scientific-figure-agent",
-        "source_type": "project_builtin", "license": "project_owned", "editable": True,
+        "source_type": "project_builtin", "license": "project_owned", "license_evidence_url": "https://github.com/Slaughter-1/scientific-figure-agent", "approval_status": "verified", "editable": True,
         "supported_types": ["architecture", "workflow", "graph", "plot"], "style_tags": ["academic_clean", "paper"],
         "components": ["module_box", "group_frame", "arrow", "plot_panel"], "preview_url": None, "download_url": None, "restrictions": [],
     },
     {
         "id": "figma_community_flowchart", "source_url": "https://www.figma.com/templates/",
-        "source_type": "figma_community", "license": "review_required", "editable": True,
+        "source_type": "figma_community", "license": "review_required", "license_evidence_url": "https://www.figma.com/templates/", "approval_status": "review_required", "editable": True,
         "supported_types": ["workflow", "architecture"], "style_tags": ["flowchart", "community"],
         "components": ["frame", "text", "connector"], "preview_url": None, "download_url": None,
         "restrictions": ["Verify the individual community file license before publication."],

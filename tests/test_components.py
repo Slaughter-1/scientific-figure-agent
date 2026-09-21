@@ -39,3 +39,13 @@ def test_attach_assets_maps_user_assets_to_spec_nodes(tmp_path):
     attached = attach_assets_to_spec(spec, {"retriever": asset})
     assert attached["nodes"][0]["asset_refs"] == [asset["asset_id"]]
     assert attached["asset_refs"][0]["asset_id"] == asset["asset_id"]
+
+
+def test_component_request_contains_mapping_and_acceptance_rules():
+    from figure_agent.components import build_component_request
+
+    request = build_component_request({"nodes": [{"id": "retriever", "label": "Retriever", "type": "tool"}]}, ["retriever"])
+
+    assert request["components"][0]["component_id"] == "retriever"
+    assert request["components"][0]["acceptance_rules"]
+    assert request["components"][0]["prompt"]

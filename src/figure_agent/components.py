@@ -58,7 +58,19 @@ def build_component_package(spec: dict[str, Any], output_dir: str | Path) -> dic
     return {"manifest": str(manifest_path), "prompts": str(prompts_path)}
 
 
-def register_asset(path: str | Path, *, source: str = "user_upload", license_status: str = "unknown") -> dict[str, Any]:
+def build_component_request(spec: dict[str, Any], missing_roles: list[str]) -> dict[str, Any]:
+    """Build an auditable handoff package when a template lacks a visual role."""
+    colors = spec.get("style", {}).get("colors", {})
+    components = []
+    for node in spec.get("nodes", []):
+        if node.get("id") not in missing_roles and node.get("type") not in missing_roles:
+            continue
+        role = node.get("type", "process")
+        components.append({"component_id": node["id"], "role": role, "required_elements": _ELEMENTS.get(role, ["clean module shape"]), "layout": {"width": 320, "height": 180, "padding": 24}, "style": {"background": colors.get(role, "#F8FAFC"), "stroke": "#64748B", "font": "Noto Sans SC"}, "text": [node.get("label", "")], "prompt": _prompt(node, colors.get(role, "#F8FAFC")), "acceptance_rules": ["transparent background", "editable vector source", "no extra labels or modules", "canvas must be 320 x 180 px"]})
+    return {"schema_version": "0.1", "components": components, "composition_order": [item["component_id"] for item in components], "source_node_mapping": {item["component_id"]: item["component_id"] for item in components}}
+
+
+def register_asset(path: str | Path, *, source: str = "user_upload", license_status: str = "unknown", license: str | None = None) -> dict[str, Any]:
     path = Path(path)
     if not path.exists() or not path.is_file():
         raise ValueError(f"asset does not exist: {path}")
@@ -75,7 +87,7 @@ def register_asset(path: str | Path, *, source: str = "user_upload", license_sta
         height = float(height_match.group(1)) if height_match else None
     return {
         "asset_id": digest[:16], "path": str(path), "format": fmt, "sha256": digest,
-        "source": source, "license": license_status, "editable": fmt in {"svg", "drawio", "json"},
+        "source": source, "license": license if license is not None else license_status, "editable": fmt in {"svg", "drawio", "json"},
         "width": int(width) if width is not None and width.is_integer() else width,
         "height": int(height) if height is not None and height.is_integer() else height,
     }

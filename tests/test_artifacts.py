@@ -18,3 +18,11 @@ def test_render_backends_reports_unknown_backend_without_crashing(tmp_path):
     result = render_backends({}, ["unknown"], tmp_path)
     assert result["unknown"]["status"] == "error"
     assert "unknown backend" in result["unknown"]["error"]
+
+
+def test_export_license_blocks_review_required_resources():
+    from figure_agent.license import check_export_license
+
+    findings = check_export_license({"template_refs": [{"id": "community", "approval_status": "review_required"}], "asset_refs": []})
+
+    assert findings[0]["code"] == "license_review_required"
