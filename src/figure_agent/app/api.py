@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import mimetypes
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,10 @@ from ..request import FigureRequest
 from ..templates import search_templates
 from ..workflow import build_figure_contract, generate_from_text
 from .store import TaskStore
+
+
+mimetypes.add_type("application/javascript", ".js")
+mimetypes.add_type("text/css", ".css")
 
 
 def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
