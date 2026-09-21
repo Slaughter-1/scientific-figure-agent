@@ -25,8 +25,8 @@
 
 ## 验收结果
 
-当前回归套件共 **70 个测试通过**。`generate`、`plot`、`package`、`assemble`、`inspect` 和 `analyze` 均有 CLI 覆盖。
+当前回归套件共 **92 个测试通过**。除既有 CLI 外，已增加 Spec 0.3 迁移、SQLite 任务仓储、FastAPI 本地 API、候选导出 ZIP、LLM Provider 协议和 React/Vite 前端构建验证。
 
 ## 边界与后续工作
 
-真实 Figma 文件写入仍取决于运行环境是否提供实际 MCP transport；核心代码只依赖 `FigmaTransport` 协议，因此未连接时不会阻断本地 Draw.io、SVG、PDF、PNG 和 scene 输出。模板检索目前是可审计的本地注册表，后续可在不改变核心协议的前提下接入网络搜索适配器，并将下载时间、许可证证据和用户确认写入 manifest。M15 的案例文件仍需补充真实论文样本后运行规模化评测。
+当前 P0/P1 已完成本地任务目录、SQLite 持久化、论文分析、候选生成、候选选择和图包导出。真实 Figma 文件写入仍取决于运行环境是否提供实际 MCP transport；模板检索仍是可审计的本地注册表；LLM Provider 已提供协议、Mock、Unavailable 和 OpenAI-compatible 实现，但默认仍使用规则解析器。下一阶段接入 LLM 语义规划、官方模板网络适配器、完整审阅操作和视觉自动精修。
