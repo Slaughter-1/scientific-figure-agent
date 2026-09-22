@@ -199,6 +199,23 @@ def test_swimlane_forward_edges_do_not_reverse_overlap():
             for b in horizontal(right)
         )
 
+    def vertical(route):
+        return [
+            (min(a[1], b[1]), max(a[1], b[1]), a[0], a[1] < b[1])
+            for a, b in zip(route, route[1:])
+            if abs(a[0] - b[0]) < 1e-8 and abs(a[1] - b[1]) > 1e-8
+        ]
+
+    def reverse_vertical_overlap(left, right):
+        return any(
+            a[2] == b[2]
+            and a[3] != b[3]
+            and min(a[1], b[1]) - max(a[0], b[0]) > 1e-8
+            for a in vertical(left)
+            for b in vertical(right)
+        )
+
     assert not any(reverse_overlap(left, right) for index, left in enumerate(routes) for right in routes[index + 1:])
+    assert not any(reverse_vertical_overlap(left, right) for index, left in enumerate(routes) for right in routes[index + 1:])
     from figure_agent.visual_critic import critique_spec_geometry
     assert "edge_reverse_overlap" not in {item["code"] for item in critique_spec_geometry(spec)}

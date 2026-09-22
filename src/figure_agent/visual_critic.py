@@ -50,6 +50,11 @@ def critique_spec_geometry(spec: dict[str, Any]) -> list[dict[str, str]]:
             if abs(start[1] - end[1]) < 1e-8 and abs(start[0] - end[0]) > 1e-8:
                 yield min(start[0], end[0]), max(start[0], end[0]), start[1], start[0] < end[0]
 
+    def vertical_segments(route):
+        for start, end in zip(route, route[1:]):
+            if abs(start[0] - end[0]) < 1e-8 and abs(start[1] - end[1]) > 1e-8:
+                yield min(start[1], end[1]), max(start[1], end[1]), start[0], start[1] < end[1]
+
     for index, left_route in enumerate(routes):
         for right_route in routes[index + 1:]:
             if any(
@@ -58,8 +63,14 @@ def critique_spec_geometry(spec: dict[str, Any]) -> list[dict[str, str]]:
                 and min(left[1], right[1]) - max(left[0], right[0]) > 1e-8
                 for left in horizontal_segments(left_route)
                 for right in horizontal_segments(right_route)
+            ) or any(
+                left[2] == right[2]
+                and left[3] != right[3]
+                and min(left[1], right[1]) - max(left[0], right[0]) > 1e-8
+                for left in vertical_segments(left_route)
+                for right in vertical_segments(right_route)
             ):
-                findings.append(_finding("edge_reverse_overlap", "error", "two edge routes share a horizontal segment in opposite directions"))
+                findings.append(_finding("edge_reverse_overlap", "error", "two edge routes share a horizontal or vertical segment in opposite directions"))
     return findings
 
 

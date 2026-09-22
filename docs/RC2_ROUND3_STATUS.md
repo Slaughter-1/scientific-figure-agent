@@ -96,14 +96,14 @@ vite build succeeded
 根据最新技术审查，本轮只处理两个明确缺口：
 
 - 导出前比较任务根目录 `figure-contract.json` 与确认修订 Spec 的内嵌 Contract；ZIP 重读进一步核对 Contract 内容、request/source 摘要、Spec source、候选指针、候选修订、selected binding 和 evidence manifest。
-- swimlane 路由在发现不同边反向占用同一水平线段时，尝试使用图外通道；几何 Critic 新增 `edge_reverse_overlap` 错误项。`candidate_02` 的 `node_0→node_2` 与 `node_2→node_3` 已分离，五条语义关系保持不变。
+- swimlane 路由在发现不同边反向占用同一水平或垂直线段时，尝试使用图外通道和目标侧端口；几何 Critic 的 `edge_reverse_overlap` 同时检查两个方向。`candidate_02` 的 `node_0→node_2`、`node_2→node_3` 以及 `node_1→node_3` 与反馈边均已分离，五条语义关系保持不变。
 
 新增回归覆盖：
 
 ```text
 根 Contract 与确认 Spec 不一致 -> 导出 409
 evidence 旧 revision / 错误 source 摘要 -> verify_package 拒绝
-三个布局候选 -> 无 edge_reverse_overlap
+三个布局候选 -> 无水平或垂直 edge_reverse_overlap
 ```
 
 本轮验证：

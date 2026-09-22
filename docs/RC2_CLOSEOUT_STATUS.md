@@ -5,7 +5,7 @@
 ## 本轮结果
 
 - 语义边界回归：并列模态不生成数据流；否定并行进入待审；模糊分支尾部不生成孤立节点；Critic 识别裸“返回目标”反馈。
-- 反馈边在 pipeline 布局使用独立外部通道；swimlane 路由也会检测并分离反向共线的正向边。
+- 反馈边在 pipeline 布局使用独立外部通道；swimlane 路由会检测并分离反向共线的正向边，覆盖水平和垂直通道。
 - 导出前会比较任务根目录 Contract 与已确认修订 Spec 内嵌 Contract；ZIP 重读会交叉验证 Contract、request/source、candidate pointer、revision、selected binding 和 evidence manifest。
 - `python -m pytest -q`：205 passed, 22 warnings。
 - `cd frontend; npm run build`：成功。
@@ -21,6 +21,6 @@
 
 ## 本轮收尾边界
 
-- `candidate_02` 的 `node_0→node_2` 与 `node_2→node_3` 不再反向共线；新增 `edge_reverse_overlap` 几何错误检查，防止未来回归。
+- `candidate_02` 的 `node_0→node_2`、`node_2→node_3` 以及 `node_1→node_3` 与反馈边不再反向共线；`edge_reverse_overlap` 同时检查水平和垂直通道，防止未来回归。
 - 根 Contract、request/source、候选指针、修订身份和 ZIP 内 evidence 选择绑定必须相互一致；故障注入测试会拒绝旧修订号和错误输入摘要。
 - 204 项 Python 回归和 fresh API 三候选 smoke 已执行；真实远程 Figma 写入、独立人工 holdout、外部素材许可证审计仍是单独发布门槛。

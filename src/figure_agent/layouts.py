@@ -75,35 +75,65 @@ def layout_edges(spec: dict[str, Any], positions: dict[str, tuple[float, float]]
     pipeline_feedback_count = 0
     indexes = _node_index(spec)
 
-    def reverse_horizontal_overlap(left_route, right_route):
-        def segments(route):
+    def reverse_route_overlap(left_route, right_route):
+        def horizontal_segments(route):
             for start, end in zip(route, route[1:]):
                 if abs(start[1] - end[1]) < 1e-8 and abs(start[0] - end[0]) > 1e-8:
                     yield min(start[0], end[0]), max(start[0], end[0]), start[1], start[0] < end[0]
 
-        return any(
+        def vertical_segments(route):
+            for start, end in zip(route, route[1:]):
+                if abs(start[0] - end[0]) < 1e-8 and abs(start[1] - end[1]) > 1e-8:
+                    yield min(start[1], end[1]), max(start[1], end[1]), start[0], start[1] < end[1]
+
+        horizontal_conflict = any(
             left[2] == right[2]
             and left[3] != right[3]
             and min(left[1], right[1]) - max(left[0], right[0]) > 1e-8
-            for left in segments(left_route)
-            for right in segments(right_route)
+            for left in horizontal_segments(left_route)
+            for right in horizontal_segments(right_route)
         )
+        vertical_conflict = any(
+            left[2] == right[2]
+            and left[3] != right[3]
+            and min(left[1], right[1]) - max(left[0], right[0]) > 1e-8
+            for left in vertical_segments(left_route)
+            for right in vertical_segments(right_route)
+        )
+        return horizontal_conflict or vertical_conflict
 
     def add_route(route, source, target):
         """Append a route, detouring a later edge when it reverses a lane."""
-        if any(reverse_horizontal_overlap(route, previous) for previous in routes):
+        if any(reverse_route_overlap(route, previous) for previous in routes):
             left = min(box[0] for box in boxes) - clearance
             right = max(box[2] for box in boxes) + clearance
-            top = max(box[3] for box in boxes) + clearance
-            bottom = min(box[1] for box in boxes) - clearance
-            alternatives = [
+            route_points = [point for previous in routes for point in previous]
+            top = max([box[3] for box in boxes] + [point[1] for point in route_points]) + clearance + 0.22
+            bottom = min([box[1] for box in boxes] + [point[1] for point in route_points]) - clearance - 0.22
+            alternatives = []
+            if source[1] < target[1]:
+                alternatives.extend([
+                    [(source[0], source[1] - height / 2), (source[0], bottom), (target[0] - width / 2, bottom), (target[0] - width / 2, target[1])],
+                    [(source[0], source[1] - height / 2), (source[0], bottom), (target[0] + width / 2, bottom), (target[0] + width / 2, target[1])],
+                ])
+            elif source[1] > target[1]:
+                alternatives.extend([
+                    [(source[0], source[1] + height / 2), (source[0], top), (target[0] - width / 2, top), (target[0] - width / 2, target[1])],
+                    [(source[0], source[1] + height / 2), (source[0], top), (target[0] + width / 2, top), (target[0] + width / 2, target[1])],
+                ])
+            else:
+                alternatives.extend([
+                    [(source[0], source[1] + height / 2), (source[0], top), (target[0] - width / 2, top), (target[0] - width / 2, target[1])],
+                    [(source[0], source[1] + height / 2), (source[0], top), (target[0] + width / 2, top), (target[0] + width / 2, target[1])],
+                ])
+            alternatives.extend([
                 [(source[0] + width / 2, source[1]), (right, source[1]), (right, target[1]), (target[0] + width / 2, target[1])],
                 [(source[0] - width / 2, source[1]), (left, source[1]), (left, target[1]), (target[0] - width / 2, target[1])],
                 [(source[0], source[1] + height / 2), (source[0], top), (target[0], top), (target[0], target[1] + height / 2)],
                 [(source[0], source[1] - height / 2), (source[0], bottom), (target[0], bottom), (target[0], target[1] - height / 2)],
-            ]
+            ])
             for alternative in alternatives:
-                if all(clear(start, end) for start, end in zip(alternative, alternative[1:])) and not any(reverse_horizontal_overlap(alternative, previous) for previous in routes):
+                if all(clear(start, end) for start, end in zip(alternative, alternative[1:])) and not any(reverse_route_overlap(alternative, previous) for previous in routes):
                     route = alternative
                     break
         routes.append(route)
