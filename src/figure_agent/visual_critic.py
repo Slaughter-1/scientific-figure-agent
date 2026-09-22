@@ -6,6 +6,63 @@ from pathlib import Path
 from typing import Any
 
 
+def _segment_crosses_box(start: tuple[float, float], end: tuple[float, float], box: tuple[float, float, float, float]) -> bool:
+    """Return whether an orthogonal segment enters the strict interior of a box."""
+    x1, y1 = start
+    x2, y2 = end
+    left, bottom, right, top = box
+    if abs(x1 - x2) < 1e-9:
+        return left < x1 < right and max(min(y1, y2), bottom) < min(max(y1, y2), top)
+    if abs(y1 - y2) < 1e-9:
+        return bottom < y1 < top and max(min(x1, x2), left) < min(max(x1, x2), right)
+    return False
+
+
+def critique_spec_geometry(spec: dict[str, Any]) -> list[dict[str, str]]:
+    """Check deterministic routes before rendering so clipping and crossings are caught."""
+    from .layouts import layout_edges, layout_nodes, node_size
+    from .visual_styles import get_visual_style
+
+    nodes = spec.get("nodes", [])
+    if not nodes or not spec.get("edges"):
+        return []
+    family = get_visual_style(spec.get("style", {}).get("variant", "editorial")).get("layout_family", "pipeline")
+    positions = layout_nodes(spec, family=family)
+    routes = layout_edges(spec, positions, family=family)
+    width, height = node_size(spec)
+    boxes = {
+        node["id"]: (positions[node["id"]][0] - width / 2, positions[node["id"]][1] - height / 2,
+                     positions[node["id"]][0] + width / 2, positions[node["id"]][1] + height / 2)
+        for node in nodes
+    }
+    findings: list[dict[str, str]] = []
+    for edge, route in zip(spec.get("edges", []), routes):
+        if any(abs(a - b) < 1e-9 and abs(c - d) < 1e-9 for (a, c), (b, d) in zip(route, route[1:])):
+            findings.append(_finding("degenerate_route", "warning", f"edge {edge.get('source')}->{edge.get('target')} contains a zero-length segment"))
+        for node_id, box in boxes.items():
+            if node_id in {edge.get("source"), edge.get("target")}:
+                continue
+            if any(_segment_crosses_box(start, end, box) for start, end in zip(route, route[1:])):
+                findings.append(_finding("edge_crosses_node", "error", f"edge {edge.get('source')}->{edge.get('target')} crosses node {node_id}"))
+                break
+    def horizontal_segments(route):
+        for start, end in zip(route, route[1:]):
+            if abs(start[1] - end[1]) < 1e-8 and abs(start[0] - end[0]) > 1e-8:
+                yield min(start[0], end[0]), max(start[0], end[0]), start[1], start[0] < end[0]
+
+    for index, left_route in enumerate(routes):
+        for right_route in routes[index + 1:]:
+            if any(
+                left[2] == right[2]
+                and left[3] != right[3]
+                and min(left[1], right[1]) - max(left[0], right[0]) > 1e-8
+                for left in horizontal_segments(left_route)
+                for right in horizontal_segments(right_route)
+            ):
+                findings.append(_finding("edge_reverse_overlap", "error", "two edge routes share a horizontal segment in opposite directions"))
+    return findings
+
+
 def _finding(code: str, severity: str, message: str) -> dict[str, str]:
     return {"code": code, "severity": severity, "message": message}
 
@@ -41,6 +98,8 @@ def critique_artifact(path: str | Path) -> list[dict[str, str]]:
         texts = list(root.iter("text"))
         if not texts:
             findings.append(_finding("missing_text", "warning", "SVG contains no text labels"))
+        if root.get("viewBox") is None:
+            findings.append(_finding("missing_viewbox", "warning", "SVG has no viewBox for reliable downstream scaling"))
         return findings
     if path.suffix.lower() == ".json":
         try:

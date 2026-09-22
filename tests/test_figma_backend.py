@@ -29,6 +29,23 @@ def test_compile_figma_scene_has_editable_nodes_and_stable_source_ids():
     assert {"query", "planner"} <= set(source_ids)
 
 
+def test_compile_figma_scene_uses_canonical_node_geometry():
+    from figure_agent.backends.figma_backend import compile_figma_scene
+
+    spec = _workflow_spec()
+    spec["style"]["node"] = {"width": 180, "height": 72}
+    scene = compile_figma_scene(spec)
+    rectangles = [node for node in scene["nodes"] if node["kind"] == "RECTANGLE"]
+    assert {(node["width"], node["height"]) for node in rectangles} == {(180, 72)}
+    labels = [node for node in scene["nodes"] if node["kind"] == "TEXT"]
+    assert {(node["width"], node["height"]) for node in labels} == {(156, 28)}
+    line = next(node for node in scene["nodes"] if node["kind"] == "LINE")
+    source = next(node for node in rectangles if node["source_id"] == line["source"])
+    target = next(node for node in rectangles if node["source_id"] == line["target"])
+    assert line["start"] == [source["x"] + 180, source["y"] + 36]
+    assert line["end"] == [target["x"], target["y"] + 36]
+
+
 def test_render_figma_without_driver_is_explicitly_unavailable(tmp_path):
     from figure_agent.backends.figma_backend import render_figma_spec
 

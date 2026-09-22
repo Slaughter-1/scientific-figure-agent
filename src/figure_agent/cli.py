@@ -17,6 +17,8 @@ from .spec import load_spec, require_valid_spec
 from .templates import search_templates
 from .workflow import build_figure_contract, generate_from_text
 from .figma_handoff import build_figma_handoff
+from .figma_m0 import run_figma_m0
+from .visual_eval import build_review_sheet, generate_benchmark
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -63,6 +65,14 @@ def main(argv: list[str] | None = None) -> int:
     figma_parser.add_argument("--spec", required=True)
     figma_parser.add_argument("--output-dir", required=True)
     figma_parser.add_argument("--connection", help="JSON file returned by an external Figma bridge")
+    figma_m0_parser = subparsers.add_parser("figma-m0")
+    figma_m0_parser.add_argument("--output-dir", required=True)
+    review_parser = subparsers.add_parser("build-review-sheet")
+    review_parser.add_argument("--cases", required=True)
+    review_parser.add_argument("--output", required=True)
+    benchmark_parser = subparsers.add_parser("generate-benchmark")
+    benchmark_parser.add_argument("--cases", required=True)
+    benchmark_parser.add_argument("--output-dir", required=True)
     args = parser.parse_args(argv)
     if args.command == "check-env":
         print(json.dumps(build_environment_report(), indent=2))
@@ -150,4 +160,18 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, ValueError, json.JSONDecodeError) as exc:
             print(f"figure-agent push-figma error: {exc}", file=sys.stderr)
             return 2
+    if args.command == "figma-m0":
+        result = run_figma_m0(args.output_dir)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "connected" else 2
+    if args.command == "build-review-sheet":
+        cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
+        path = build_review_sheet(cases, args.output)
+        print(path)
+        return 0
+    if args.command == "generate-benchmark":
+        cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
+        path = generate_benchmark(cases, args.output_dir)
+        print(path)
+        return 0
     return 2

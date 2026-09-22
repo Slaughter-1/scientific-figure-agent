@@ -63,7 +63,9 @@ def test_parser_compiles_explicit_loop_back_as_control_flow():
     spec = parse_method_text("Query → Retriever → Generator → loop back to Retriever")
     ids = {node["label"]: node["id"] for node in spec["nodes"]}
     loop_edges = [edge for edge in spec["edges"] if edge["type"] == "control_flow"]
-    assert loop_edges == [{"source": ids["Generator"], "target": ids["Retriever"], "type": "control_flow"}]
+    assert len(loop_edges) == 1
+    assert {key: loop_edges[0][key] for key in ("source", "target", "type")} == {"source": ids["Generator"], "target": ids["Retriever"], "type": "control_flow"}
+    assert loop_edges[0]["evidence"][0]["quote"] == "loop back to Retriever"
 
 
 def test_classifier_routes_common_figure_inputs():

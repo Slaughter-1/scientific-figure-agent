@@ -116,6 +116,47 @@ class TaskStore:
             db.execute("INSERT INTO task_versions VALUES (?, ?, ?, ?, ?, ?, ?)", (version_id, task_id, version_number, "review_action", str(version_path), hashlib.sha256(payload).hexdigest(), action["created_at"]))
         return {"action_id": action_id, "task_id": task_id, "action": action}
 
+    def selected_candidate(self, task_id: str) -> str | None:
+        with self._connect() as db:
+            rows = db.execute("SELECT action_json FROM review_actions WHERE task_id = ? ORDER BY created_at", (task_id,)).fetchall()
+        selected = None
+        for row in rows:
+            action = json.loads(row["action_json"])
+            if action.get("action") == "select_candidate" and isinstance(action.get("candidate_id"), str):
+                selected = action["candidate_id"]
+        return selected
+
+    def selected_candidate_binding(self, task_id: str) -> dict[str, Any] | None:
+        with self._connect() as db:
+            rows = db.execute("SELECT action_json FROM review_actions WHERE task_id = ? ORDER BY created_at", (task_id,)).fetchall()
+        selected = None
+        for row in rows:
+            action = json.loads(row["action_json"])
+            if action.get("action") == "select_candidate" and isinstance(action.get("candidate_id"), str):
+                selected = action
+        return selected
+
+    def list_review_actions(self, task_id: str) -> list[dict[str, Any]]:
+        with self._connect() as db:
+            rows = db.execute("SELECT action_json FROM review_actions WHERE task_id = ? ORDER BY created_at", (task_id,)).fetchall()
+        return [json.loads(row["action_json"]) for row in rows]
+
+    def save_version_snapshot(self, task_id: str, kind: str, payload: dict[str, Any]) -> dict[str, Any]:
+        """Persist a JSON snapshot with a monotonic task version."""
+        if self.get_task(task_id) is None:
+            raise KeyError(task_id)
+        with self._connect() as db:
+            row = db.execute("SELECT COALESCE(MAX(version_number), 0) AS version FROM task_versions WHERE task_id = ?", (task_id,)).fetchone()
+        version_number = int(row["version"] if row else 0) + 1
+        now = _now()
+        version_path = self.root / "tasks" / task_id / "versions" / f"v{version_number:04d}-{kind}.json"
+        version_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        content = version_path.read_bytes()
+        version_id = str(uuid.uuid4())
+        with self._connect() as db:
+            db.execute("INSERT INTO task_versions VALUES (?, ?, ?, ?, ?, ?, ?)", (version_id, task_id, version_number, kind, str(version_path), hashlib.sha256(content).hexdigest(), now))
+        return {"version_id": version_id, "version_number": version_number, "path": str(version_path)}
+
     def register_artifact(self, task_id: str, path: str | Path, kind: str, *, editable: bool = False, license: str | None = None) -> dict[str, Any]:
         if self.get_task(task_id) is None:
             raise KeyError(task_id)

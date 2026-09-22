@@ -11,7 +11,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
 
-from ..layouts import layout_edges, layout_nodes
+from ..layouts import layout_edges, layout_nodes, node_size_px
 from ..visual_styles import get_visual_style
 
 REQUIRED_LABELS = [
@@ -30,7 +30,9 @@ REQUIRED_LABELS = [
 plt.rcParams["font.sans-serif"] = ["Noto Sans SC", "Microsoft YaHei", "SimHei", "DejaVu Sans"]
 plt.rcParams["axes.unicode_minus"] = False
 plt.rcParams["svg.fonttype"] = "none"
-plt.rcParams["pdf.fonttype"] = 42
+# Type 3 embeds glyph outlines instead of declaring an incompatible TrueType
+# wrapper. Keep the save operation scoped too: other backends set rcParams.
+plt.rcParams["pdf.fonttype"] = 3
 
 
 def check_drawio_output(path: str | Path, required_labels: list[str] | None = None) -> list[str]:
@@ -72,16 +74,18 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
         style = f"rounded=1;shape={shape};whiteSpace=wrap;html=1;fillColor={color};strokeColor={stroke};fontFamily={font_family};fontSize={font_size};fontColor=#172033;"
         label = html.escape(str(node["label"]), quote=True)
         group_attribute = f' data-group="{html.escape(group_by_node[node["id"]], quote=True)}"' if node["id"] in group_by_node else ""
-        node_width = style_config.get("node_width", 170)
-        node_height = style_config.get("node_height", 68)
+        node_width, node_height = node_size_px(spec)
+        node_width, node_height = round(node_width), round(node_height)
+        x, y = x - node_width / 2, y - node_height / 2
         cells.append(f'<mxCell id="{node["id"]}" value="{label}" style="{style}" vertex="1" parent="1"{group_attribute}><mxGeometry x="{x}" y="{y}" width="{node_width}" height="{node_height}" as="geometry"/></mxCell>')
     for group_index, group in enumerate(spec.get("groups", []), start=500):
         children = [positions[node_id] for node_id in group["children"] if node_id in positions]
         if not children:
             continue
         xs, ys = zip(*children)
-        x, y = min(xs) - 20, min(ys) - 25
-        width, height = max(xs) - min(xs) + 190, max(ys) - min(ys) + 110
+        node_width, node_height = node_size_px(spec)
+        x, y = min(xs) - node_width / 2 - 35, min(ys) - node_height / 2 - 35
+        width, height = max(xs) - min(xs) + node_width + 70, max(ys) - min(ys) + node_height + 70
         label = html.escape(str(group["label"]), quote=True)
         group_style = spec.get("style", {})
         group_fill = group_style.get("group_fill", "#F8FAFC")
@@ -91,7 +95,8 @@ def build_drawio_xml(spec: dict[str, Any]) -> str:
         arrow_color = spec.get("style", {}).get("arrow_color", "#64748B")
         points = route_points[index - 100]
         intermediate = "".join(f'<mxPoint x="{round(point[0] * 100)}" y="{round((6.2 - point[1]) * 100)}" />' for point in points[1:-1])
-        cells.append(f'<mxCell id="edge-{index}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;strokeColor={arrow_color};strokeWidth=1.5;"><mxGeometry relative="1" as="geometry"><Array as="points">{intermediate}</Array></mxGeometry></mxCell>')
+        edge_label = html.escape(str(edge.get("label", "")), quote=True)
+        cells.append(f'<mxCell id="edge-{index}" value="{edge_label}" edge="1" parent="1" source="{edge["source"]}" target="{edge["target"]}" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=block;strokeColor={arrow_color};strokeWidth=1.5;labelBackgroundColor=#FFFFFF;"><mxGeometry relative="1" as="geometry"><Array as="points">{intermediate}</Array></mxGeometry></mxCell>')
     return '<mxfile host="Scientific Figure Agent"><diagram name="Agent Workflow"><mxGraphModel><root>' + "".join(cells) + "</root></mxGraphModel></diagram></mxfile>"
 
 
@@ -111,7 +116,7 @@ def _node_color(spec: dict[str, Any], node: dict[str, Any]) -> str:
 
 
 def render_drawio_spec(spec: dict[str, Any], output_dir: str | Path, stem: str = "figure") -> dict[str, Path]:
-    """Render one validated Figure Spec to editable Draw.io plus SVG/PDF previews."""
+    """Render one validated Figure Spec to editable Draw.io plus SVG/PDF/PNG previews."""
     from figure_agent.spec import require_valid_spec
 
     require_valid_spec(spec)
@@ -121,40 +126,52 @@ def render_drawio_spec(spec: dict[str, Any], output_dir: str | Path, stem: str =
     drawio_path.write_text(build_drawio_xml(spec), encoding="utf-8")
 
     positions = _layout(spec)
-    max_x = max((x for x, _ in positions.values()), default=2.0) + 1.6
-    max_y = max((y for _, y in positions.values()), default=2.0) + 1.0
+    route_points = layout_edges(spec, positions, family=_layout_family(spec))
+    node_width, node_height = node_size_px(spec)
+    node_half_width, node_half_height = node_width / 100 / 2, node_height / 100 / 2
+    all_points = list(positions.values()) + [point for route in route_points for point in route]
+    min_x = min((x for x, _ in all_points), default=0.0) - node_half_width - 0.45
+    max_x = max((x for x, _ in all_points), default=2.0) + node_half_width + 0.45
+    min_y = min((y for _, y in all_points), default=0.0) - node_half_height - 0.45
+    max_y = max((y for _, y in all_points), default=2.0) + node_half_height + 0.75
     fig, ax = plt.subplots(figsize=(max(5.5, max_x), max(3.5, max_y)), constrained_layout=True)
     style_config = spec.get("style", {})
-    ax.set_xlim(0, max_x)
-    ax.set_ylim(0, max_y)
+    ax.set_xlim(min_x, max_x)
+    ax.set_ylim(min_y, max_y)
     ax.axis("off")
-    for group in spec.get("groups", []):
+    for group_index, group in enumerate(spec.get("groups", [])):
         children = [positions[node_id] for node_id in group["children"] if node_id in positions]
         if not children:
             continue
         xs, ys = zip(*children)
         pad = 0.35
         style_config = spec.get("style", {})
-        rect = Rectangle((min(xs) - 1.0 - pad, min(ys) - 0.45 - pad), max(xs) - min(xs) + 2.0 + 2 * pad, max(ys) - min(ys) + 0.9 + 2 * pad, fill=True, facecolor=style_config.get("group_fill", "#F8FAFC"), alpha=0.45, linestyle="--", linewidth=1.0, edgecolor=style_config.get("stroke", "#94A3B8"), zorder=0)
+        rect = Rectangle((min(xs) - node_half_width - pad, min(ys) - node_half_height - pad), max(xs) - min(xs) + 2 * node_half_width + 2 * pad, max(ys) - min(ys) + 2 * node_half_height + 2 * pad, fill=True, facecolor=style_config.get("group_fill", "#F8FAFC"), alpha=0.45, linestyle="--", linewidth=1.0, edgecolor=style_config.get("stroke", "#94A3B8"), zorder=0)
         ax.add_patch(rect)
-        ax.text(min(xs) - 0.95, max(ys) + 0.5, group["label"], fontsize=8, color="#475569")
-    route_points = layout_edges(spec, positions, family=_layout_family(spec))
+        ax.text(min(xs) - 0.95, max(ys) + 0.5 + group_index * 0.28, group["label"], fontsize=8, color="#475569")
     for points in route_points:
         for start, end in zip(points, points[1:]):
             ax.plot([start[0], end[0]], [start[1], end[1]], color=style_config.get("arrow_color", "#475569"), linewidth=1.0, zorder=1)
         start, end = points[-2], points[-1]
         ax.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=10, color=style_config.get("arrow_color", "#475569"), linewidth=1.0, zorder=2))
+    for edge, points in zip(spec.get("edges", []), route_points):
+        if edge.get("label"):
+            mid = points[len(points) // 2]
+            ax.text(mid[0], mid[1] + 0.12, edge["label"], ha="center", va="bottom", fontsize=style_config.get("font_sizes", {}).get("edge", 8), fontfamily=style_config.get("font_family", "Noto Sans SC"), color="#475569", bbox={"facecolor": "white", "edgecolor": "none", "pad": 1.5}, zorder=3)
     for node in spec["nodes"]:
         x, y = positions[node["id"]]
         style_config = spec.get("style", {})
-        patch = FancyBboxPatch((x - 1.05, y - 0.42), 2.1, 0.84, boxstyle="round,pad=0.04,rounding_size=0.10", facecolor=_node_color(spec, node), edgecolor=style_config.get("stroke", "#64748B"), linewidth=1.2)
+        patch = FancyBboxPatch((x - node_half_width, y - node_half_height), node_half_width * 2, node_half_height * 2, boxstyle="round,pad=0,rounding_size=0.10", facecolor=_node_color(spec, node), edgecolor=style_config.get("stroke", "#64748B"), linewidth=1.2)
         ax.add_patch(patch)
         ax.text(x, y, node["label"], ha="center", va="center", fontsize=style_config.get("font_sizes", {}).get("node", 9), fontfamily=style_config.get("font_family", "Noto Sans SC"), color="#172033")
     if spec.get("title"):
         ax.set_title(spec["title"], fontsize=style_config.get("font_sizes", {}).get("title", 13), pad=12, fontfamily=style_config.get("font_family", "Noto Sans SC"), color="#172033", fontweight="bold")
     svg_path = output_dir / f"{stem}.svg"
     pdf_path = output_dir / f"{stem}.pdf"
+    png_path = output_dir / f"{stem}.png"
     fig.savefig(svg_path, format="svg")
-    fig.savefig(pdf_path, format="pdf")
+    with matplotlib.rc_context({"pdf.fonttype": 3}):
+        fig.savefig(pdf_path, format="pdf")
+    fig.savefig(png_path, format="png", dpi=220)
     plt.close(fig)
-    return {"drawio": drawio_path, "svg": svg_path, "pdf": pdf_path}
+    return {"drawio": drawio_path, "svg": svg_path, "pdf": pdf_path, "png": png_path}

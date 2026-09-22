@@ -34,7 +34,7 @@ function CandidateCard({ candidate, selected, onExport }) {
     <div className="scores"><ScoreBar label="证据" value={candidate.scores?.evidence_coverage} /><ScoreBar label="可读性" value={candidate.scores?.visual_readability ?? candidate.scores?.readability} /><ScoreBar label="差异度" value={candidate.scores?.layout_distinctiveness ?? 0.7} /></div>
     <EvidencePanel candidate={candidate} />
     <ArtifactLinks artifacts={candidate.artifacts} />
-    <button onClick={() => onExport(candidate.candidate_id)}>选择并导出</button>
+    <button onClick={() => onExport(candidate.candidate_id, candidate.revision_id)}>选择并导出当前修订</button>
   </article>;
 }
 
@@ -62,10 +62,10 @@ function App() {
     finally { setBusy(false); }
   }
 
-  async function exportCandidate(candidateId) {
+  async function exportCandidate(candidateId, revisionId) {
     setError("");
     try {
-      await api(`/api/tasks/${task.task_id}/select-candidate`, { method: "POST", body: JSON.stringify({ candidate_id: candidateId }) });
+      await api(`/api/tasks/${task.task_id}/select-candidate`, { method: "POST", body: JSON.stringify({ candidate_id: candidateId, revision_id: revisionId }) });
       const result = await api(`/api/tasks/${task.task_id}/export`, { method: "POST", body: JSON.stringify({ candidate_id: candidateId }) });
       setSelected(candidateId);
       window.open(result.download_url, "_blank");

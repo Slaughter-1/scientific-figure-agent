@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -88,6 +89,7 @@ def register_asset(path: str | Path, *, source: str = "user_upload", license_sta
     return {
         "asset_id": digest[:16], "path": str(path), "format": fmt, "sha256": digest,
         "source": source, "license": license if license is not None else license_status, "editable": fmt in {"svg", "drawio", "json"},
+        "license_evidence_url": None, "retrieved_at": datetime.now(timezone.utc).isoformat(),
         "width": int(width) if width is not None and width.is_integer() else width,
         "height": int(height) if height is not None and height.is_integer() else height,
     }

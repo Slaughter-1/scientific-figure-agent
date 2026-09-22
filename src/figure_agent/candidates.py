@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import uuid
+import shutil
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
 from .critic import critique_spec
+from .artifacts import file_record
+from .reviews import identify_issues
+from .visual_critic import critique_spec_geometry
 from .layouts import layout_edges, layout_nodes
 from .spec import require_valid_spec
 from .visual_styles import available_layout_families, get_visual_style
@@ -26,14 +32,12 @@ def _score(spec: dict[str, Any], template: dict[str, Any] | None) -> dict[str, f
 
 
 def _has_cycle(spec: dict[str, Any]) -> bool:
-    indexes = {node["id"]: index for index, node in enumerate(spec.get("nodes", []))}
-    graph = {node_id: [] for node_id in indexes}
+    node_ids = {node["id"] for node in spec.get("nodes", [])}
+    graph = {node_id: [] for node_id in node_ids}
     for edge in spec.get("edges", []):
         source, target = edge.get("source"), edge.get("target")
         if source in graph:
             graph[source].append(target)
-        if target in indexes and source in indexes and indexes[target] <= indexes[source]:
-            return True
     visiting: set[str] = set()
     visited: set[str] = set()
 
@@ -96,6 +100,9 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
         candidate_id = f"candidate_{index + 1:02d}"
         candidate_spec = deepcopy(spec)
         candidate_spec["candidate_id"] = candidate_id
+        revision_id = f"{candidate_id}-r{uuid.uuid4().hex[:10]}"
+        candidate_spec["revision_id"] = revision_id
+        identify_issues(candidate_spec, revision_id)
         family = families[index % len(families)]
         style = get_visual_style(family, paper_width=candidate_spec.get("constraints", {}).get("paper_width", "double_column"))
         candidate_spec["layout"] = {**candidate_spec.get("layout", {}), "direction": "top-to-bottom" if family == "swimlane" else "left-to-right", "spacing": 30 if family == "swimlane" else 36}
@@ -106,14 +113,15 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
             candidate_spec["template_refs"] = [templates[index]]
         require_valid_spec(candidate_spec)
         candidate_dir = output_dir / candidate_id
+        revision_dir = candidate_dir / "revisions" / revision_id
         if candidate_spec.get("figure_type") == "plot":
             from .backends.plot_backend import render_plot_spec
 
-            rendered = render_plot_spec(candidate_spec, candidate_dir, "figure")
+            rendered = render_plot_spec(candidate_spec, revision_dir, "figure")
         else:
             from .backends.drawio_backend import render_drawio_spec
 
-            rendered = render_drawio_spec(candidate_spec, candidate_dir, "figure")
+            rendered = render_drawio_spec(candidate_spec, revision_dir, "figure")
         artifacts = {key: str(value) for key, value in rendered.items()}
         template = templates[index] if templates and index < len(templates) else None
         positions = layout_nodes(candidate_spec, family=style["layout_family"])
@@ -122,14 +130,21 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
         design["family"] = family
         score = _score(candidate_spec, template)
         score.update({"layout_distinctiveness": round(0.82 if family != "pipeline" and (has_cycle or has_branch) else 0.72, 3), "visual_readability": 1.0 if len(candidate_spec.get("nodes", [])) <= 9 else 0.75, "semantic_preservation": 1.0})
+        spec_hash = hashlib.sha256(json.dumps(candidate_spec, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
         result = {
             "candidate_id": candidate_id, "template_ref": template.get("id") if template else None,
-            "spec": candidate_spec, "spec_path": str(candidate_dir / "figure-spec.json"), "artifacts": artifacts,
+            "spec": candidate_spec, "spec_path": str(revision_dir / "figure-spec.json"), "artifacts": artifacts,
+            "artifact_records": {key: file_record(path) for key, path in rendered.items()},
+            "revision_id": revision_id, "revision_number": 1, "spec_sha256": spec_hash,
             "design": design, "preview_fingerprint": {"node_positions": {key: list(value) for key, value in positions.items()}, "edge_routes": [[list(point) for point in route] for route in routes], "style_variant": family},
-            "scores": score, "review_findings": critique_spec(candidate_spec),
+            "scores": score, "review_findings": critique_spec(candidate_spec) + (critique_spec_geometry(candidate_spec) if candidate_spec.get("figure_type") != "plot" else []),
         }
+        (revision_dir / "figure-spec.json").write_text(json.dumps(candidate_spec, ensure_ascii=False, indent=2), encoding="utf-8")
+        (revision_dir / "candidate.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         (candidate_dir / "figure-spec.json").write_text(json.dumps(candidate_spec, ensure_ascii=False, indent=2), encoding="utf-8")
         (candidate_dir / "candidate.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        for path in rendered.values():
+            shutil.copy2(path, candidate_dir / Path(path).name)
         results.append(result)
     (output_dir / "candidates.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
     return results

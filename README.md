@@ -90,7 +90,7 @@ figure-agent-web --data-dir figure-agent-data
 
 浏览器打开 `http://127.0.0.1:5173`，可以创建论文段落任务、运行 Figure Contract、生成三个候选并查看候选状态。任务和输入默认保存在 `figure-agent-data/`，该目录不会提交到 Git。
 
-API 也支持候选选择和图包导出：`POST /api/tasks/{task_id}/select-candidate`、`POST /api/tasks/{task_id}/export`。导出 ZIP 会包含候选 Figure Spec、Draw.io、SVG/PDF/PNG（按后端实际生成结果）、任务 manifest 和审阅记录。
+API 也支持候选选择、任务级证据清单和图包导出：`POST /api/tasks/{task_id}/select-candidate`、`GET /api/tasks/{task_id}/manifest`、`POST /api/tasks/{task_id}/export`。任务 manifest 会绑定输入/Contract、候选修订、节点/边证据覆盖和文件 SHA-256；导出 ZIP 会包含所选候选 Figure Spec、Draw.io、SVG/PDF/PNG（按后端实际生成结果）、同任务 `evidence-manifest.json` 和审阅记录。哈希清单不替代独立人工视觉评测或真实 Figma 验收。
 
 阶段验收与限制见 [`docs/m9-m15-report.md`](docs/m9-m15-report.md)。
 

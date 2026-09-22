@@ -40,3 +40,43 @@ def test_critique_reports_nodes_without_evidence():
     findings = critique_spec(spec)
 
     assert any(item["code"] == "missing_evidence" and "a" in item["message"] for item in findings)
+
+
+def test_critique_flags_branch_cue_collapsed_to_linear_graph():
+    spec = {
+        "schema_version": "0.1", "figure_type": "workflow", "title": "Method",
+        "layout": {"direction": "left-to-right"}, "style": {},
+        "nodes": [
+            {"id": "a", "label": "审核", "type": "decision", "evidence": [{"quote": "审核通过后发布，审核失败则返回修改环节"}]},
+            {"id": "b", "label": "发布", "type": "process", "evidence": [{"quote": "审核通过后发布，审核失败则返回修改环节"}]},
+        ], "edges": [{"source": "a", "target": "b", "type": "data_flow"}], "groups": [],
+    }
+    assert any(item["code"] == "missing_branch_structure" for item in critique_spec(spec))
+
+
+def test_critique_flags_loop_cue_without_feedback_edge():
+    spec = {
+        "schema_version": "0.1", "figure_type": "workflow", "title": "Method",
+        "layout": {"direction": "left-to-right"}, "style": {},
+        "nodes": [
+            {"id": "a", "label": "检索器", "type": "tool", "evidence": [{"quote": "证据不足则回到检索器"}]},
+            {"id": "b", "label": "知识库", "type": "storage", "evidence": [{"quote": "查询知识库，证据不足则回到检索器"}]},
+        ], "edges": [{"source": "a", "target": "b", "type": "data_flow"}], "groups": [],
+    }
+    assert any(item["code"] == "missing_feedback_structure" for item in critique_spec(spec))
+
+
+def test_critique_does_not_call_a_conditional_feedback_edge_a_branch():
+    spec = {
+        "schema_version": "0.1", "figure_type": "workflow", "title": "Method",
+        "layout": {"direction": "left-to-right"}, "style": {},
+        "nodes": [
+            {"id": "a", "label": "检索器", "type": "tool", "evidence": [{"quote": "若证据不足则回到检索器"}]},
+            {"id": "b", "label": "知识库", "type": "storage", "evidence": [{"quote": "查询知识库，若证据不足则回到检索器"}]},
+        ], "edges": [
+            {"source": "a", "target": "b", "type": "data_flow"},
+            {"source": "b", "target": "a", "type": "control_flow", "label": "若证据不足"},
+        ], "groups": [],
+    }
+    codes = {item["code"] for item in critique_spec(spec)}
+    assert "missing_branch_structure" not in codes

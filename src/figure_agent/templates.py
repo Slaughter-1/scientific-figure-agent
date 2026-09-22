@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
+import json
 from typing import Any
 
 TEMPLATE_RECORDS: list[dict[str, Any]] = [
@@ -49,6 +51,9 @@ def search_templates(query: str, *, policy: str = "open_license_first", limit: i
             continue
         result = dict(record)
         result["retrieved_at"] = datetime.now(timezone.utc).isoformat()
+        result["embedded"] = False
+        result["content_hash_scope"] = "template_record_metadata"
+        result["content_sha256"] = hashlib.sha256(json.dumps({key: record[key] for key in sorted(record) if key not in {"preview_url", "download_url"}}, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
         result["match_reason"] = "query token matched template metadata"
         matches.append(result)
     return matches[: max(0, limit)]

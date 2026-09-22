@@ -1,0 +1,22 @@
+[
+  {"id":"rc2_pipeline_01","category":"pipeline","text":"原始句子先完成分词，再经过编码层，最后送入分类头得到标签"},
+  {"id":"rc2_pipeline_02","category":"pipeline","text":"日志文件经过清洗后聚合事件并生成统计报告"},
+  {"id":"rc2_pipeline_03","category":"pipeline","text":"文档加载后切成片段，随后计算向量并写入索引库"},
+  {"id":"rc2_pipeline_04","category":"pipeline","text":"音频输入先提取特征，再由声学网络转成转写文本"},
+  {"id":"rc2_pipeline_05","category":"pipeline","text":"样本归一化后训练分类模型，之后评估模型并保存指标"},
+  {"id":"rc2_rag_01","category":"rag_agent","text":"用户问题交给检索器查找候选文档，重排结果后由生成器给出回答"},
+  {"id":"rc2_rag_02","category":"rag_agent","text":"问题送入检索器查询知识库，若返回证据不足便回到检索器继续查询"},
+  {"id":"rc2_rag_03","category":"rag_agent","text":"查询先做召回，再由交叉编码器排序，最终提供给语言模型"},
+  {"id":"rc2_rag_04","category":"rag_agent","text":"文档切块后建立向量存储；用户提问时检索片段并生成带引用的答案"},
+  {"id":"rc2_rag_05","category":"rag_agent","text":"检索结果与历史消息一起进入提示构造器，之后提交给 LLM"},
+  {"id":"rc2_branch_01","category":"branch_condition","text":"分类器依据置信度选择高置信路径或低置信路径"},
+  {"id":"rc2_branch_02","category":"branch_condition","text":"路由器判断请求类型，搜索请求调用搜索工具，计算请求调用代码工具"},
+  {"id":"rc2_branch_03","category":"branch_condition","text":"审核通过才发布，审核未通过则退回修改步骤"},
+  {"id":"rc2_branch_04","category":"branch_condition","text":"输入是图片时经过视觉编码器，输入是文本时经过文本编码器"},
+  {"id":"rc2_loop_01","category":"loop_feedback","text":"规划器生成计划，工具执行计划，观察结果后返回规划器直到任务完成"},
+  {"id":"rc2_loop_02","category":"loop_feedback","text":"答案生成后进行事实核验，若发现错误就返回生成器重新生成"},
+  {"id":"rc2_loop_03","category":"loop_feedback","text":"多轮交互中代理先读记忆，再调用工具，随后把结果写回记忆"},
+  {"id":"rc2_multi_01","category":"multi_agent","text":"调度代理把子任务派给检索代理和分析代理，汇总代理收集两者结果"},
+  {"id":"rc2_multi_02","category":"multi_agent","text":"协调器同时调用工具代理与审查代理，最后交给回答代理"},
+  {"id":"rc2_containment_01","category":"phase_containment","text":"训练阶段包含数据模块、编码器和解码器；推理阶段由服务模块调用编码器"}
+]

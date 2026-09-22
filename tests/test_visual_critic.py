@@ -38,3 +38,25 @@ def test_critique_candidate_set_detects_duplicate_visual_fingerprint():
     findings = critique_candidate_set(candidates)
 
     assert any(item["code"] == "candidate_similarity" for item in findings)
+
+
+def test_critique_spec_geometry_accepts_external_feedback_route():
+    from figure_agent.visual_critic import critique_spec_geometry
+
+    spec = {
+        "schema_version": "0.1",
+        "figure_type": "workflow",
+        "layout": {"direction": "left-to-right"},
+        "nodes": [
+            {"id": "a", "label": "A", "type": "process"},
+            {"id": "b", "label": "B", "type": "process"},
+            {"id": "c", "label": "C", "type": "process"},
+        ],
+        "edges": [
+            {"source": "a", "target": "b", "type": "data_flow"},
+            {"source": "c", "target": "a", "type": "control_flow", "label": "retry"},
+        ],
+        "groups": [],
+        "style": {"variant": "hierarchy"},
+    }
+    assert critique_spec_geometry(spec) == []

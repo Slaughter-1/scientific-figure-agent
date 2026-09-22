@@ -41,7 +41,24 @@ def test_render_drawio_spec_writes_editable_and_preview_artifacts(tmp_path):
     }
 
     artifacts = render_drawio_spec(spec, tmp_path, "architecture")
-    assert set(artifacts) == {"drawio", "svg", "pdf"}
+    assert set(artifacts) == {"drawio", "svg", "pdf", "png"}
     assert all(path.exists() and path.stat().st_size > 0 for path in artifacts.values())
     assert check_drawio_output(artifacts["drawio"], ["Input", "Model", "Store"]) == []
     assert "Input" in artifacts["svg"].read_text(encoding="utf-8")
+
+
+def test_conditional_edge_label_is_exported_to_editable_and_preview_outputs(tmp_path):
+    from figure_agent.backends.drawio_backend import render_drawio_spec
+
+    spec = {
+        "schema_version": "0.1",
+        "figure_type": "workflow",
+        "layout": {"direction": "left-to-right", "spacing": 24},
+        "nodes": [{"id": "a", "label": "A", "type": "process"}, {"id": "b", "label": "B", "type": "process"}],
+        "edges": [{"source": "a", "target": "b", "type": "control_flow", "label": "if evidence is insufficient"}],
+        "groups": [],
+        "style": {"theme": "academic_clean", "colors": {"process": "#E8EEF7"}},
+    }
+    artifacts = render_drawio_spec(spec, tmp_path, "conditional")
+    assert "if evidence is insufficient" in artifacts["drawio"].read_text(encoding="utf-8")
+    assert "if evidence is insufficient" in artifacts["svg"].read_text(encoding="utf-8")
