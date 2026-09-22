@@ -113,6 +113,6 @@ python -m pytest -q
 205 passed, 22 warnings
 ```
 
-fresh API smoke 重新创建任务、生成三个候选、选择并导出 `candidate_02`，ZIP `verify_package` 返回 `verified`；实际 PNG 目视检查显示分析代理到回答代理的路径走独立外侧通道。产物保存在 `outputs/rc2-closeout-task-v2/`。
+fresh API smoke 重新创建任务、生成三个候选、选择并导出 `candidate_02`，ZIP `verify_package` 返回 `verified`；实际 PNG 目视检查显示检索代理到回答代理的正向路径与回答代理到检索代理的反馈路径走不同的外侧/下方通道。三个候选的 MuPDF、Type 3、SVG/PDF 尺寸和 Poppler smoke 均通过。产物保存在 `outputs/rc2-closeout-task-v3/`。
 
 源码和测试已冻结到本地 Git 提交。真实远程 Figma 写入、独立人工 holdout 和外部素材许可证审计仍未关闭；这些门槛不因本轮代码回归而自动变为 PASS。

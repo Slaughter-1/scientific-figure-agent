@@ -1,10 +1,12 @@
 # RC2 Source Freeze
 
-- Source commit: `1df5dad9dff6ea8d0d6466cb1e7cb91e0585f2e5` on `main`
-- Export package: `outputs/rc2-closeout-task-v2/data/tasks/eaf4f19a-6b6e-42ca-9ed5-0adc1fb793d4/exports/candidate_02-r70af249aeb-fbbc001e.zip`
-- Package SHA-256: `b4104f4c47d44c24e3a81e6ba479de5581d258cb28d9a3e6512419c1af1b96e5`
-- Package size: `82815` bytes
-- Python: `3.13.7`
-- Validation: `python -m pytest -q` reported 205 passed / 22 warnings; `npm run build` reported Vite success; fresh API export and ZIP verification returned `verified`; MuPDF, Type3, SVG/PDF parity and Poppler smoke passed.
+- Implementation source commit: `14e332e5ae9d620dd5163c8ad3e45a6dfc99d746` on `main`.
+- Fresh API smoke task: `8dc69e9b-8aa3-4d2b-b60b-7ec7fb08bdfc`.
+- Selected export: `outputs/rc2-closeout-task-v3/data/tasks/8dc69e9b-8aa3-4d2b-b60b-7ec7fb08bdfc/exports/candidate_02-r10cf6cd8b5-aca83fd9.zip`.
+- Selected export SHA-256: `b1ef5ff72e5722e7109c025fa71d850fd025537428d0349dbb13ea75d048b1ae`.
+- The source-inclusive evidence bundle and its SHA-256 are recorded in `outputs/rc2-closeout-task-v3/freeze-manifest.json`.
+- Python: `3.13.7`.
+- Validation: `python -m pytest -q` reported 205 passed / 22 warnings; `npm run build` reported Vite success; `python -m compileall -q src tests` passed; fresh API export and ZIP verification returned `verified`; MuPDF text extraction, Type 3 glyph, SVG/PDF page-size parity and Poppler smoke passed for all three candidates.
+- The evidence snapshot includes the relevant source files, regression tests, full pytest/build/compile/PDF logs, route records and this freeze documentation.
 
-The freeze identifies the code and evidence snapshot used for this closeout. It does not close independent human holdout, real remote Figma write, or external asset license audit.
+This freeze identifies the implementation and evidence snapshot used for the current closeout. It does not close independent human holdout, real remote Figma write, or external asset license audit.
