@@ -508,7 +508,7 @@ python -m compileall -q src
 - 私有证据包：独立保存，不上传到公开仓库或公开 Release。
 
 本次工程预览发布页：
-[`v0.1.0-engineering.20260928`](https://github.com/Slaughter-1/scientific-figure-agent/releases/tag/v0.1.0-engineering.20260928)。
+[`v0.1.0-engineering.20260928.1`](https://github.com/Slaughter-1/scientific-figure-agent/releases/tag/v0.1.0-engineering.20260928.1)。
 下载命名的 `Scientific_Figure_Agent` 使用包和同名 `.sha256` 校验文件；Release 不代表 R2/S5 质量通过。
 
 只有正式 push 后从 GitHub 新 clone、安装并实际通过测试与业务验证，才能报告“远端版本完整可用”。GitHub 的自动 Source code ZIP 不一定含预构建前端；普通使用者优先下载命名的使用包附件。
