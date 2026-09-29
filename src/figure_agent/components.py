@@ -71,13 +71,43 @@ def build_component_request(spec: dict[str, Any], missing_roles: list[str]) -> d
     return {"schema_version": "0.1", "components": components, "composition_order": [item["component_id"] for item in components], "source_node_mapping": {item["component_id"]: item["component_id"] for item in components}}
 
 
-def register_asset(path: str | Path, *, source: str = "user_upload", license_status: str = "unknown", license: str | None = None) -> dict[str, Any]:
+#: Registration never self-approves; approval stays an explicit, evidenced human act.
+ASSET_APPROVAL_STATES = ("pending_review", "approved", "rejected")
+_UNUSABLE_LICENSES = {"", "unknown", "rejected", "verified", "user_confirmed", "none"}
+
+
+def register_asset(path: str | Path, *, source: str = "user_upload", license_status: str = "unknown", license: str | None = None,
+                   source_url: str | None = None, license_evidence_url: str | None = None,
+                   license_evidence_path: str | Path | None = None, approval_status: str = "pending_review") -> dict[str, Any]:
+    """Register one asset with the fields the export licence audit actually requires.
+
+    ``approval_status`` defaults to ``pending_review`` and can only be raised to
+    ``approved`` when a named licence, source URL and verifiable licence-evidence
+    file are all supplied. This records evidence; it does not lower the standard.
+    """
     path = Path(path)
     if not path.exists() or not path.is_file():
         raise ValueError(f"asset does not exist: {path}")
     fmt = path.suffix.lower().lstrip(".")
     if fmt not in {"svg", "png", "pdf", "drawio", "json"}:
         raise ValueError(f"unsupported asset format: {fmt or 'unknown'}")
+    if approval_status not in ASSET_APPROVAL_STATES:
+        raise ValueError(f"unsupported approval status: {approval_status}")
+    resolved_license = license if license is not None else license_status
+    evidence_path = Path(license_evidence_path) if license_evidence_path is not None else None
+    evidence_digest = None
+    if evidence_path is not None:
+        if not evidence_path.is_file() or not evidence_path.read_bytes():
+            raise ValueError(f"license evidence file is missing or empty: {evidence_path}")
+        evidence_digest = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+    if approval_status == "approved":
+        if str(resolved_license).strip().lower() in _UNUSABLE_LICENSES:
+            raise ValueError("approval requires a named license, not a placeholder status")
+        missing = [name for name, value in (("source_url", source_url), ("license_evidence_url", license_evidence_url)) if not (isinstance(value, str) and value.strip())]
+        if evidence_digest is None:
+            missing.append("license_evidence_path")
+        if missing:
+            raise ValueError(f"approval requires license evidence: {', '.join(missing)}")
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     width = height = None
     if fmt == "svg":
@@ -88,8 +118,13 @@ def register_asset(path: str | Path, *, source: str = "user_upload", license_sta
         height = float(height_match.group(1)) if height_match else None
     return {
         "asset_id": digest[:16], "path": str(path), "format": fmt, "sha256": digest,
-        "source": source, "license": license if license is not None else license_status, "editable": fmt in {"svg", "drawio", "json"},
-        "license_evidence_url": None, "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        "source": source, "license": resolved_license, "editable": fmt in {"svg", "drawio", "json"},
+        "approval_status": approval_status, "source_url": source_url,
+        "hash_scope": "file_bytes", "content_sha256": digest,
+        "license_evidence_url": license_evidence_url,
+        "license_evidence_path": str(evidence_path) if evidence_path is not None else None,
+        "license_evidence_sha256": evidence_digest,
+        "retrieved_at": datetime.now(timezone.utc).isoformat(),
         "width": int(width) if width is not None and width.is_integer() else width,
         "height": int(height) if height is not None and height.is_integer() else height,
     }

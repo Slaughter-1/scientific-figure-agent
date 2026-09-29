@@ -19,6 +19,7 @@ except ImportError as exc:  # pragma: no cover - exercised when optional web dep
     raise RuntimeError("Install the 'web' extra to use the local web API") from exc
 
 from ..request import FigureRequest
+from ..components import attach_assets_to_spec, register_asset
 from ..templates import search_templates
 from ..workflow import build_figure_contract, generate_from_text, contract_findings
 from ..artifacts import build_task_evidence_manifest, file_record, verify_package, write_task_evidence_manifest
@@ -32,6 +33,34 @@ from .store import TaskStore
 
 mimetypes.add_type("application/javascript", ".js")
 mimetypes.add_type("text/css", ".css")
+
+
+def _resolve_task_file(task_root: Path, value: Any, field: str) -> Path:
+    """Resolve an asset-related path, refusing anything outside the task directory.
+
+    Export already requires every packaged resource to live inside the task tree, so a
+    reference that escapes it would only fail later, after a revision had been rendered.
+    Rejecting it here keeps the stored record and the packaged bytes the same thing.
+    """
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field} is required")
+    candidate = Path(value)
+    # The upload endpoint reports paths built from ``data_dir``, so they are relative to
+    # the process working directory, while a hand-written reference is naturally relative
+    # to the task directory. Accept either spelling and let containment be the real gate.
+    options = [candidate] if candidate.is_absolute() else [candidate, task_root / candidate]
+    root = task_root.resolve()
+    for option in options:
+        resolved = option.resolve()
+        if root in resolved.parents:
+            if not resolved.is_file():
+                raise ValueError(f"{field} does not exist: {value}")
+            # Return it spelled like ``task_root`` itself. Every other stored path
+            # (spec_path, artifacts) is relative to the process directory because
+            # ``data_root`` is, and the export packager calls ``relative_to(task_root)``
+            # on the unresolved form, so an absolute path here would break packaging.
+            return task_root / resolved.relative_to(root)
+    raise ValueError(f"{field} must stay inside the task directory: {value}")
 
 
 def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
@@ -96,7 +125,7 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
     def materialize_review_action(task_id: str, action: dict[str, Any]) -> dict[str, Any] | None:
         """Apply a semantic review action using a staged revision directory."""
         action_name = action.get("action")
-        supported = {"remove_node", "lock_node", "unlock_node", "mark_needs_evidence", "resolve_needs_evidence", "dismiss_review"}
+        supported = {"remove_node", "lock_node", "unlock_node", "mark_needs_evidence", "resolve_needs_evidence", "dismiss_review", "attach_asset", "approve_asset"}
         if action_name not in supported:
             return None
         candidate_id = action.get("candidate_id") or store.selected_candidate(task_id)
@@ -121,9 +150,47 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
         revision_id = f"{candidate_id}-r{uuid.uuid4().hex[:10]}"
         target = action.get("target")
         node = next((item for item in current.get("nodes", []) if item.get("id") == target or item.get("label") == target), None)
-        if node is None and action_name not in {"dismiss_review"}:
+        if node is None and action_name not in {"dismiss_review", "approve_asset"}:
             raise ValueError(f"review target not found: {target}")
-        if action_name == "remove_node":
+        if action_name == "attach_asset":
+            # Registration only records evidence. ``register_asset`` defaults to
+            # ``pending_review`` and is called without an approval status here, so
+            # attaching an asset can never approve it as a side effect.
+            asset_root = data_root / "tasks" / task_id
+            evidence = action.get("license_evidence_path")
+            asset = register_asset(
+                _resolve_task_file(asset_root, action.get("path"), "path"),
+                source=action.get("source", "user_upload"),
+                license=action.get("license", "unknown"),
+                source_url=action.get("source_url"),
+                license_evidence_url=action.get("license_evidence_url"),
+                license_evidence_path=_resolve_task_file(asset_root, evidence, "license_evidence_path") if evidence else None,
+            )
+            current = attach_assets_to_spec(current, {node["id"]: asset})
+        elif action_name == "approve_asset":
+            # Approval is a separate, reasoned act against bytes already on disk.
+            if not str(action.get("reason", "")).strip():
+                raise ValueError("reason is required to approve an asset license")
+            asset_id = action.get("asset_id")
+            existing = next((item for item in current.get("asset_refs", []) if isinstance(item, dict) and item.get("asset_id") == asset_id), None)
+            if existing is None:
+                raise ValueError(f"asset is not attached to this candidate: {asset_id}")
+            asset_root = data_root / "tasks" / task_id
+            approved = register_asset(
+                _resolve_task_file(asset_root, existing.get("path"), "path"),
+                source=existing.get("source", "user_upload"),
+                license=action.get("license") or existing.get("license"),
+                source_url=action.get("source_url") or existing.get("source_url"),
+                license_evidence_url=action.get("license_evidence_url") or existing.get("license_evidence_url"),
+                license_evidence_path=_resolve_task_file(asset_root, action.get("license_evidence_path") or existing.get("license_evidence_path"), "license_evidence_path"),
+                approval_status="approved",
+            )
+            # ``asset_id`` is derived from the file bytes, so a change between
+            # registration and approval would silently approve something else.
+            if approved["asset_id"] != asset_id:
+                raise ValueError("asset bytes changed since registration; re-register before approving")
+            current["asset_refs"] = [approved if item.get("asset_id") == asset_id else item for item in current.get("asset_refs", [])]
+        elif action_name == "remove_node":
             if node.get("locked"):
                 raise PermissionError("node is locked; unlock it before removal")
             node_id = node["id"]
@@ -177,9 +244,16 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
             if current.get("figure_type") == "plot":
                 from ..backends.plot_backend import render_plot_spec
                 rendered = render_plot_spec(current, revision_dir, "figure")
+                route_plan = None
             else:
                 from ..backends.drawio_backend import render_drawio_spec
-                rendered = render_drawio_spec(current, revision_dir, "figure")
+                from ..layouts import build_route_plan
+                from ..visual_styles import get_visual_style
+                style = current.get("style", {})
+                family = get_visual_style(style.get("variant", "editorial")).get("layout_family", "pipeline")
+                paper_width = 85.0 if current.get("constraints", {}).get("paper_width") == "single_column" else 180.0
+                route_plan = build_route_plan(current, family=family, paper_width_mm=paper_width)
+                rendered = render_drawio_spec(current, revision_dir, "figure", route_plan=route_plan)
         except Exception as exc:
             _atomic_json(revision_dir / "revision-error.json", {"revision_id": revision_id, "status": "failed", "error": str(exc)})
             raise OSError(f"revision render failed: {exc}") from exc
@@ -187,7 +261,7 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
         if expected_formats - set(rendered) or not all(Path(path).exists() and Path(path).stat().st_size > 0 for path in rendered.values()):
             raise OSError("revision render did not produce complete artifacts")
         result = previous_result
-        result.update({"spec": current, "revision_id": revision_id, "revision_number": revision_number, "spec_sha256": _spec_hash(current), "spec_path": str(revision_dir / "figure-spec.json"), "artifacts": {key: str(value) for key, value in rendered.items()}, "artifact_records": {key: file_record(path) for key, path in rendered.items()}, "review_findings": critique_spec(current) + (critique_spec_geometry(current) if current.get("figure_type") != "plot" else [])})
+        result.update({"spec": current, "revision_id": revision_id, "revision_number": revision_number, "spec_sha256": _spec_hash(current), "spec_path": str(revision_dir / "figure-spec.json"), "artifacts": {key: str(value) for key, value in rendered.items()}, "artifact_records": {key: file_record(path) for key, path in rendered.items()}, "review_findings": critique_spec(current) + (critique_spec_geometry(current, route_plan=route_plan) if route_plan is not None else [])})
         _atomic_json(revision_dir / "figure-spec.json", current)
         _atomic_json(revision_dir / "candidate.json", result)
         store.save_version_snapshot(task_id, "figure-spec-before-review", old_spec)
@@ -288,7 +362,7 @@ def create_app(data_dir: str | Path = "figure-agent-data") -> FastAPI:
             store.update_status(task_id, "generating_candidates")
             contract_path = data_root / "tasks" / task_id / "figure-contract.json"
             saved_contract = json.loads(contract_path.read_text(encoding="utf-8")) if contract_path.exists() else None
-            result = generate_from_text(content, output_dir, count=task["request"].get("candidate_count", 3), template_policy=task["request"].get("template_policy", "open_license_first"), target_figure_type=task["request"].get("target_figure_type"), contract=saved_contract)
+            result = generate_from_text(content, output_dir, count=task["request"].get("candidate_count", 3), template_policy=task["request"].get("template_policy", "open_license_first"), target_figure_type=task["request"].get("target_figure_type"), contract=saved_contract, paper_width=task["request"].get("paper_width"))
             contract_path.write_text(json.dumps(result["contract"], ensure_ascii=False, indent=2), encoding="utf-8")
             store.update_status(task_id, "awaiting_review")
             refresh_task_manifest(task_id)

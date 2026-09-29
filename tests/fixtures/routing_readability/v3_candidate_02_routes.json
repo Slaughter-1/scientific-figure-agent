@@ -1,0 +1,253 @@
+{
+  "status": "development_reference_not_holdout",
+  "source_archive": "rc2-closeout-task-v3.zip",
+  "source_member": "data/tasks/8dc69e9b-8aa3-4d2b-b60b-7ec7fb08bdfc/candidates/candidate_02/candidate.json",
+  "positions": {
+    "node_0": [
+      1.7,
+      5.0
+    ],
+    "node_1": [
+      4.5,
+      5.0
+    ],
+    "node_2": [
+      7.3,
+      5.0
+    ],
+    "node_3": [
+      1.7,
+      3.25
+    ]
+  },
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理",
+          "start": 0,
+          "end": 16
+        }
+      ]
+    },
+    {
+      "source": "node_0",
+      "target": "node_2",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理",
+          "start": 0,
+          "end": 16
+        }
+      ]
+    },
+    {
+      "source": "node_1",
+      "target": "node_3",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理，最终交给回答代理；若证据不足则回到检索代理继续搜索。",
+          "start": 0,
+          "end": 43
+        }
+      ]
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理，最终交给回答代理；若证据不足则回到检索代理继续搜索。",
+          "start": 0,
+          "end": 43
+        }
+      ]
+    },
+    {
+      "source": "node_3",
+      "target": "node_1",
+      "type": "control_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "若证据不足则回到检索代理继续搜索",
+          "start": 26,
+          "end": 42
+        }
+      ],
+      "label": "若证据不足"
+    }
+  ],
+  "routes": [
+    [
+      [
+        2.75,
+        5.0
+      ],
+      [
+        2.9299999999999997,
+        5.0
+      ],
+      [
+        3.27,
+        5.0
+      ],
+      [
+        3.45,
+        5.0
+      ]
+    ],
+    [
+      [
+        2.75,
+        5.0
+      ],
+      [
+        2.9299999999999997,
+        5.0
+      ],
+      [
+        3.27,
+        5.0
+      ],
+      [
+        3.27,
+        4.62
+      ],
+      [
+        5.7299999999999995,
+        4.62
+      ],
+      [
+        6.07,
+        4.62
+      ],
+      [
+        6.07,
+        5.0
+      ],
+      [
+        6.25,
+        5.0
+      ]
+    ],
+    [
+      [
+        4.5,
+        5.38
+      ],
+      [
+        4.5,
+        5.779999999999999
+      ],
+      [
+        0.6499999999999999,
+        5.779999999999999
+      ],
+      [
+        0.6499999999999999,
+        3.25
+      ]
+    ],
+    [
+      [
+        7.3,
+        5.38
+      ],
+      [
+        7.3,
+        6.179999999999999
+      ],
+      [
+        0.6499999999999999,
+        6.179999999999999
+      ],
+      [
+        0.6499999999999999,
+        3.25
+      ]
+    ],
+    [
+      [
+        1.7,
+        2.87
+      ],
+      [
+        1.7,
+        1.6000000000000003
+      ],
+      [
+        4.5,
+        1.6000000000000003
+      ],
+      [
+        4.5,
+        4.62
+      ]
+    ]
+  ],
+  "observations": [
+    {
+      "edge_indices": [
+        0,
+        1
+      ],
+      "kind": "same_direction_overlap",
+      "axis": "horizontal",
+      "fixed_coordinate": 5.0,
+      "interval": [
+        2.75,
+        3.27
+      ],
+      "merged_length_layout_units": 0.52
+    },
+    {
+      "edge_indices": [
+        2,
+        3
+      ],
+      "kind": "same_direction_overlap",
+      "axis": "vertical",
+      "fixed_coordinate": 0.65,
+      "interval": [
+        3.25,
+        5.78
+      ],
+      "merged_length_layout_units": 2.53
+    },
+    {
+      "kind": "shared_port",
+      "node_id": "node_0",
+      "edge_indices": [
+        0,
+        1
+      ],
+      "point": [
+        2.75,
+        5.0
+      ]
+    },
+    {
+      "kind": "shared_port",
+      "node_id": "node_3",
+      "edge_indices": [
+        2,
+        3
+      ],
+      "point": [
+        0.65,
+        3.25
+      ]
+    }
+  ]
+}

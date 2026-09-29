@@ -1,0 +1,407 @@
+{
+  "round_id": "R2",
+  "baseline_commit": "2d9e900fb9a7a7e827c1adbd0eff00c8a5cbb989",
+  "cases": [
+    {
+      "task_id": "r2_sequence_01",
+      "category": "sequence",
+      "source_text": "数据采集系统接收传感器数据，随后进行清洗处理，然后执行特征提取，接着完成模型分析，最后生成结果报告。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent sequence structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_sequence_02",
+      "category": "sequence",
+      "source_text": "医学影像平台接收影像文件，随后进行图像预处理，然后完成特征编码，再执行诊断分析，最后输出诊断信息。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent sequence structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_sequence_03",
+      "category": "sequence",
+      "source_text": "推荐系统获取用户行为记录，随后分析用户兴趣，然后生成推荐表示，接着计算推荐结果，最后返回内容列表。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent sequence structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_sequence_04",
+      "category": "sequence",
+      "source_text": "软件交付系统接收代码提交，随后执行构建任务，然后运行测试流程，接着生成部署包，最后发布运行环境。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent sequence structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_branch_05",
+      "category": "branch",
+      "source_text": "客服系统接收用户问题后进入意图判断模块。若属于订单问题，则进入订单查询流程；否则进入知识检索流程。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent branch structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_branch_06",
+      "category": "branch",
+      "source_text": "风险管理系统接收交易数据并进行风险判断。若风险较低，则进入自动处理流程；否则进入人工审核流程。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent branch structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_branch_07",
+      "category": "branch",
+      "source_text": "制造控制系统接收设备状态并进行状态判断。若设备正常，则继续生产；否则进入故障处理流程。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent branch structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_branch_08",
+      "category": "branch",
+      "source_text": "教育平台接收学生内容并进行质量判断。若符合要求，则进入反馈模块；否则进入修改指导模块。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent branch structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_feedback_09",
+      "category": "feedback",
+      "source_text": "生成式问答系统产生回答后进入质量检查模块。如果质量不足，则返回信息检索模块重新获取资料并再次生成回答。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent feedback structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_feedback_10",
+      "category": "feedback",
+      "source_text": "数据分析系统生成分析结果后进入验证模块。如果验证未通过，则返回数据处理阶段重新计算。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent feedback structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_feedback_11",
+      "category": "feedback",
+      "source_text": "图像识别系统输出识别结果后进入人工确认模块。如果确认失败，则返回模型调整阶段进行优化。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent feedback structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_feedback_12",
+      "category": "feedback",
+      "source_text": "推荐服务生成推荐列表后进入用户反馈收集模块。如果反馈不满足要求，则返回推荐生成阶段重新调整。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent feedback structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_parallel_merge_13",
+      "category": "parallel_merge",
+      "source_text": "视觉处理系统和文本处理系统分别处理图像信息与文本信息，随后融合模块合并两路特征并生成综合结果。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent parallel_merge structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_parallel_merge_14",
+      "category": "parallel_merge",
+      "source_text": "科研分析平台分别执行实验数据处理和文献数据处理，之后汇总模块合并两类分析结果。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent parallel_merge structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_parallel_merge_15",
+      "category": "parallel_merge",
+      "source_text": "安全检测系统分别进行网络行为分析和日志分析，随后统一处理模块汇总检测信息。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent parallel_merge structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_parallel_merge_16",
+      "category": "parallel_merge",
+      "source_text": "智能助手分别执行语义理解和知识查询，随后生成模块融合两部分信息输出结果。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent parallel_merge structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_containment_17",
+      "category": "containment",
+      "source_text": "智能医疗系统包含病例分析模块、风险预测模块和治疗建议模块。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent containment structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_containment_18",
+      "category": "containment",
+      "source_text": "智能交通平台包含车辆管理模块、路线规划模块和状态监控模块。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent containment structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_mixed_19",
+      "category": "mixed",
+      "source_text": "智能客服平台包含问题理解模块和知识服务模块。用户请求进入分类判断，根据类型进入不同处理路径，生成回答后由质量检查模块验证，不满足条件时返回知识服务阶段优化。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent mixed structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    },
+    {
+      "task_id": "r2_mixed_20",
+      "category": "mixed",
+      "source_text": "智能科研分析系统包含数据管理模块和实验分析模块。数据输入后分别进入数据处理与模型分析流程，结果汇合后进行质量检查，不符合条件时返回分析阶段重新执行。",
+      "provenance": {
+        "source_kind": "newly_authored",
+        "source_reference": "independent synthetic workflow",
+        "selection_rule": "Created independently to represent mixed structural relations."
+      },
+      "owner": {
+        "name_or_id": "independent_curator_001",
+        "role": "Independent Holdout Curator",
+        "not_involved_in_debugging": true
+      },
+      "independence_attestation": {
+        "attested_by": "independent_curator_001",
+        "attested_at": "2026-09-26",
+        "statement": "This case was independently authored and the provider was not involved in system debugging."
+      }
+    }
+  ],
+  "status": "ready"
+}

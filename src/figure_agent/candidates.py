@@ -12,7 +12,7 @@ from .critic import critique_spec
 from .artifacts import file_record
 from .reviews import identify_issues
 from .visual_critic import critique_spec_geometry
-from .layouts import layout_edges, layout_nodes
+from .layouts import build_route_plan, layout_edges, layout_nodes
 from .spec import require_valid_spec
 from .visual_styles import available_layout_families, get_visual_style
 
@@ -87,9 +87,19 @@ def _design_description(family: str, has_cycle: bool, has_branch: bool) -> dict[
     return design
 
 
-def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: int = 3, templates: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+#: Physical width of each supported column layout, in millimetres. The layout
+#: engine already honours these via ``build_route_plan(paper_width_mm=...)``;
+#: this table only names the two widths a caller is allowed to request.
+PAPER_WIDTH_MM = {"single_column": 85.0, "double_column": 180.0}
+
+
+def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: int = 3, templates: list[dict[str, Any]] | None = None, paper_width: str | None = None) -> list[dict[str, Any]]:
     if not 1 <= count <= 3:
         raise ValueError("count must be between 1 and 3")
+    if paper_width is not None and paper_width not in PAPER_WIDTH_MM:
+        # Fail loudly: silently falling back to double column would report a
+        # single-column run that was actually rendered at 180 mm.
+        raise ValueError(f"unsupported paper_width: {paper_width!r}; expected one of {sorted(PAPER_WIDTH_MM)}")
     require_valid_spec(spec)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -99,6 +109,8 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
     for index in range(count):
         candidate_id = f"candidate_{index + 1:02d}"
         candidate_spec = deepcopy(spec)
+        if paper_width is not None:
+            candidate_spec["constraints"] = {**candidate_spec.get("constraints", {}), "paper_width": paper_width}
         candidate_spec["candidate_id"] = candidate_id
         revision_id = f"{candidate_id}-r{uuid.uuid4().hex[:10]}"
         candidate_spec["revision_id"] = revision_id
@@ -114,6 +126,10 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
         require_valid_spec(candidate_spec)
         candidate_dir = output_dir / candidate_id
         revision_dir = candidate_dir / "revisions" / revision_id
+        route_plan = None
+        if candidate_spec.get("figure_type") != "plot":
+            paper_width_mm = PAPER_WIDTH_MM.get(candidate_spec.get("constraints", {}).get("paper_width"), 180.0)
+            route_plan = build_route_plan(candidate_spec, family=style["layout_family"], paper_width_mm=paper_width_mm)
         if candidate_spec.get("figure_type") == "plot":
             from .backends.plot_backend import render_plot_spec
 
@@ -121,11 +137,12 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
         else:
             from .backends.drawio_backend import render_drawio_spec
 
-            rendered = render_drawio_spec(candidate_spec, revision_dir, "figure")
+            rendered = render_drawio_spec(candidate_spec, revision_dir, "figure", route_plan=route_plan)
         artifacts = {key: str(value) for key, value in rendered.items()}
         template = templates[index] if templates and index < len(templates) else None
-        positions = layout_nodes(candidate_spec, family=style["layout_family"])
-        routes = layout_edges(candidate_spec, positions, family=style["layout_family"])
+        positions = route_plan["positions"] if route_plan is not None else layout_nodes(candidate_spec, family=style["layout_family"])
+        routes = ([route["points"] for route in route_plan["routes"]] if route_plan is not None
+                  else layout_edges(candidate_spec, positions, family=style["layout_family"]))
         design = _design_description(style["layout_family"], has_cycle, has_branch)
         design["family"] = family
         score = _score(candidate_spec, template)
@@ -137,7 +154,7 @@ def generate_candidates(spec: dict[str, Any], output_dir: str | Path, *, count: 
             "artifact_records": {key: file_record(path) for key, path in rendered.items()},
             "revision_id": revision_id, "revision_number": 1, "spec_sha256": spec_hash,
             "design": design, "preview_fingerprint": {"node_positions": {key: list(value) for key, value in positions.items()}, "edge_routes": [[list(point) for point in route] for route in routes], "style_variant": family},
-            "scores": score, "review_findings": critique_spec(candidate_spec) + (critique_spec_geometry(candidate_spec) if candidate_spec.get("figure_type") != "plot" else []),
+            "scores": score, "review_findings": critique_spec(candidate_spec) + (critique_spec_geometry(candidate_spec, route_plan=route_plan) if route_plan is not None else []),
         }
         (revision_dir / "figure-spec.json").write_text(json.dumps(candidate_spec, ensure_ascii=False, indent=2), encoding="utf-8")
         (revision_dir / "candidate.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

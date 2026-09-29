@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import xml.etree.ElementTree as ET
+import math
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +19,71 @@ def _segment_crosses_box(start: tuple[float, float], end: tuple[float, float], b
     return False
 
 
-def critique_spec_geometry(spec: dict[str, Any]) -> list[dict[str, str]]:
+def inspect_route_plan(plan: dict[str, Any]) -> list[dict[str, Any]]:
+    """Inspect one already-routed plan without changing its geometry."""
+    from .layouts import box_distance, polygon_box, route_crossings, route_pair_conflicts, route_self_conflicts, segment_box_distance, _segments
+
+    findings: list[dict[str, Any]] = list(plan.get("findings", []))
+    routes = plan.get("routes", [])
+    scale = float(plan.get("mm_per_unit", 1.0))
+    boxes = plan.get("node_boxes", {})
+    for index, route in enumerate(routes):
+        points = route.get("points", [])
+        if len(points) < 2:
+            if not any(f.get("code") == "routing_unresolved" and f.get("edge_index") == route.get("edge_index") for f in findings):
+                findings.append(_finding("routing_unresolved", "error", f"edge {route.get('edge_index')} has no route"))
+            continue
+        if any(abs(a[0]-b[0]) < 1e-9 and abs(a[1]-b[1]) < 1e-9 for a, b in zip(points, points[1:])):
+            findings.append(_finding("degenerate_route", "error", f"edge {route.get('edge_index')} contains a zero-length segment"))
+        findings.extend(route_self_conflicts(points))
+        for node_id, box in boxes.items():
+            if node_id in {route.get("source"), route.get("target")}:
+                continue
+            if any(_segment_crosses_box(a, b, box) for a, b in zip(points, points[1:])):
+                findings.append(_finding("edge_crosses_node", "error", f"edge {route.get('edge_index')} crosses node {node_id}"))
+        arrow = route.get("arrow_polygon") or []
+        arrow_box = polygon_box(arrow) if arrow else None
+        if arrow_box and any(box_distance(arrow_box, box)*scale < 1e-8 for node_id, box in boxes.items() if node_id != route.get("target")):
+            findings.append(_finding("edge_crosses_node", "error", f"arrow for edge {route.get('edge_index')} overlaps a node"))
+    for index, left in enumerate(routes):
+        for right in routes[index+1:]:
+            findings.extend(route_pair_conflicts(left.get("points", []), right.get("points", []), mm_per_unit=scale))
+            findings.extend(route_crossings(left.get("points", []), right.get("points", [])))
+            for node_id in set((left.get("source"), left.get("target"))) & set((right.get("source"), right.get("target"))):
+                lp = [left.get("source_port"), left.get("target_port")][left.get("source") != node_id]
+                rp = [right.get("source_port"), right.get("target_port")][right.get("source") != node_id]
+                if lp and rp and math.dist(lp["point"], rp["point"]) * scale < 2.0-1e-8:
+                    findings.append(_finding("edge_port_crowding", "error", f"ports at node {node_id} are closer than 2 mm"))
+    for title in plan.get("group_titles", []):
+        for route in routes:
+            if any(segment_box_distance(a, b, title["box"]) * scale < 1.2-1e-8
+                   for a, b in _segments(route.get("points", []))):
+                findings.append(_finding(
+                    "edge_group_title_clearance", "error",
+                    f"edge {route.get('edge_index')} is too close to group title {title.get('text', '')!r}",
+                ))
+    label_boxes = [(route, route.get("label_box", {}).get("box")) for route in routes if route.get("label_box")]
+    for route, label_box in label_boxes:
+        if any(segment_box_distance(a, b, label_box)*scale < 1.0-1e-8
+               for a, b in _segments(route.get("points", []))):
+            findings.append(_finding("edge_label_clearance", "error", f"label for edge {route.get('edge_index')} touches its own edge"))
+        others = [box for node_id, box in boxes.items() if node_id not in {route.get("source"), route.get("target")}]
+        others += [title.get("box") for title in plan.get("group_titles", [])]
+        if plan.get("title"):
+            others.append(plan["title"]["box"])
+        others += [r.get("label_box", {}).get("box") for r, box in label_boxes if r is not route]
+        others += [polygon_box(r.get("arrow_polygon")) for r in routes if r is not route and r.get("arrow_polygon")]
+        if any(box_distance(label_box, other)*scale < 1.0-1e-8 for other in others):
+            findings.append(_finding("edge_label_clearance", "error", f"label for edge {route.get('edge_index')} is too close to another object"))
+        for other in routes:
+            if other is route:
+                continue
+            if any(segment_box_distance(a, b, label_box)*scale < 1.0-1e-8 for a, b in _segments(other.get("points", []))):
+                findings.append(_finding("edge_label_clearance", "error", f"label for edge {route.get('edge_index')} touches another edge"))
+    return findings
+
+
+def critique_spec_geometry(spec: dict[str, Any], *, route_plan: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """Check deterministic routes before rendering so clipping and crossings are caught."""
     from .layouts import layout_edges, layout_nodes, node_size
     from .visual_styles import get_visual_style
@@ -26,6 +91,8 @@ def critique_spec_geometry(spec: dict[str, Any]) -> list[dict[str, str]]:
     nodes = spec.get("nodes", [])
     if not nodes or not spec.get("edges"):
         return []
+    if route_plan is not None:
+        return inspect_route_plan(route_plan)
     family = get_visual_style(spec.get("style", {}).get("variant", "editorial")).get("layout_family", "pipeline")
     positions = layout_nodes(spec, family=family)
     routes = layout_edges(spec, positions, family=family)

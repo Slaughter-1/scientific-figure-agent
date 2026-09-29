@@ -6,6 +6,8 @@ from typing import Any
 
 from .artifacts import spec_sha256
 from .backends.figma_backend import compile_figma_scene
+from .layouts import build_route_plan
+from .visual_styles import get_visual_style
 from .spec import load_spec, require_valid_spec
 
 
@@ -20,7 +22,13 @@ def build_figma_handoff(
     output_dir = Path(output_dir)
     spec = load_spec(spec_path)
     require_valid_spec(spec)
-    scene = compile_figma_scene(spec)
+    route_plan = None
+    if spec.get("figure_type") != "plot":
+        style = spec.get("style", {})
+        family = get_visual_style(style.get("variant", "editorial")).get("layout_family", "pipeline")
+        paper_width = 85.0 if spec.get("constraints", {}).get("paper_width") == "single_column" else 180.0
+        route_plan = build_route_plan(spec, family=family, paper_width_mm=paper_width)
+    scene = compile_figma_scene(spec, route_plan=route_plan)
     output_dir.mkdir(parents=True, exist_ok=True)
     scene_path = output_dir / "figure.figma-scene.json"
     scene_path.write_text(json.dumps(scene, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -5,8 +5,10 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from .backends.figma_backend import compile_figma_scene
+from .layouts import build_route_plan
 from .parity import compare_semantics, extract_figma_semantics
 from .spec import require_valid_spec
+from .visual_styles import get_visual_style
 
 
 class FigmaM0Transport(Protocol):
@@ -40,6 +42,13 @@ def m0_spec() -> dict[str, Any]:
     }
 
 
+def _m0_route_plan(spec: dict[str, Any]) -> dict[str, Any]:
+    """Reuse the existing RoutePlan for the M0 bundle; no routing algorithm changes here."""
+    style = get_visual_style(spec.get("style", {}).get("variant", "editorial"))
+    paper_width_mm = 85.0 if spec.get("constraints", {}).get("paper_width") == "single_column" else 180.0
+    return build_route_plan(spec, family=style.get("layout_family", "pipeline"), paper_width_mm=paper_width_mm)
+
+
 def run_figma_m0(output_dir: str | Path, transport: FigmaM0Transport | None = None) -> dict[str, Any]:
     """Create an auditable local M0 bundle; remote success requires all bridge methods."""
     output = Path(output_dir)
@@ -47,13 +56,15 @@ def run_figma_m0(output_dir: str | Path, transport: FigmaM0Transport | None = No
     spec = m0_spec()
     require_valid_spec(spec)
     (output / "spec.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
-    scene = compile_figma_scene(spec)
+    route_plan = _m0_route_plan(spec)
+    (output / "route-plan.json").write_text(json.dumps(route_plan, ensure_ascii=False, indent=2), encoding="utf-8")
+    scene = compile_figma_scene(spec, route_plan=route_plan)
     (output / "local-scene.json").write_text(json.dumps(scene, ensure_ascii=False, indent=2), encoding="utf-8")
     parity = compare_semantics(spec, extract_figma_semantics(scene))
     (output / "parity.json").write_text(json.dumps({"status": "pass" if not parity else "fail", "findings": parity}, ensure_ascii=False, indent=2), encoding="utf-8")
-    schema = {"protocol": "FigmaM0Transport", "methods": ["write_scene(scene)", "readback(file_or_frame)", "export(file_or_frame, ['svg','pdf'], output_dir)"], "remote_status": "unavailable"}
+    schema = {"protocol": "FigmaM0Transport", "methods": ["write_scene(scene)", "readback(file_or_frame)", "export(file_or_frame, ['svg','pdf'], output_dir)"], "remote_status": "unavailable", "edge_kind": "VECTOR", "geometry_source": "route_plan"}
     (output / "transport-schema.json").write_text(json.dumps(schema, ensure_ascii=False, indent=2), encoding="utf-8")
-    result: dict[str, Any] = {"status": "unavailable", "spec": str(output / "spec.json"), "scene": str(output / "local-scene.json"), "parity": str(output / "parity.json"), "file_or_frame": None}
+    result: dict[str, Any] = {"status": "unavailable", "spec": str(output / "spec.json"), "scene": str(output / "local-scene.json"), "parity": str(output / "parity.json"), "route_plan": str(output / "route-plan.json"), "file_or_frame": None}
     if transport is not None:
         try:
             remote = transport.write_scene(scene)

@@ -19,6 +19,40 @@ from .workflow import build_figure_contract, generate_from_text
 from .figma_handoff import build_figma_handoff
 from .figma_m0 import run_figma_m0
 from .visual_eval import build_review_sheet, generate_benchmark
+from .candidates import PAPER_WIDTH_MM
+
+
+def _load_benchmark_cases(path: str) -> list[dict[str, str]]:
+    """Normalize legacy flat cases and the full R2 holdout envelope.
+
+    The generator intentionally receives only the fields it consumes.  The
+    source envelope remains the provenance-bearing input artifact on disk.
+    """
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if isinstance(payload, dict):
+        cases = payload.get("cases")
+        if not isinstance(cases, list):
+            raise ValueError("benchmark cases envelope must contain a list at 'cases'")
+    elif isinstance(payload, list):
+        cases = payload
+    else:
+        raise ValueError("benchmark cases must be a list or an envelope object")
+
+    normalized: list[dict[str, str]] = []
+    for index, case in enumerate(cases, start=1):
+        if not isinstance(case, dict):
+            raise ValueError(f"benchmark case {index} must be an object")
+        case_id = case.get("id", case.get("task_id"))
+        text = case.get("text", case.get("source_text"))
+        category = case.get("category")
+        if not isinstance(case_id, str) or not case_id:
+            raise ValueError(f"benchmark case {index} is missing id/task_id")
+        if not isinstance(text, str) or not text:
+            raise ValueError(f"benchmark case {case_id} is missing text/source_text")
+        if not isinstance(category, str) or not category:
+            raise ValueError(f"benchmark case {case_id} is missing category")
+        normalized.append({"id": case_id, "category": category, "text": text})
+    return normalized
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -50,6 +84,7 @@ def main(argv: list[str] | None = None) -> int:
     generate_parser.add_argument("--output-dir", required=True)
     generate_parser.add_argument("--candidates", type=int, default=3)
     generate_parser.add_argument("--policy", default="open_license_first")
+    generate_parser.add_argument("--paper-width", choices=sorted(PAPER_WIDTH_MM), help="render at this column width; omit to keep the double-column default")
     analyze_parser = subparsers.add_parser("analyze")
     analyze_parser.add_argument("--input", required=True)
     package_parser = subparsers.add_parser("package")
@@ -73,6 +108,7 @@ def main(argv: list[str] | None = None) -> int:
     benchmark_parser = subparsers.add_parser("generate-benchmark")
     benchmark_parser.add_argument("--cases", required=True)
     benchmark_parser.add_argument("--output-dir", required=True)
+    benchmark_parser.add_argument("--paper-widths", default="single_column,double_column", help="comma-separated column widths; each is generated separately")
     args = parser.parse_args(argv)
     if args.command == "check-env":
         print(json.dumps(build_environment_report(), indent=2))
@@ -117,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "generate":
         try:
             text = Path(args.input).read_text(encoding="utf-8")
-            result = generate_from_text(text, args.output_dir, count=args.candidates, template_policy=args.policy)
+            result = generate_from_text(text, args.output_dir, count=args.candidates, template_policy=args.policy, paper_width=args.paper_width)
             print(json.dumps({"contract": result["contract"], "candidate_count": len(result["candidates"])}, ensure_ascii=False, indent=2))
             return 0
         except (OSError, ValueError) as exc:
@@ -170,8 +206,17 @@ def main(argv: list[str] | None = None) -> int:
         print(path)
         return 0
     if args.command == "generate-benchmark":
-        cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
-        path = generate_benchmark(cases, args.output_dir)
+        widths = tuple(item.strip() for item in args.paper_widths.split(",") if item.strip())
+        try:
+            cases = _load_benchmark_cases(args.cases)
+            path = generate_benchmark(cases, args.output_dir, paper_widths=widths)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            print(f"figure-agent generate-benchmark error: {exc}", file=sys.stderr)
+            return 2
         print(path)
         return 0
     return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -84,7 +84,7 @@ def compile_spec_with_contract(spec: dict[str, Any], contract: dict[str, Any]) -
     return compiled
 
 
-def generate_from_text(text: str, output_dir: str | Path, *, count: int = 3, template_policy: str = "open_license_first", target_figure_type: str | None = None, contract: dict[str, Any] | None = None) -> dict[str, Any]:
+def generate_from_text(text: str, output_dir: str | Path, *, count: int = 3, template_policy: str = "open_license_first", target_figure_type: str | None = None, contract: dict[str, Any] | None = None, paper_width: str | None = None) -> dict[str, Any]:
     spec = parse_method_text(text)
     contract = contract or build_figure_contract(text, target_figure_type=target_figure_type)
     spec = compile_spec_with_contract(spec, contract)
@@ -92,5 +92,5 @@ def generate_from_text(text: str, output_dir: str | Path, *, count: int = 3, tem
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "figure-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2), encoding="utf-8")
-    candidates = generate_candidates(spec, output_dir, count=count, templates=templates)
+    candidates = generate_candidates(spec, output_dir, count=count, templates=templates, paper_width=paper_width)
     return {"contract": contract, "candidates": candidates}

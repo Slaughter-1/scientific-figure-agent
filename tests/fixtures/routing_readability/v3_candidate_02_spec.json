@@ -1,0 +1,275 @@
+{
+  "schema_version": "0.3",
+  "figure_type": "architecture",
+  "title": "Generated Workflow",
+  "layout": {
+    "direction": "top-to-bottom",
+    "spacing": 30
+  },
+  "nodes": [
+    {
+      "id": "node_0",
+      "label": "协调器",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器",
+          "start": 0,
+          "end": 3
+        }
+      ]
+    },
+    {
+      "id": "node_1",
+      "label": "检索代理",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "检索代理",
+          "start": 7,
+          "end": 11
+        }
+      ]
+    },
+    {
+      "id": "node_2",
+      "label": "分析代理",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "分析代理",
+          "start": 12,
+          "end": 16
+        }
+      ]
+    },
+    {
+      "id": "node_3",
+      "label": "回答代理",
+      "type": "process",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "回答代理",
+          "start": 21,
+          "end": 25
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "node_0",
+      "target": "node_1",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理",
+          "start": 0,
+          "end": 16
+        }
+      ]
+    },
+    {
+      "source": "node_0",
+      "target": "node_2",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理",
+          "start": 0,
+          "end": 16
+        }
+      ]
+    },
+    {
+      "source": "node_1",
+      "target": "node_3",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理，最终交给回答代理；若证据不足则回到检索代理继续搜索。",
+          "start": 0,
+          "end": 43
+        }
+      ]
+    },
+    {
+      "source": "node_2",
+      "target": "node_3",
+      "type": "data_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "协调器并行调用检索代理和分析代理，最终交给回答代理；若证据不足则回到检索代理继续搜索。",
+          "start": 0,
+          "end": 43
+        }
+      ]
+    },
+    {
+      "source": "node_3",
+      "target": "node_1",
+      "type": "control_flow",
+      "evidence": [
+        {
+          "source": "input_text",
+          "quote": "若证据不足则回到检索代理继续搜索",
+          "start": 26,
+          "end": 42
+        }
+      ],
+      "label": "若证据不足"
+    }
+  ],
+  "groups": [
+    {
+      "id": "visual-group-2",
+      "label": "Agent Core",
+      "children": [
+        "node_0",
+        "node_1",
+        "node_2",
+        "node_3"
+      ]
+    }
+  ],
+  "needs_review": [],
+  "provenance": {
+    "source": "input_text",
+    "parser": "explicit_prose"
+  },
+  "metadata": {
+    "source_text": "协调器并行调用检索代理和分析代理，最终交给回答代理；若证据不足则回到检索代理继续搜索。",
+    "figure_contract": {
+      "figure_goal": "method_overview",
+      "target_figure_type": "architecture",
+      "required_labels": [
+        "协调器",
+        "检索代理",
+        "分析代理",
+        "回答代理"
+      ],
+      "optional_nodes": [],
+      "required_edges": [
+        {
+          "source": "node_0",
+          "target": "node_1",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_0",
+          "target": "node_2",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_1",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_2",
+          "target": "node_3",
+          "type": "data_flow"
+        },
+        {
+          "source": "node_3",
+          "target": "node_1",
+          "type": "control_flow",
+          "label": "若证据不足"
+        }
+      ],
+      "evidence_gaps": [],
+      "evidence_coverage": 1.0,
+      "needs_review": []
+    }
+  },
+  "style": {
+    "theme": "academic_clean",
+    "colors": {
+      "process": "#DBEAFE",
+      "data": "#EFF6FF",
+      "tool": "#E0E7FF",
+      "model": "#DDD6FE",
+      "storage": "#CFFAFE",
+      "decision": "#FEF3C7"
+    },
+    "layout_family": "swimlane",
+    "surface": {
+      "background": "#F8FAFC",
+      "canvas_padding": 34
+    },
+    "node": {
+      "width": 210,
+      "height": 76,
+      "radius": 10,
+      "shadow": "none"
+    },
+    "edge": {
+      "routing": "orthogonal",
+      "width": 1.4,
+      "arrow": "open"
+    },
+    "font": {
+      "family": "Noto Sans SC",
+      "fallbacks": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Arial",
+        "DejaVu Sans"
+      ],
+      "title_size": 14.0,
+      "node_size": 9.5,
+      "annotation_size": 8.0
+    },
+    "variant": "swimlane",
+    "font_family": "Noto Sans SC",
+    "font_sizes": {
+      "title": 14.0,
+      "node": 9.5
+    },
+    "stroke": "#355070",
+    "arrow_color": "#56718C",
+    "group_fill": "#F8FAFC"
+  },
+  "candidate_id": "candidate_02",
+  "revision_id": "candidate_02-r10cf6cd8b5",
+  "template_refs": [
+    {
+      "id": "mermaid_official_architecture",
+      "source_url": "https://mermaid.js.org/syntax/architecture",
+      "source_type": "mermaid_official",
+      "license": "verified",
+      "license_evidence_url": "https://mermaid.js.org/syntax/architecture",
+      "approval_status": "verified",
+      "editable": true,
+      "supported_types": [
+        "architecture",
+        "workflow"
+      ],
+      "style_tags": [
+        "academic_clean",
+        "text_first"
+      ],
+      "components": [
+        "service",
+        "group",
+        "edge"
+      ],
+      "preview_url": null,
+      "download_url": null,
+      "restrictions": [],
+      "retrieved_at": "2026-09-22T11:43:45.397724+00:00",
+      "embedded": false,
+      "content_hash_scope": "template_record_metadata",
+      "content_sha256": "d830848468a7d39b76bcac631c9bc8108f78b61265b39e8a7e5f71b19068d8e9",
+      "match_reason": "query token matched template metadata"
+    }
+  ]
+}

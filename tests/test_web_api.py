@@ -1,8 +1,32 @@
+import re
+import struct
+import xml.etree.ElementTree as ET
+
+import pytest
 from fastapi.testclient import TestClient
 
 
 def _request():
     return {"input_type": "paper_text", "content": "Query → Retriever → Generator", "figure_goal": "method_overview"}
+
+
+def _svg_width_mm(payload: bytes) -> float:
+    width = ET.fromstring(payload).get("width")
+    assert width and width.endswith("pt")
+    return float(width[:-2]) / (72.0 / 25.4)
+
+
+def _pdf_width_mm(payload: bytes) -> float:
+    match = re.search(rb"/MediaBox\s*\[\s*0\s+0\s+([\d.]+)", payload)
+    assert match
+    return float(match.group(1)) / (72.0 / 25.4)
+
+
+def _png_width_mm(payload: bytes) -> float:
+    assert payload[:8] == b"\x89PNG\r\n\x1a\n"
+    assert payload[12:16] == b"IHDR"
+    width_px = struct.unpack(">I", payload[16:20])[0]
+    return width_px / 220.0 * 25.4
 
 
 def test_local_api_creates_and_persists_task(tmp_path):
@@ -83,6 +107,26 @@ def test_local_api_analyzes_and_generates_candidates(tmp_path):
     exported = client.post(f"/api/tasks/{task_id}/export", json={"candidate_id": "candidate_02"})
     assert exported.status_code == 200
     assert client.get(exported.json()["download_url"]).status_code == 200
+
+
+@pytest.mark.parametrize(("paper_width", "expected_mm"), [("single_column", 85.0), ("double_column", 180.0)])
+def test_local_api_generates_requested_paper_width_in_real_artifacts(tmp_path, paper_width, expected_mm):
+    from figure_agent.app.api import create_app
+
+    client = TestClient(create_app(tmp_path))
+    request = {**_request(), "paper_width": paper_width}
+    task_id = client.post("/api/tasks", json=request).json()["task_id"]
+    generated = client.post(f"/api/tasks/{task_id}/generate-candidates")
+    assert generated.status_code == 200
+
+    artifacts = generated.json()["candidates"][0]["artifacts"]
+    svg = client.get(artifacts["svg"])
+    pdf = client.get(artifacts["pdf"])
+    png = client.get(artifacts["png"])
+    assert svg.status_code == pdf.status_code == png.status_code == 200
+    assert _svg_width_mm(svg.content) == pytest.approx(expected_mm, abs=0.1)
+    assert _pdf_width_mm(pdf.content) == pytest.approx(expected_mm, abs=0.1)
+    assert _png_width_mm(png.content) == pytest.approx(expected_mm, abs=0.5)
 
 
 def test_export_without_candidate_uses_selected_candidate(tmp_path):
@@ -237,3 +281,129 @@ def test_evidence_review_can_be_resolved_without_clearing_unrelated_findings(tmp
     assert next(node for node in spec["nodes"] if node["id"] == "node_1")["evidence"][-1]["quote"] == "Retriever"
     assert client.post(f"/api/tasks/{task_id}/select-candidate", json={"candidate_id": "candidate_01"}).status_code == 200
     assert client.post(f"/api/tasks/{task_id}/export", json={}).status_code == 200
+
+
+def _asset_task(client, tmp_path, *, with_license=True):
+    """Drive a task to the point where an uploaded asset can be attached to a candidate."""
+    task_id = client.post("/api/tasks", json=_request()).json()["task_id"]
+    assert client.post(f"/api/tasks/{task_id}/generate-candidates").status_code == 200
+    svg = client.post(
+        f"/api/tasks/{task_id}/assets",
+        files={"file": ("component.svg", b'<svg width="24" height="24"></svg>', "image/svg+xml")},
+    ).json()
+    evidence = None
+    if with_license:
+        evidence = client.post(
+            f"/api/tasks/{task_id}/assets",
+            files={"file": ("LICENSE.txt", b"MIT License\nCopyright (c) 2026 Example Owner\n", "text/plain")},
+        ).json()
+    return task_id, svg, evidence
+
+
+def _attached_spec(client, task_id):
+    return client.get(f"/api/tasks/{task_id}/files/candidates/candidate_01/figure-spec.json").json()
+
+
+def test_attach_asset_review_action_records_it_as_pending_review(tmp_path):
+    """Attaching is evidence-recording only: it must not approve as a side effect."""
+    from figure_agent.app.api import create_app
+
+    client = TestClient(create_app(tmp_path))
+    task_id, svg, evidence = _asset_task(client, tmp_path)
+    response = client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "attach_asset", "candidate_id": "candidate_01", "target": "node_1",
+              "path": svg["path"], "license": "MIT", "license_evidence_path": evidence["path"],
+              "source_url": "https://example.org/component.svg",
+              "license_evidence_url": "https://example.org/LICENSE"},
+    )
+    assert response.status_code == 200
+    asset = _attached_spec(client, task_id)["asset_refs"][0]
+    assert asset["approval_status"] == "pending_review"
+    assert asset["hash_scope"] == "file_bytes"
+    assert client.post(f"/api/tasks/{task_id}/select-candidate", json={"candidate_id": "candidate_01"}).status_code == 200
+    assert client.post(f"/api/tasks/{task_id}/export", json={}).status_code == 409
+
+
+def test_approve_asset_review_action_requires_a_reason(tmp_path):
+    from figure_agent.app.api import create_app
+
+    client = TestClient(create_app(tmp_path))
+    task_id, svg, evidence = _asset_task(client, tmp_path)
+    assert client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "attach_asset", "candidate_id": "candidate_01", "target": "node_1",
+              "path": svg["path"], "license": "MIT", "license_evidence_path": evidence["path"]},
+    ).status_code == 200
+    asset_id = _attached_spec(client, task_id)["asset_refs"][0]["asset_id"]
+    unreasoned = client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "approve_asset", "candidate_id": "candidate_01", "asset_id": asset_id},
+    )
+    assert unreasoned.status_code == 422
+    assert _attached_spec(client, task_id)["asset_refs"][0]["approval_status"] == "pending_review"
+
+
+def test_approve_asset_review_action_clears_the_export_audit(tmp_path):
+    from figure_agent.app.api import create_app
+
+    client = TestClient(create_app(tmp_path))
+    task_id, svg, evidence = _asset_task(client, tmp_path)
+    assert client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "attach_asset", "candidate_id": "candidate_01", "target": "node_1",
+              "path": svg["path"], "license": "MIT", "license_evidence_path": evidence["path"],
+              "source_url": "https://example.org/component.svg",
+              "license_evidence_url": "https://example.org/LICENSE"},
+    ).status_code == 200
+    asset_id = _attached_spec(client, task_id)["asset_refs"][0]["asset_id"]
+    assert client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "approve_asset", "candidate_id": "candidate_01", "asset_id": asset_id,
+              "reason": "user supplied the upstream MIT license"},
+    ).status_code == 200
+    asset = _attached_spec(client, task_id)["asset_refs"][0]
+    assert asset["approval_status"] == "approved"
+    assert asset["license"] == "MIT"
+    assert asset["asset_id"] == asset_id
+    assert client.post(f"/api/tasks/{task_id}/select-candidate", json={"candidate_id": "candidate_01"}).status_code == 200
+    assert client.post(f"/api/tasks/{task_id}/export", json={}).status_code == 200
+
+
+def test_approve_asset_refuses_bytes_changed_since_attachment(tmp_path):
+    """``asset_id`` is derived from the bytes, so a swap must not be approved silently."""
+    from pathlib import Path
+
+    from figure_agent.app.api import create_app
+
+    client = TestClient(create_app(tmp_path))
+    task_id, svg, evidence = _asset_task(client, tmp_path)
+    assert client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "attach_asset", "candidate_id": "candidate_01", "target": "node_1",
+              "path": svg["path"], "license": "MIT", "license_evidence_path": evidence["path"]},
+    ).status_code == 200
+    asset_id = _attached_spec(client, task_id)["asset_refs"][0]["asset_id"]
+    Path(svg["path"]).write_bytes(b'<svg width="999" height="24"></svg>')
+    swapped = client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "approve_asset", "candidate_id": "candidate_01", "asset_id": asset_id,
+              "reason": "should not pass"},
+    )
+    assert swapped.status_code == 422
+    assert _attached_spec(client, task_id)["asset_refs"][0]["approval_status"] == "pending_review"
+
+
+def test_attach_asset_refuses_a_path_outside_the_task_directory(tmp_path):
+    from figure_agent.app.api import create_app
+
+    outside = tmp_path / "outside.svg"
+    outside.write_bytes(b'<svg width="24" height="24"></svg>')
+    client = TestClient(create_app(tmp_path / "data"))
+    task_id, _, evidence = _asset_task(client, tmp_path)
+    escaped = client.post(
+        f"/api/tasks/{task_id}/review-actions",
+        json={"action": "attach_asset", "candidate_id": "candidate_01", "target": "node_1",
+              "path": str(outside), "license": "MIT", "license_evidence_path": evidence["path"]},
+    )
+    assert escaped.status_code == 422

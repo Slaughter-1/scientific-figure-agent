@@ -10,3 +10,10 @@ dist/
 frontend/node_modules/
 frontend/dist/
 figure-agent-data/
+
+# New local runtime/evaluation artifacts. Existing tracked historical fixtures
+# remain tracked and are not removed by these patterns.
+outputs/**/*.zip
+outputs/**/*.log
+outputs/**/*.sqlite3
+outputs/**/tasks/

@@ -23,7 +23,14 @@ def _clean_clause(clause: str, *, strip_leading: bool = True) -> str:
     if "模块" in clause:
         return clause[: clause.index("模块") + 2]
     if "模型" in clause:
-        return clause[: clause.index("模型") + 2]
+        model_at = clause.index("模型")
+        suffix = clause[model_at + 2:]
+        # Keep an explicitly named action such as ``完成模型分析`` intact.
+        # Bare model nouns (``大语言模型进行规则识别``) retain the historic
+        # noun normalization used by the parser and existing contracts.
+        if suffix and re.search(r"(?:完成|执行|进行|生成|输出)模型", clause):
+            return clause
+        return clause[: model_at + 2]
     if clause.startswith("接收"):
         return clause[2:].strip()
     if clause.startswith("存入"):

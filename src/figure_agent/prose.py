@@ -66,7 +66,11 @@ def _entity(text: str) -> str:
     """Normalize an entity without turning a noun-list suffix into an action."""
     from .parser import _clean_clause
 
-    value = _clean_clause(text).strip()
+    raw = re.sub(r'^(?:进入|走|调用|转到|由)', '', text.strip())
+    if re.search(r'(?:模块|阶段|流程|环节)$', raw):
+        value = raw
+    else:
+        value = _clean_clause(raw).strip()
     if value != "输入":
         value = re.sub(r"(?:两种|多种|若干)?(?:类型)?输入$", "", value).strip()
     return value
@@ -94,10 +98,57 @@ def _steps(clause: str) -> list[str]:
     if '、' in clause:
         return [step for part in clause.split('、') for step in _steps(part)]
     clause = re.sub(r'^(?:送入|交给|进入|经过|进行)', '', clause)
+    clause = re.sub(r'^由', '', clause)
     return [_clean_clause(clause)] if clause else []
 
 
+def _continuation_target(graph: _Graph, suffix: str, quote: str) -> tuple[str | None, str | None]:
+    """Resolve one explicit ``再次/重新/继续`` action to an existing node."""
+    markers = list(re.finditer(r'(?:再次|重新|继续)(?:进行|执行|完成|优化)?', suffix))
+    if not markers:
+        return None, None
+    marker = markers[-1]
+    tail = suffix[marker.end():].strip()
+    if not tail:
+        return None, None
+    # A continuation marker inside an explicit prohibition is evidence about
+    # what must not happen. Keep that evidence for review, but never turn it
+    # into a positive graph edge.
+    prefix = suffix[:marker.start()]
+    if re.search(r'(?:禁止|不得|不要|不能|不可|严禁)\s*$', prefix):
+        graph.review('negative_continuation', quote, suffix.strip())
+        return None, None
+    if any(separator in tail for separator in ('、', '，', ',', '并', '和', '与')):
+        graph.review('ambiguous_continuation', quote, tail)
+        return None, None
+    action = tail.rstrip('。；;')
+    labels = list(graph.nodes)
+    exact = [label for label in labels if action in label or label in action]
+    if not exact:
+        action_chars = {char for char in action if not char.isspace()}
+        exact = [label for label in labels
+                 if len(action_chars) >= 2 and action_chars <= set(label)]
+    if len(exact) != 1:
+        graph.review('continuation_target_unresolved', quote, action)
+        return None, None
+    return exact[0], suffix[marker.start():marker.end() + len(action)]
+
+
 def _return(graph: _Graph, sources: list[str], clause: str, quote: str, condition: str = '') -> bool:
+    named = re.fullmatch(
+        rf'(?:则|便|就)?(?:返回|退回|回到|循环回到|迭代到)'
+        rf'(?P<target>.+?(?:模块|阶段|流程|环节))'
+        rf'(?P<suffix>(?:(?:重新|再次|继续|进行|执行|完成|优化|并).*)?)', clause
+    )
+    if named and sources:
+        target = re.sub(r'^(?:进入|走|调用|转到)', '', named['target'].strip())
+        graph.node(target, quote)
+        for source in sources:
+            graph.edge(source, target, quote, kind='control_flow', label=condition)
+        continuation, continuation_quote = _continuation_target(graph, named['suffix'], quote)
+        if continuation and continuation_quote:
+            graph.edge(target, continuation, continuation_quote)
+        return True
     match = re.fullmatch(rf'(?:则|便|就)?(?:{_RETURN})(.+?)(?:(直到.+)|(?:继续|重新).*)?', clause)
     if not match:
         return False
@@ -125,12 +176,32 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
     previous: list[str] = []
     changed = False
     branch_source: str | None = None
+    branch_anchor: str | None = None
     parallel_pending = False
     branch_pending = False
     branch_arms: list[str] = []
     pending_condition = ''
+    pending_branch_condition = ''
     for index, clause in enumerate(clauses):
+        if pending_branch_condition:
+            branch_arm = re.fullmatch(r'(?:则|便|就)(?:进入|走|调用|转到|继续|执行|进行|处理)(.+)', clause)
+            if branch_arm and previous:
+                source = previous[-1]
+                target = graph.node(_entity(branch_arm[1]), clause)
+                graph.edge(source, target, clause, kind='control_flow', label=pending_branch_condition)
+                previous, changed, branch_pending, branch_arms, branch_anchor = [], True, True, [target], source
+                pending_branch_condition = ''
+                continue
+            pending_branch_condition = ''
         if branch_pending:
+            else_arm = re.fullmatch(r'(?:否则|不满足时|否则则)(?:进入|走|调用|转到|继续|执行|进行|处理)?(.+)', clause)
+            if else_arm and branch_anchor:
+                target = graph.node(_entity(else_arm[1]), clause)
+                graph.edge(branch_anchor, target, clause, kind='control_flow', label='否则')
+                branch_arms.append(target)
+                previous, branch_pending, branch_anchor = [target], False, None
+                changed = True
+                continue
             # A branch continuation is only joined when the source explicitly
             # names the merge. A bare next sentence remains review-only and
             # must not receive guessed edges from every branch arm.
@@ -145,7 +216,7 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
                 graph.node(target, clause)
                 for arm in branch_arms:
                     graph.edge(arm, target, clause)
-                previous, branch_pending, branch_arms = [target], False, []
+                previous, branch_pending, branch_arms, branch_anchor = [target], False, [], None
                 changed = True
                 continue
             # Consecutive success/failure clauses form one explicit branch;
@@ -177,7 +248,7 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
 
         # Phase membership and explicitly stated invocation are different
         # relations; never chain siblings or adjacent phases.
-        member = re.fullmatch(r'(.+?阶段)(?:包含|包括)(.+)', clause)
+        member = re.fullmatch(r'(.+?(?:阶段|系统|平台))(?:包含|包括)(.+)', clause)
         invoke = re.fullmatch(r'(.+?阶段)由(.+?)调用(.+)', clause)
         if member or invoke:
             match = member or invoke
@@ -214,6 +285,37 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
             previous, changed, parallel_pending = children, True, True
             continue
 
+        parallel_subjects = re.fullmatch(r'(.+?)(?:和|与)(.+?)分别处理(.+?)(?:与|和)(.+)', clause)
+        parallel_actions = re.fullmatch(r'(.+?)(?:分别执行|分别进行)(.+?)(?:和|与)(.+)', clause)
+        parallel_enter = re.fullmatch(r'(.+?)后分别进入(.+?)(?:和|与)(.+)', clause)
+        if parallel_subjects:
+            subjects = [_entity(parallel_subjects[1]), _entity(parallel_subjects[2])]
+            for subject in subjects:
+                graph.node(subject, clause)
+                for prior in previous:
+                    graph.edge(prior, subject, text)
+            previous, changed, parallel_pending = subjects, True, True
+            continue
+        if parallel_actions:
+            source = graph.node(_entity(parallel_actions[1]), clause)
+            actions = [_entity(parallel_actions[2]), _entity(parallel_actions[3])]
+            for action in actions:
+                graph.node(action, clause)
+                graph.edge(source, action, clause)
+            previous, changed, parallel_pending = actions, True, True
+            continue
+        if parallel_enter:
+            source = graph.node(_entity(parallel_enter[1]), clause)
+            for prior in previous:
+                if prior != source:
+                    graph.edge(prior, source, clause)
+            actions = [_entity(parallel_enter[2]), _entity(parallel_enter[3])]
+            for action in actions:
+                graph.node(action, clause)
+                graph.edge(source, action, clause)
+            previous, changed, parallel_pending = actions, True, True
+            continue
+
         fan_in = re.fullmatch(r'(.+?)(?:共同|一起)进入(.+)', clause)
         if fan_in and len(_items(fan_in[1])) >= 2:
             target = graph.node(fan_in[2], clause)
@@ -224,6 +326,31 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
             continue
 
         if parallel_pending:
+            merge_then = re.fullmatch(r'(?:结果)?汇合后(?:进行|执行|完成)?(.+)', clause)
+            if merge_then:
+                merged = graph.node('结果汇合', clause)
+                for source in previous:
+                    graph.edge(source, merged, clause)
+                target = graph.node(_entity(merge_then[1]), clause)
+                graph.edge(merged, target, clause)
+                previous, parallel_pending = [target], False
+                changed = True
+                continue
+            fusion = re.fullmatch(r'(?:随后|之后)(.+?)(?:合并|汇总|融合)(.+)', clause)
+            if fusion:
+                target = graph.node(_entity(fusion[1]), clause)
+                for source in previous:
+                    graph.edge(source, target, clause)
+                result_match = re.search(r'(?:并)?(?:生成|输出)(.+)', fusion[2])
+                if result_match:
+                    result = graph.node(_entity(result_match[1]), clause)
+                    graph.edge(target, result, clause)
+                    previous = [result]
+                else:
+                    previous = [target]
+                parallel_pending = False
+                changed = True
+                continue
             join = re.fullmatch(rf'(?:{_SEQUENTIAL})?(?:交给|汇入)(.+)', clause)
             aggregate = re.fullmatch(r'(.+?)(?:合并|收集|汇总)(?:两者|各代理|所有)?.*结果', clause)
             if join or aggregate:
@@ -246,7 +373,39 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
                 graph.edge(source, target, clause, kind='control_flow', label=target)
             # A following action does not say which arm reaches it, or
             # whether all arms merge. Keep it review-only instead of guessing.
-            previous, changed, branch_pending, branch_arms = [], True, True, targets
+            previous, changed, branch_pending, branch_arms, branch_anchor = [], True, True, targets, source
+            continue
+
+        explicit_branch = re.fullmatch(
+            r'(?:若|如果|当)(.+?)(?:则|便|就)(?:进入|走|调用|转到|继续|执行|进行|处理)(.+)', clause
+        )
+        if explicit_branch and previous:
+            source = previous[-1]
+            target = graph.node(_entity(explicit_branch[2]), clause)
+            graph.edge(source, target, clause, kind='control_flow', label=explicit_branch[1].strip())
+            previous, changed, branch_pending, branch_arms, branch_anchor = [], True, True, [target], source
+            continue
+        explicit_condition_route = re.fullmatch(r'(?:根据|依据)(.+?)(?:进入|选择)(.+)', clause)
+        if explicit_condition_route and previous:
+            target = graph.node(_entity(explicit_condition_route[2]), clause)
+            graph.edge(previous[-1], target, clause, kind='control_flow', label=explicit_condition_route[1].strip())
+            previous, changed = [target], True
+            continue
+        explicit_transition = re.fullmatch(r'(.+?)进入(.+)', clause)
+        if (explicit_transition and '后' not in explicit_transition[1]
+                and not any(token in clause for token in ('、', '并'))):
+            stages = [_entity(explicit_transition[1]), _entity(explicit_transition[2])]
+            graph.chain(stages, clause)
+            for source in previous:
+                if source != stages[0]:
+                    graph.edge(source, stages[0], clause)
+            previous, changed = [stages[-1]], True
+            continue
+        branch_condition = re.fullmatch(r'(?:若|如果|当)(.+)', clause)
+        if (branch_condition and index + 1 < len(clauses)
+                and re.fullmatch(r'(?:则|便|就)(?:进入|走|调用|转到|继续|执行|进行|处理).+', clauses[index + 1])):
+            pending_branch_condition = branch_condition[1].strip()
+            changed = True
             continue
 
         status = re.fullmatch(r'(.+?)(未通过|通过|失败)(?:后|才|则)(?:返回|退回|走)?(.+)', clause)
@@ -263,6 +422,7 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
             if status:
                 branch_arms.append(target)
                 branch_pending = True
+                branch_anchor = source
             previous, changed = [], True
             continue
 
@@ -280,11 +440,27 @@ def parse_explicit_prose(text: str) -> dict[str, Any] | None:
             continue
         branch_source = None
 
+        # A final output cue is temporal sequence, not a loop return.  Handle it
+        # before the generic ``<stage>后返回...`` observation rule.
+        final_return = re.fullmatch(r'(?:最后|最终)(?:返回|输出|生成|发布)(.+)', clause)
+        if final_return:
+            stages = [_entity(final_return[1])]
+            graph.chain(stages, clause)
+            for source in previous:
+                graph.edge(source, stages[0], clause)
+            previous, changed = stages, True
+            continue
+
         # Conditions and observation actions are parsed before sequence cues.
         conditional = re.fullmatch(rf'((?:若|如果|当).+?|.+?(?:失败|错误))(?:则|便|就)?((?:{_RETURN}).+)', clause)
         observation = re.fullmatch(rf'(.+?)后((?:{_RETURN}).+)', clause)
         if conditional:
             _return(graph, previous, conditional[2], clause, conditional[1].rstrip('则便就'))
+            previous, changed = [], True
+            continue
+        condition_return = re.fullmatch(rf'(.+?)时((?:{_RETURN}).+)', clause)
+        if condition_return:
+            _return(graph, previous, condition_return[2], clause, condition_return[1])
             previous, changed = [], True
             continue
         if observation:

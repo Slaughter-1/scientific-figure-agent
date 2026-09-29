@@ -8,12 +8,21 @@ def render_backends(spec: dict[str, Any], backends: list[str], output_dir: str |
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     results: dict[str, dict[str, Any]] = {}
+    route_plan = None
+    if spec.get("figure_type") != "plot" and any(backend in {"drawio", "figma"} for backend in backends):
+        from .layouts import build_route_plan
+        from .visual_styles import get_visual_style
+
+        style = spec.get("style", {})
+        family = get_visual_style(style.get("variant", "editorial")).get("layout_family", "pipeline")
+        paper_width = 85.0 if spec.get("constraints", {}).get("paper_width") == "single_column" else 180.0
+        route_plan = build_route_plan(spec, family=family, paper_width_mm=paper_width)
     for backend in backends:
         try:
             if backend == "drawio":
                 from .backends.drawio_backend import render_drawio_spec
 
-                results[backend] = {"status": "ok", **{key: str(value) for key, value in render_drawio_spec(spec, output_dir, "figure").items()}}
+                results[backend] = {"status": "ok", **{key: str(value) for key, value in render_drawio_spec(spec, output_dir, "figure", route_plan=route_plan).items()}}
             elif backend == "matplotlib":
                 if spec.get("figure_type") != "plot":
                     results[backend] = {"status": "skipped", "reason": "matplotlib backend requires figure_type=plot"}
@@ -24,7 +33,7 @@ def render_backends(spec: dict[str, Any], backends: list[str], output_dir: str |
             elif backend == "figma":
                 from .backends.figma_backend import render_figma_spec
 
-                results[backend] = {"status": "ok", **{key: str(value) for key, value in render_figma_spec(spec, output_dir, figma_transport).items()}}
+                results[backend] = {"status": "ok", **{key: str(value) for key, value in render_figma_spec(spec, output_dir, figma_transport, route_plan=route_plan).items()}}
             else:
                 results[backend] = {"status": "error", "error": f"unknown backend: {backend}"}
         except Exception as exc:
