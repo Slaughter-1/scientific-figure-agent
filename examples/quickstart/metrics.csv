@@ -1,0 +1,4 @@
+method,accuracy,f1,std,significance
+Baseline,0.71,0.68,0.02,
+Variant,0.78,0.75,0.015,
+Proposed,0.83,0.81,0.01,*

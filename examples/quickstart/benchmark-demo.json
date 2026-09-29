@@ -1,0 +1,7 @@
+[
+  {
+    "id": "demo_sequence",
+    "category": "sequence",
+    "text": "文本经过分词、编码后送入分类器并输出标签。"
+  }
+]
